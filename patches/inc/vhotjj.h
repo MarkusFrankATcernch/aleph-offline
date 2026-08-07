@@ -1,0 +1,6 @@
+*CD vhotjj
+#ifndef VHOTJJ_H
+#define VHOTJJ_H
+      INTEGER JVHOHA,LVHOTA
+      PARAMETER(JVHOHA=1,LVHOTA=1)
+#endif
