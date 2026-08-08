@@ -141,15 +141,14 @@ namespace alpha  {
 #include <alpha/qvec.h>
 #include <alpha/qvrt.h>
 #include <alpha/frft.h>
+#include <alpha/frtl.h>
+#include <alpha/frid.h>
 #include <alpha/eidt.h>
 #include <alpha/hmad.h>
 #include <alpha/mcad.h>
 #include <alpha/muid.h>
 #include <alpha/peco.h>
 #include <alpha/phco.h>
-
-#include <alpha/track.h>
-#include <alpha/calo_object.h>
 
 /// podio include files
 #include <podio/CollectionBase.h>
@@ -261,9 +260,9 @@ edm4hep::MutableTrack alpha::event_edm4hep::get_particle_reco(int itk)  {
   auto* frtl = track->frtl();
   trk.addToSubdetectorHitNumbers(frtl ? frtl->narcV()  : 0);
   trk.addToSubdetectorHitNumbers(frtl ? frtl->narcI()  : 0);
-  trk.addToSubdetectorHitNumbers(frtl ? frtl->nresti() : 0);
+  trk.addToSubdetectorHitNumbers(frtl ? frtl->nrEsti() : 0);
   trk.addToSubdetectorHitNumbers(frtl ? frtl->narcT()  : 0);
-  trk.addToSubdetectorHitNumbers(frtl ? frtl->ntestt() : 0);
+  trk.addToSubdetectorHitNumbers(frtl ? frtl->nrestt() : 0);
   trk.addToSubdetectorHitNumbers(0);
   auto* frid = track->frid();
   trk.addToSubdetectorHitNumbers(frid ? frid->bitPat()    : 0);

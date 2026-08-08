@@ -28,9 +28,6 @@
 #include <alpha/pgac.h>
 #include <alpha/pcqa.h>
 
-#include <alpha/track.h>
-#include <alpha/calo_object.h>
-
 
 /// C/C++ include files
 #include <cstdio>
@@ -48,7 +45,8 @@ namespace {
     return { text };
   }
   void print_track(int which, const char* prefix = nullptr)  {
-    const auto* track  = alpha::params.qvec_table->at(which);
+    using namespace alpha;
+    const auto* track  = params.qvec_table->at(which);
     const auto* pgac  = track->xpgac() ? track->pgac() : nullptr;
     const auto* pdlt  = track->xpdlt() ? track->pdlt() : nullptr;
     const auto* pmlt  = track->xpmlt() ? track->pmlt() : nullptr;
@@ -76,7 +74,7 @@ void alpha::tests::check_qcde_alignment( bool print )  {
   using namespace alpha;
   if( print )  {
     printf("++++ Check loop variables (QCDE struct/common alignment)\n");
-    f77_print_qcde_();
+    // f77_print_qcde_();
     f77_print_loop_vars_("C++", "CHT", qcde.KNCHT, qcde.KFCHT, qcde.KLCHT);
     f77_print_loop_vars_("C++", "JET", qcde.KNJET, qcde.KFJET, qcde.KLJET);
     f77_print_loop_vars_("C++", "FRT",         -1, qcde.KFFRT, qcde.KLFRT);
@@ -111,6 +109,7 @@ void alpha::tests::access_bank_lists(bool print)  {
       names.reserve(255);
       ::printf(" +++ %s: BANKLIST: %c\n", __FUNCTION__, bank_list);
       for( int i = 1; ; ++i )  {
+#if 0
         std::string bnam = bos77::nlistb(i, bank_list);
         if( bnam.empty() )  {
           break;
@@ -127,6 +126,7 @@ void alpha::tests::access_bank_lists(bool print)  {
                    ((uint8_t*)bank) - (uint8_t*)bos77::bcs.iw,
                    (void*)bank, bank->to_string().c_str());
         }
+#endif
       }
       ::printf(" +++ %s: BANKLIST: %c  %ld words\n\n", __FUNCTION__, bank_list, total_mem);
     }
@@ -136,7 +136,6 @@ void alpha::tests::access_bank_lists(bool print)  {
 void alpha::tests::print_charged_tracks( bool print, int32_t first, int32_t last )  {
   if( print )  {
     auto*   native = params.qvec_table;
-    auto&   table  = object_table<qvec, alphatrack>::get(params.naqvec);
     int32_t kqvec  = bcs.iw[params.naqvec];
     int32_t kcqvec = bcs.iw[kqvec]; // Indices in C start with 0: F77: IW(KOQVEC+1)
     int32_t koqvec = kqvec + bos77::subheader_words - kcqvec;
@@ -149,14 +148,13 @@ void alpha::tests::print_charged_tracks( bool print, int32_t first, int32_t last
              "Fortran tracks \n");
     for(int32_t i=first; i <= last; ++i )  {
       int   id = koqvec + i*kcqvec;
-      auto  t  = table.at(i);
       auto  p  = native->at(i);
       float qx = bcs.rw[id + qvec::JQVEQX];
       float qy = bcs.rw[id + qvec::JQVEQY];
       float qz = bcs.rw[id + qvec::JQVEQZ];
       ::fprintf(stdout,
-                "C++ Track[%3d] %9.3f %9.3f %9.3f || %9.3f  %9.3f  %9.3f || %9.3f  %9.3f  %9.3f  ||    ",
-                i, qx, qy, qz, t.px(), t.py(), t.pz(), p->px, p->py, p->pz );
+                "C++ Track[%3d] %9.3f %9.3f %9.3f || %9.3f  %9.3f  %9.3f  ||    ",
+                i, qx, qy, qz, p->px, p->py, p->pz );
       ::fflush(stdout);
       f77_print_track_(i);
     }
@@ -165,29 +163,25 @@ void alpha::tests::print_charged_tracks( bool print, int32_t first, int32_t last
 
 namespace alpha  {
   /// Access PECO objects as calo_object entities
-  using calo_peco = object_table<peco, calo_object<peco> >;
-  /// Access PECO objects as calo_object entities
-  using calo_ecal = object_table<peco, ecal_object<peco> >;
+  using calo_peco = object_table<peco>;
   
   /// Access PHCO objects as calo_object entities
-  using calo_phco = object_table<phco, calo_object<phco> >;
+  using calo_phco = object_table<phco>;
   /// Access PHCO objects as calo_object entities
-  using calo_hcal = object_table<phco, hcal_object<phco> >;
+  using calo_hcal = object_table<phco>;
 }
 
 /// Loop and print PECO objects
 void alpha::tests::print_peco(bool print)  {
   if( print )  {
     auto& peco = alpha::calo_peco::get("PECO");
-    auto& ecal = alpha::calo_ecal::get("PECO");
     for(uint32_t i=1; i <= peco.size(); ++i )   {
       auto hit = peco.at(i);
-      auto ec  = ecal.at(i);
       ::printf("+++ PECO %-3d energy:%7.3f corr:%7.3f theta: %4.2f phi: %4.2f"
                " region:%1d corr:%4d rel:%02X id: %6d stack1:%7.3f stack2:%7.3f ",
-               i, hit.raw(), hit.energy(), hit.theta(), hit.phi(),
-               hit.region_code(), hit.correction_code(), hit.relations(),
-               hit.object_id(), ec.stack1(), ec.stack2());
+               i, hit->eraw(), hit->ecorr(), hit->theta(), hit->phi(),
+               hit->kdrg(), hit->ccode(), hit->rbits(),
+               hit->pcOB(), hit->esta1(), hit->esta2());
       f77_print_peco_(i);
     }
   }
@@ -197,15 +191,13 @@ void alpha::tests::print_peco(bool print)  {
 void alpha::tests::print_phco(bool print)  {
   if( print )  {
     auto& phco = alpha::calo_phco::get("PHCO");
-    auto& hcal = alpha::calo_hcal::get("PHCO");
     for(uint32_t i=1; i <= phco.size(); ++i )   {
       auto hit = phco.at(i);
-      auto hc  = hcal.at(i);
       ::printf("+++ PHCO %-3d energy:%7.3f corr:%7.3f theta: %4.2f phi: %4.2f"
                " region:%1d corr:%4d rel:%02X id: %6d noise:%02X\n",
-               i, hit.raw(), hit.energy(), hit.theta(), hit.phi(),
-               hit.region_code(), hit.correction_code(), hit.relations(),
-               hit.object_id(), hc.noise_flag());
+               i, hit->eraw(), hit->ecorr(), hit->theta(), hit->phi(),
+               hit->kdrg(), hit->ccode(), hit->rbits(),
+               hit->pcOB(), hit->noiseFlag());
       f77_print_phco_(i);
     }
   }
@@ -307,13 +299,7 @@ void alpha::tests::print_charged_track_opts1(int32_t itk)  {
     ptexs = pqdet->texs(2);
     ::printf("0: seg:%2d #s:%2d ", ptexs->segmentId(), ptexs->numberSamples());
   }
-  ::printf("\n");
-  f77_print_track_opts1_(itk);
-}
 
-/// Check links from QVEC to other banks (2)
-void alpha::tests::print_charged_track_opts2(int32_t itk)  {
-  const auto* track = params.qvec_table->at(itk);
   const auto* eidt  = track->xeidt() ? track->eidt() : nullptr;
   const auto* hmad  = track->xhmad() ? track->hmad() : nullptr;
   const auto* mcad  = track->xmcad() ? track->mcad() : nullptr;
@@ -361,7 +347,7 @@ void alpha::tests::print_charged_track_opts2(int32_t itk)  {
     ::printf(" !!!!! MUID: ERROR !!!!!");
   }
   ::printf("\n");
-  f77_print_track_opts2_(itk);
+  f77_print_track_opts1_(itk);
 }
 
 /// Check links from QVEC track fit parameters
@@ -447,7 +433,6 @@ void alpha::tests::print_charged_track_relations( bool print, int32_t first, int
       print_charged_track_mothers (itk);
       print_charged_track_daughters (itk);
       print_charged_track_opts1 (itk);
-      print_charged_track_opts2 (itk);
       print_charged_track_trackfit (itk);
       print_charged_track_ecal (itk);
       print_charged_track_hcal (itk);
@@ -586,7 +571,7 @@ void alpha::tests::process_event()  {
   }
   /// Energy flow jets
   for(int itk=qcde.KFJET; itk<=qcde.KLJET; ++itk)  {
-    const auto* track  = params.qvec_table->at(itk);
+    //const auto* track  = params.qvec_table->at(itk);
      print_track(itk, "C++ JET    ");
     ::printf("\n");
   }
@@ -610,7 +595,7 @@ void alpha::tests::process_event()  {
   }
   /// Tracks from standard V0 Vertices
   for(int itk=qcde.KFDCT; itk<=qcde.KLDCT; ++itk)  {
-    const auto* track  = params.qvec_table->at(itk);
+    //const auto* track  = params.qvec_table->at(itk);
     print_track(itk, "C++ V0Track");
     ::printf("\n");
   }

@@ -236,18 +236,16 @@ namespace alpha  {
     const class efol* efol()  const        {  return bcs_offset<class efol>(this->offset_efol);  }
 
     /// Check if V0 data are available for track I
-    bool              xyv0v()  const       {  return false;   } // this->offset_yv0v != params.kqzer; }
+    bool              xyv0v()  const;
     /// Access V0 data are available for track I
-    const class efol* yv0v()  const        {  return nullptr; } // bcs_offset<class yv0v>(this->offset_yv0v);  }
+    const class yv0v* yv0v()  const;
 
     /// Check if PCQA data are available for track I
     bool              xpcqa()  const       {
       return params.pcqa_table && this->offset_pcqa != params.kqzer;
     }
     /// Access PCQA data are available for track I
-    const class pcqa* pcqa()  const        {
-      return params.pcqa_table ? params.pcqa_table->at(this->offset_pcqa+1) : nullptr;
-    }
+    const class pcqa* pcqa()  const        {  return bcs_offset<class pcqa>(this->offset_pcqa);    }
 
     /// Check if GAMPECK data are available for “track” I of the GAT section
     bool              xpgac()  const       {

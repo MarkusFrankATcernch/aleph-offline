@@ -76,7 +76,7 @@ namespace alpha  {
   public:
     int32_t  row[1];
 
-    bool check_bounds(int idx)  const {
+    bool check_bounds(int /* idx */)  const {
       return true;//(idx >= 0 && idx <= this->_num_objects) ? true : false;
     }
     int32_t* _access_pointer(int idx)  const  {
@@ -98,8 +98,8 @@ namespace alpha  {
     ~object_table() = delete;
 
     /// Access table by name index [aka NAMIND('QVEC') ]
-    static object_table& get(uint32_t naqvec)  {
-      return *( object_table* ) bos77::get_bank_pointer_from_namind( naqvec );
+    static object_table& get(uint32_t indx)  {
+      return *( object_table* ) bos77::get_bank_pointer_from_namind( indx );
     }
 
     /// Access table by name index [aka NAMIND('QVEC') ]
@@ -163,6 +163,7 @@ namespace alpha  {
   class pcqa;
   class pdlt;
   class pmlt;
+  class efol;
 
   struct constants_t   {
     int32_t naqzer;
@@ -179,6 +180,7 @@ namespace alpha  {
     int32_t napmdt;
     int32_t napdlt;
     int32_t napmlt;
+    int32_t naefol;
 
     int32_t kmatix[6][6];
     
@@ -196,7 +198,8 @@ namespace alpha  {
     const object_table<class pcqa>* pcqa_table;
     const object_table<class pdlt>* pdlt_table;
     const object_table<class pmlt>* pmlt_table;
-    
+    const object_table<class efol>* efol_table;
+
   };
   extern constants_t&  params;
 }      // End namespace alpha

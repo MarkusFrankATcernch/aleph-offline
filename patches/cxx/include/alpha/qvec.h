@@ -96,7 +96,7 @@ namespace alpha  {
     float    mass                  { 0e0 };              // JQVEQM= 4
     float    momentum              { 0e0 };              // JQVEQP= 5
     float    charge                {   0 };              // JQVECH= 6
-    uint32_t frft_row              {   0 };              // JQVETN= 7
+    int32_t  frft_row              {   0 };              // JQVETN= 7
     int32_t  stability_code        {   0 };              // JQVESC= 8
     int32_t  lund_status           {   0 };              // JQVEKS= 9
     int32_t  track_class           {   0 };              // JQVECL=10
@@ -209,6 +209,8 @@ namespace alpha  {
 
     /// Particle class (see ALPHA user's manual for details)
     int32_t kclass()  const    {  return this->track_class;                      }
+    /// Lund status clode from JETSET
+    int32_t klunds()  const    {  return this->lund_status;                      }
     /// Check if track a MC particle
     bool    xmc()  const       {  return this->track_class != 1;                 }
 
@@ -220,7 +222,7 @@ namespace alpha  {
     std::string cqtpn() const;
     
     /// GALEPH/ JULIA/ ENFLW track number (see ALPHA user's manual for details)
-    uint32_t ktn()     const    {  return this->frft_row;                         }
+    int32_t ktn()  const       {  return this->frft_row;                         }
 
     /// Number of mother tracks
     uint32_t knmoth()   const  {  return this->number_mothers;                   }
@@ -233,9 +235,9 @@ namespace alpha  {
     const class qvec* mother(uint32_t i)  const;
 
     /// Number of daughter tracks
-    uint32_t kndau()   const   {  return this->number_daughters;                 }
+    uint32_t          kndau()   const   {  return this->number_daughters;             }
     /// Access index of the charged daughter track
-    uint32_t kdau(uint32_t i) const  {
+    uint32_t          kdau(uint32_t i) const  {
       const auto* qlin = params.qlin_table->at(this->offset_first_daughter + i + 1);
       return qlin ? qlin->link : 0;
     }
@@ -243,11 +245,11 @@ namespace alpha  {
     const class qvec* daughter(uint32_t i)  const;
 
     /// Pointer to origin vertex
-    uint32_t koriv()  const     {  return this->pointer_origin_vtx;              }
+    uint32_t          koriv()  const {  return this->pointer_origin_vtx;              }
     /// Pointer to start vertex
     const class qvrt* origin_vtx()  const;
     /// Pointer to end vertex
-    uint32_t kendv()  const     {  return this->pointer_end_vtx;                 }
+    uint32_t          kendv()  const {  return this->pointer_end_vtx;                 }
     /// Pointer to end vertex
     const class qvrt* end_vtx()  const;
 
@@ -277,8 +279,12 @@ namespace alpha  {
     uint32_t          knecal()  const;
     /// Access ith associated ECAL object
     const class peco* peco(uint32_t i)  const;
+    /// Access ith associated ECAL bank row object
+    uint32_t          peco_rownum(uint32_t i)  const;
     /// Reference to the ECAL track object
     const class qvec* ecal_track(uint32_t i)  const;
+    /// QVEC index of the ECAL track object
+    uint32_t          ecal_track_rownum(uint32_t i)  const;
 
     /// Check if ECAL data (PEPT) are available for calorimeter object “track”
     bool              xpept()  const;
@@ -289,8 +295,12 @@ namespace alpha  {
     uint32_t          knhcal()  const;
     /// Access ith associated HCAL object
     const class phco* phco(uint32_t i)  const;
+    /// Access ith associated HCAL bank row object
+    uint32_t          phco_rownum(uint32_t i)  const;
     /// Reference to the HCAL track object
     const class qvec* hcal_track(uint32_t i)  const;
+    /// QVEC index of the HCAL track object
+    uint32_t          hcal_track_rownum(uint32_t i)  const;
 
     /// Check if electron identification (bank EIDT) is available for this track
     bool              xeidt()  const;
@@ -320,7 +330,7 @@ namespace alpha  {
     /// Check if V0 data are available for track I
     bool              xyv0v()  const;
     /// Access V0 data are available for track I
-    const class efol* yv0v()  const;
+    const class yv0v* yv0v()  const;
 
     /// Check if PCQA data are available for track I
     bool              xpcqa()  const;
@@ -344,6 +354,8 @@ namespace alpha  {
     real_t            qleppe() const;
     /// Flag giving the validity of the Pt calculation (See ALPHA manual)
     int32_t           klepvp() const;
+    /// Check if access to lepton information is present
+    bool              xpdlt()  const;
     /// Access results for track as a Lepton tagged by QSELEP
     const class pdlt* pdlt()  const;
     
@@ -363,6 +375,8 @@ namespace alpha  {
     int32_t           klepme() const;
     /// FKIN track number of the lepton
     int32_t           klepkt() const;
+    /// Check if access to QTRUTH part of QSELEP is present
+    bool              xpmlt()  const;
     /// Access results from the QTRUTH part of QSELEP
     const class pmlt* pmlt()  const;
   };
@@ -412,11 +426,19 @@ namespace alpha  {
   /// number of associated ECAL objects
   inline uint32_t          qvec::knecal()  const    {  return this->qdet()->knecal();    }
   /// Access ith associated ECAL object
-  inline const class peco* qvec::peco(uint32_t i)  const {  return this->qdet()->peco(i);     }
+  inline const class peco* qvec::peco(uint32_t i)  const { return this->qdet()->peco(i); }
+  /// Access ith associated ECAL bank row object
+  inline uint32_t          qvec::peco_rownum(uint32_t i)  const  {
+    return this->qdet()->peco_rownum(i);
+  }
   /// Reference to the ECAL track object
-  inline const class qvec* qvec::ecal_track(uint32_t i)  const
-  {  return this->qdet()->ecal_track(i);                                                 }
-
+  inline const class qvec* qvec::ecal_track(uint32_t i)  const  {
+    return this->qdet()->ecal_track(i);
+  }
+  /// QVEC index of the ECAL track object
+  inline uint32_t          qvec::ecal_track_rownum(uint32_t i)  const  {
+    return this->qdet()->ecal_track_rownum(i);
+  }
   /// Check if ECAL data (PEPT) are available for calorimeter object “track”
   inline bool              qvec::xpept()  const     {  return this->qdet()->xpept();     }
 
@@ -426,10 +448,18 @@ namespace alpha  {
   inline uint32_t          qvec::knhcal()  const    {  return this->qdet()->knhcal();    }
   /// Access ith associated HCAL object
   inline const class phco* qvec::phco(uint32_t i)  const {  return this->qdet()->phco(i);}
+  /// Access ith associated HCAL bank row object
+  inline uint32_t          qvec::phco_rownum(uint32_t i)  const  {
+    return this->qdet()->phco_rownum(i);
+  }
   /// Reference to the HCAL track object
-  inline const class qvec* qvec::hcal_track(uint32_t i)  const
-  {  return this->qdet()->hcal_track(i);                                                 }
-
+  inline const class qvec* qvec::hcal_track(uint32_t i)  const  {
+    return this->qdet()->hcal_track(i);
+  }
+  /// QVEC index of the HCAL track object
+  inline uint32_t          qvec::hcal_track_rownum(uint32_t i)  const  {
+    return this->qdet()->hcal_track_rownum(i);
+  }
   /// Check if electron identification (bank EIDT) is available for this track
   inline bool              qvec::xeidt()  const     {  return this->qdet()->xeidt();     }
   /// Access bank with electron identification information (bank EIDT)
@@ -458,7 +488,7 @@ namespace alpha  {
   /// Check if V0 data are available for track I
   inline bool              qvec::xyv0v()  const      {  return this->qdet()->xyv0v();    }
   /// Access V0 data are available for track I
-  inline const class efol* qvec::yv0v()  const       {  return this->qdet()->yv0v();     }
+  inline const class yv0v* qvec::yv0v()  const       {  return this->qdet()->yv0v();     }
 
   /// Check if PCQA data are available for track I
   inline bool              qvec::xpcqa()  const      {  return this->qdet()->xpcqa();    }
@@ -472,6 +502,8 @@ namespace alpha  {
 
   /// Check if track is a Lepton tagged by QSELEP
   inline bool              qvec::xleptg() const      {  return this->qdet()->xpdlt();    }
+  /// Check if access to lepton information is present
+  inline bool              qvec::xpdlt()  const      {  return this->qdet()->xpdlt();    }
   /// Access results for track as a Lepton tagged by QSELEP
   inline const class pdlt* qvec::pdlt()  const       {  return this->qdet()->pdlt();     }
   /// Properties of selected tagged Leptons (See ALPHA manual)
@@ -487,6 +519,8 @@ namespace alpha  {
   
   /// Check for results from the QTRUTH part of QSELEP
   inline bool              qvec::xlepth() const      {  return this->qdet()->xpmlt();    }
+  /// Check for results from the QTRUTH part of QSELEP
+  inline bool              qvec::xpmlt() const       {  return this->qdet()->xpmlt();    }
   /// Access results from the QTRUTH part of QSELEP
   inline const class pmlt* qvec::pmlt()  const       {  return this->qdet()->pmlt();     }
   /// Primary quark Flavour of the event

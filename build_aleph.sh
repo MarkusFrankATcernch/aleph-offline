@@ -58,9 +58,17 @@ cp -r ../cernlib ./;
 #
 patch_checkout;
 #
-mkdir build64;
+mkdir -p build64;
 cd build64;
-cmake -DCMAKE_INSTALL_PREFIX=`pwd`/../install64  ..;
+. /cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-ubuntu2404-gcc13-opt/setup.sh;
+#
+python ../dbase/scripts/gen_header.py -o ../aleph_headers/alpha -a;
+#
+cmake  -DCMAKE_MODULE_PATH=/cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-ubuntu2404-gcc13-opt\
+       -DCMAKE_INSTALL_PREFIX=`pwd`/../install64 \
+       ..;
+#
+#
 make -j 33 install;
 ./alpha/alpha.124;
 

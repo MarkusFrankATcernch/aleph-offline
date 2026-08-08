@@ -73,6 +73,7 @@ add_subdirectory(   julia )
 add_subdirectory(   alpha )
 add_subdirectory(   galeph )
 add_subdirectory(   uphy )
+add_subdirectory(   cxx )
 #add_subdirectory(  kin.${KIN_VERSION} )
 #add_subdirectory(   gen.${GEN_VERSION} )
 #

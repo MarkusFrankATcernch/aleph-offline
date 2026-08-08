@@ -15,6 +15,7 @@
 #include <cstdio>
 #include <cstdint>
 #include <alpha/alpha.h>
+#include <alpha/processor.h>
 
 #include <alpha/defs.h>
 #include <alpha/qcde.h>
@@ -36,19 +37,20 @@ namespace alpha {
 
 static void init_event()  {
   using namespace alpha;
-  params.kqzer  = bos77::bcs.iw[params.naqzer];
+  int32_t* iw = bos77::bcs.iw;
+  params.kqzer  = iw[params.naqzer];
 
-  int32_t kqvec  = bos77::bcs.iw[params.naqvec];
-  int32_t kqvrt  = bos77::bcs.iw[params.naqvrt];
-  int32_t kqdet  = bos77::bcs.iw[params.naqdet];
-  int32_t kqlin  = bos77::bcs.iw[params.naqlin];
-  int32_t kpeco  = bos77::bcs.iw[params.napeco];
-  int32_t kphco  = bos77::bcs.iw[params.naphco];
-  int32_t kpgac  = bos77::bcs.iw[params.napgac];
-  int32_t kpcqa  = bos77::bcs.iw[params.napcqa];
-  int32_t kpdlt  = bos77::bcs.iw[params.napdlt];
-  int32_t kpmlt  = bos77::bcs.iw[params.napmlt];
-  int32_t kefol  = bos77::bcs.iw[params.naefol];
+  int32_t kqvec  = iw[params.naqvec];
+  int32_t kqvrt  = iw[params.naqvrt];
+  int32_t kqdet  = iw[params.naqdet];
+  int32_t kqlin  = iw[params.naqlin];
+  int32_t kpeco  = iw[params.napeco];
+  int32_t kphco  = iw[params.naphco];
+  int32_t kpgac  = iw[params.napgac];
+  int32_t kpcqa  = iw[params.napcqa];
+  int32_t kpdlt  = iw[params.napdlt];
+  int32_t kpmlt  = iw[params.napmlt];
+  int32_t kefol  = iw[params.naefol];
 
   params.qvec_table = params.table<object_table<class qvec> >(kqvec);
   params.qvrt_table = params.table<object_table<class qvrt> >(kqvrt);
@@ -57,7 +59,7 @@ static void init_event()  {
   params.peco_table = params.table<object_table<class peco> >(kpeco);
   params.phco_table = params.table<object_table<class phco> >(kphco);
   params.pgac_table = params.table<object_table<class pgac> >(kpgac);
-  params.pcqa_table = params.table<object_table<class pcqa> >(kpgac);
+  params.pcqa_table = params.table<object_table<class pcqa> >(kpcqa);
   params.pdlt_table = params.table<object_table<class pdlt> >(kpdlt);
   params.pmlt_table = params.table<object_table<class pmlt> >(kpmlt);
   params.efol_table = params.table<object_table<class efol> >(kefol);
@@ -113,13 +115,12 @@ template <> void alpha::processor<alpha::event_processor>::initialize()  {
   params.napcqa = bos77::namind("PCQA");
   params.napdlt = bos77::namind("PDLT");
   params.napmlt = bos77::namind("PMLT");
-  params.napmlt = bos77::namind("PMLT");
 
   if( have_tests ) tests::initialize();
 }
 
 /// Framework event callback
-template <> void alpha::processor<alpha::event_processor>::handle_event()  {
+template <> void alpha::processor<alpha::event_processor>::handle_event(constants_t& /* par */)  {
   ::printf("+++++++  Calling %s\n", __FUNCTION__);
   init_event();
   if( have_tests ) tests::process_event();

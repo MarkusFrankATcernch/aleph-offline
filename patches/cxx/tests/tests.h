@@ -15,7 +15,8 @@
 
 /// C/C++ include files
 #include <cstdint>
-#include <alpha/track.h>
+#include <alpha/defs.h>
+#include <alpha/qvec.h>
 
 namespace alpha  {
 
@@ -31,7 +32,8 @@ namespace alpha  {
     /// Check links from QVEC track fit parameters
     void print_charged_track_trackfit(int32_t itk);
     /// Check links from QVEC to ECAL/HCAL banks
-    void print_charged_track_calo(int32_t itk);
+    void print_charged_track_ecal(int32_t itk);
+    void print_charged_track_hcal(int32_t itk);
 
     /// Print attributes for a range of vertices
     void print_vertex_relations( bool print, int32_t first, int32_t last );
