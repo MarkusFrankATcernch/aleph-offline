@@ -55,41 +55,88 @@ namespace podio {
 /// ALPHA namespace declaration
 namespace alpha  {
 
+  class vdxy;
+
+  struct bank_access_t  {
+    int32_t  nami  { 0 };
+    int32_t  kloc  { 0 };
+    int32_t* data  { nullptr };
+
+    void event_config()  {
+      this->kloc = bos77::bcs.iw[this->nami];
+      this->data = this->_pointer();
+    }
+
+    int32_t* _pointer()  const  {
+      int32_t off = this->offset();
+      if( off )  {
+	int32_t* ptr = bos77::bcs.iw + off - bos77::bankheader_words;
+	return ptr;
+      }
+      return nullptr;
+    }
+
+    template<typename T> T* row(int32_t idx)  {
+      T* row = this->table<T>()->at(idx);
+      if( row )  {
+	return row;
+      }
+      throw std::runtime_error("Error: non existing cluster in table!");
+    }
+
+    template<typename T=int32_t> object_table<T>* table()  const  {
+      return (object_table<T>*)this->data;
+    }
+
+    int32_t offset()  const  {
+      return this->kloc ? *(bos77::bcs.iw + this->kloc) : 0;
+    }
+  };
+
+  struct data_access_t  {
+    bank_access_t qvec;  // QVEC table bank
+    bank_access_t peco;  // PECO table bank
+    bank_access_t phco;  // PHCO table bank
+    bank_access_t vdco;  // VDET coordinated NR=0 (POT) --> FRFT
+    bank_access_t vdxy;  // MVD hits in r-phi wafer.       NR=ILAYER*10000+IZED*1000+IPH-I*10+(IVIEW=1)
+    bank_access_t vdzt;  // MVD hits in z wafer. (POT)     NR=ILAYER*10000+IZED*1000+IPH-I*10+(IVIEW=1)
+    bank_access_t vfhl;  // VDET final hit list bank,      NR=VHLS number (POT)
+    bank_access_t vfph;  // VDET final pulse height bank,  NR=VHLS number (POT)
+    bank_access_t vflg;  // VDET strip flag bank,          NR=VHLS number (POT)
+    bank_access_t vufk;  // Vdxy/vdzt to FKIN truth
+    bank_access_t vdfk;  // Vdco to FKIN truth relation
+    bank_access_t vdht;  // VDet HiT list NR=0 (GAL)
+    bank_access_t vdgc;  // VDET global clusters
+  };
+
   class event_edm4hep  {
   public:
-    edm4hep::EventHeader            event_header   {  };
-    edm4hep::MCParticleCollection   particles_mc   {  };
-    edm4hep::TrackCollection        particles_reco {  };
-    edm4hep::ClusterCollection      clusters_ecal  {  };
-    edm4hep::ClusterCollection      clusters_hcal  {  };
-    std::map<int, podio::ObjectID>  alpha2edm4hep_particles { };
-    std::map<int, podio::ObjectID>  alpha2edm4hep_tracks    { };
-    std::map<int, podio::ObjectID>  alpha2edm4hep_ecal      { };
-    std::map<int, podio::ObjectID>  alpha2edm4hep_hcal      { };
-    const object_table<class qvec>* alpha_tracks  { nullptr };
-    const object_table<class peco>* alpha_ecal    { nullptr };
-    const object_table<class phco>* alpha_hcal    { nullptr };
-    
+    edm4hep::EventHeader               event_header            {  };
+    edm4hep::MCParticleCollection      particles_mc            {  };
+    edm4hep::TrackCollection           particles_reco          {  };
+    edm4hep::ClusterCollection         clusters_ecal           {  };
+    edm4hep::ClusterCollection         clusters_hcal           {  };
+    edm4hep::TrackerHitPlaneCollection mvd_hits                {  };
+    std::map<int, podio::ObjectID>     alpha2edm4hep_particles {  };
+    std::map<int, podio::ObjectID>     fkin2edm4hep_particles  {  };
+    std::map<int, podio::ObjectID>     alpha2edm4hep_tracks    {  };
+    std::map<int, podio::ObjectID>     alpha2edm4hep_ecal      {  };
+    std::map<int, podio::ObjectID>     alpha2edm4hep_hcal      {  };
+
+    data_access_t& data;
+
     template<typename T,typename C>
     T get_item(C& cont, podio::ObjectID id)  {
       for( auto i=cont.begin(); i != cont.end(); ++i )  {
-        if( id == i->id() )  {
-          return *i;
-        }
+	if( id == i->id() )  {
+	  return *i;
+	}
       }
       throw std::runtime_error("Non existing object");
     }
-    template<typename T>
-    T* get_row(const object_table<T>* table, int32_t idx)  {
-      T* row = table->at(idx);
-      if( !row )  {
-        throw std::runtime_error("Error: non existing cluster in table!");
-      }
-      return row;
-    }
 
     /// Default constructor
-    event_edm4hep();
+    event_edm4hep(data_access_t& data);
     /// Default destructor
     virtual ~event_edm4hep();
     /// Create MC particle
@@ -106,12 +153,17 @@ namespace alpha  {
   public:
     std::unique_ptr<event_edm4hep> event;
 #if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
-      using writer_t = podio::Writer;
+    using writer_t = podio::Writer;
 #else
-      using writer_t = podio::ROOTWriter;
+    using writer_t = podio::ROOTWriter;
 #endif
     std::unique_ptr<writer_t>     podio_file  { };
     podio::Frame                  podio_frame { };
+
+    data_access_t data  { };
+
+    int32_t*  iw { nullptr };
+    
   public:
     /// Default constructor
     output_edm4hep();
@@ -150,6 +202,8 @@ namespace alpha  {
 #include <alpha/peco.h>
 #include <alpha/phco.h>
 
+#include <alpha/vdxy.h>
+
 /// podio include files
 #include <podio/CollectionBase.h>
 #include <podio/podioVersion.h>
@@ -171,14 +225,51 @@ namespace {
   edm4hep::Vector3f null_position(0e0, 0e0, 0e0);
   
   constexpr static const double ENECONV = (TGeoUnit::GeV/G4::GeV);
-  double enecnv(double val) { return val * ENECONV;  }
+  double _ENE(double val) { return val * ENECONV;   }
 
   constexpr static const double LENCONV = (TGeoUnit::GeV/G4::GeV);
-  double lencnv(double val) { return val * LENCONV;  }
+  double _LEN(double val) { return val * LENCONV;   }
+
+  constexpr static const double TIMECONV = (TGeoUnit::ns/G4::ns);
+  double _TIM(double val) { return val * TIMECONV;  }
+  
+  void data_access_namind( alpha::data_access_t& acc )  {
+    acc.qvec.nami = bos77::namind("QVEC");
+    acc.peco.nami = bos77::namind("PECO");
+    acc.phco.nami = bos77::namind("PHCO");
+    acc.vdco.nami = bos77::namind("VDCO");
+    acc.vdxy.nami = bos77::namind("VDXY");
+    acc.vdzt.nami = bos77::namind("VDZT");
+    acc.vfhl.nami = bos77::namind("VFHL");
+    acc.vfph.nami = bos77::namind("VFPH");
+    acc.vflg.nami = bos77::namind("VFLG");
+    acc.vufk.nami = bos77::namind("VUFK");
+    acc.vdfk.nami = bos77::namind("VDFK");
+    acc.vdht.nami = bos77::namind("VDHT");
+    acc.vdgc.nami = bos77::namind("VDGC");
+  }
+
+  void data_access_event_config( alpha::data_access_t& acc )  {
+    acc.qvec.event_config();
+    acc.peco.event_config();
+    acc.phco.event_config();
+    acc.vdco.event_config();
+    acc.vdxy.event_config();
+    acc.vdzt.event_config();
+    acc.vfhl.event_config();
+    acc.vfph.event_config();
+    acc.vflg.event_config();
+    acc.vufk.event_config();
+    acc.vdfk.event_config();
+    acc.vdht.event_config();
+    acc.vdgc.event_config();
+  }
 }
 
 /// Default constructor
-alpha::event_edm4hep::event_edm4hep()  {
+alpha::event_edm4hep::event_edm4hep(data_access_t& da)
+  : data(da)
+{
 }
 
 /// Default destructor
@@ -190,29 +281,32 @@ edm4hep::MutableMCParticle alpha::event_edm4hep::get_particle_mc(int itk)  {
   if( it != this->alpha2edm4hep_particles.end() )  {
     return this->get_item<edm4hep::MutableMCParticle>(this->particles_mc, it->second);
   }
-  auto*        track = this->get_row(this->alpha_tracks, itk);
-  auto         mcp   = this->particles_mc.create();
-  const auto* vstart = track->origin_vtx();
-  const auto* vend   = track->end_vtx();
-  double  part_time  = 0e0;
-  int32_t sim_status = 0;
+  auto*        track  = this->data.qvec.row<class qvec>(itk);
+  auto         mcp    = this->particles_mc.create();
+  const auto*  vstart = track->origin_vtx();
+  const auto*  vend   = track->end_vtx();
+  double       ptime  = 0e0;
+  int32_t sim_status  = 0;
 
   this->alpha2edm4hep_particles[itk] = mcp.id();
-  mcp.setMass(track->qm());
-  mcp.setTime(part_time);
+  this->fkin2edm4hep_particles[track->ktn()] = mcp.id();
+  mcp.setMass(_ENE(track->qm()));
+  mcp.setTime(_TIM(ptime));
   mcp.setCharge(track->qch());
   mcp.setPDG(track->ktpcod());
   mcp.setSimulatorStatus(sim_status);
 
-  mcp.setMomentum({ enecnv(track->qx()), enecnv(track->qy()), enecnv(track->qz()) });
-  mcp.setMomentumAtEndpoint({ enecnv(track->qx()), enecnv(track->qy()), enecnv(track->qz()) });
+  mcp.setMomentum( {           _ENE(track->qx()), _ENE(track->qy()), _ENE(track->qz()) } );
+  mcp.setMomentumAtEndpoint( { _ENE(track->qx()), _ENE(track->qy()), _ENE(track->qz()) } );
 
-  mcp.setVertex(   { vstart ? lencnv(vstart->x) : 0e0,
-      vstart ? lencnv(vstart->y) : 0e0,
-      vstart ? lencnv(vstart->z) : 0e0 } );
-  mcp.setEndpoint( { vend ? lencnv(vend->x) : 0e0,
-      vend ? lencnv(vend->y) : 0e0,
-      vend ? lencnv(vend->z) : 0e0 } );
+  mcp.setVertex(   {
+      vstart ? _LEN(vstart->x) : 0e0,
+      vstart ? _LEN(vstart->y) : 0e0,
+      vstart ? _LEN(vstart->z) : 0e0 } );
+  mcp.setEndpoint( {
+      vend ? _LEN(vend->x) : 0e0,
+      vend ? _LEN(vend->y) : 0e0,
+      vend ? _LEN(vend->z) : 0e0 } );
 
   // Set generator status
   mcp.setGeneratorStatus(track->klunds());
@@ -232,11 +326,12 @@ edm4hep::MutableTrack alpha::event_edm4hep::get_particle_reco(int itk)  {
   if( it != this->alpha2edm4hep_tracks.end() )  {
     return this->get_item<edm4hep::MutableTrack>(this->particles_reco, it->second);
   }
-  auto* track = this->get_row(this->alpha_tracks, itk);
-  auto* frft = track->frft();
+  auto* track = this->data.qvec.row<class qvec>(itk);
+  auto* frft  = track->frft();
   if( !frft )  {
     throw std::runtime_error("Error: No FRFT bank present");
   }
+
   auto trk  = this->particles_reco.create();
   this->alpha2edm4hep_tracks[itk] = trk.id();
   trk.setType(track->kclass());
@@ -258,24 +353,25 @@ edm4hep::MutableTrack alpha::event_edm4hep::get_particle_reco(int itk)  {
   trk.addToTrackStates(state);
   
   auto* frtl = track->frtl();
-  trk.addToSubdetectorHitNumbers(frtl ? frtl->narcV()  : 0);
-  trk.addToSubdetectorHitNumbers(frtl ? frtl->narcI()  : 0);
-  trk.addToSubdetectorHitNumbers(frtl ? frtl->nrEsti() : 0);
-  trk.addToSubdetectorHitNumbers(frtl ? frtl->narcT()  : 0);
-  trk.addToSubdetectorHitNumbers(frtl ? frtl->nrestt() : 0);
+  trk.addToSubdetectorHitNumbers(frtl ? frtl->narcV()                : 0);
+  trk.addToSubdetectorHitNumbers(frtl ? frtl->narcI()                : 0);
+  trk.addToSubdetectorHitNumbers(frtl ? frtl->nrEsti()               : 0);
+  trk.addToSubdetectorHitNumbers(frtl ? frtl->narcT()                : 0);
+  trk.addToSubdetectorHitNumbers(frtl ? frtl->nrestt()               : 0);
   trk.addToSubdetectorHitNumbers(0);
+
   auto* frid = track->frid();
-  trk.addToSubdetectorHitNumbers(frid ? frid->bitPat()    : 0);
-  trk.addToSubdetectorHitNumbers(frid ? frid->deadZone()  : 0);
-  trk.addToSubdetectorHitNumbers(frid ? frid->bitpatC()   : 0);
-  trk.addToSubdetectorHitNumbers(frid ? frid->deadzoneC() : 0);
+  trk.addToSubdetectorHitNumbers(frid ? frid->bitPat()               : 0);
+  trk.addToSubdetectorHitNumbers(frid ? frid->deadZone()             : 0);
+  trk.addToSubdetectorHitNumbers(frid ? frid->bitpatC()              : 0);
+  trk.addToSubdetectorHitNumbers(frid ? frid->deadzoneC()            : 0);
   trk.addToSubdetectorHitNumbers(frid ? int(frid->probElec()*1000)   : 0);
   trk.addToSubdetectorHitNumbers(frid ? int(frid->probMuon()*1000)   : 0);
   trk.addToSubdetectorHitNumbers(frid ? int(frid->probpIon()*1000)   : 0);
   trk.addToSubdetectorHitNumbers(frid ? int(frid->probKaon()*1000)   : 0);
   trk.addToSubdetectorHitNumbers(frid ? int(frid->probProton()*1000) : 0);
   trk.addToSubdetectorHitNumbers(frid ? int(frid->noKinkprob()*1000) : 0);
-  trk.addToSubdetectorHitNumbers(frid ? frid->qualityFlag()  : 0);
+  trk.addToSubdetectorHitNumbers(frid ? frid->qualityFlag()          : 0);
   return trk;
 }
 
@@ -285,7 +381,7 @@ edm4hep::MutableCluster alpha::event_edm4hep::get_ecal_cluster(int itk)  {
   if( it != this->alpha2edm4hep_ecal.end() )  {
     return this->get_item<edm4hep::MutableCluster>(this->clusters_ecal, it->second);
   }
-  auto* aclu = this->get_row(this->alpha_ecal, itk);
+  auto* aclu = this->data.peco.row<class peco>(itk);
   auto  clu  = this->clusters_ecal.create();
   this->alpha2edm4hep_ecal[itk] = clu.id();
   clu.setIPhi(aclu->phi());
@@ -293,8 +389,8 @@ edm4hep::MutableCluster alpha::event_edm4hep::get_ecal_cluster(int itk)  {
   clu.setEnergy(aclu->ecorr());
   clu.setEnergyError( std::abs(aclu->ecorr() - aclu->eraw()) );
   clu.setType(aclu->rbits() +
-              (aclu->ccode()<<8) +
-              (aclu->kdrg()<<16));
+	      (aclu->ccode()<<8) +
+	      (aclu->kdrg()<<16));
   clu.setPosition( { } );
   clu.setPositionError( { } );
   clu.setDirectionError( { aclu->eraw(), aclu->esta1(), aclu->esta2() } );
@@ -307,7 +403,7 @@ edm4hep::MutableCluster alpha::event_edm4hep::get_hcal_cluster(int itk)  {
   if( it != this->alpha2edm4hep_hcal.end() )  {
     return this->get_item<edm4hep::MutableCluster>(this->clusters_hcal, it->second);
   }
-  auto* aclu = get_row(this->alpha_hcal, itk);
+  auto* aclu = this->data.phco.row<class phco>(itk);
   auto  clu  = this->clusters_hcal.create();
   this->alpha2edm4hep_hcal[itk] = clu.id();
   clu.setIPhi(aclu->phi());
@@ -315,9 +411,9 @@ edm4hep::MutableCluster alpha::event_edm4hep::get_hcal_cluster(int itk)  {
   clu.setEnergy(aclu->ecorr());
   clu.setEnergyError( std::abs(aclu->ecorr() - aclu->eraw()) );
   clu.setType(aclu->rbits() +
-              (aclu->ccode()<<8) +
-              (aclu->kdrg()<<16) +
-              (aclu->noiseFlag()<<24));
+	      (aclu->ccode()<<8) +
+	      (aclu->kdrg()<<16) +
+	      (aclu->noiseFlag()<<24));
   clu.setPosition( { } );
   clu.setPositionError( { } );
   clu.setDirectionError( { aclu->eraw(), 0e0, 0e0 } );
@@ -326,6 +422,8 @@ edm4hep::MutableCluster alpha::event_edm4hep::get_hcal_cluster(int itk)  {
 
 /// Default constructor
 alpha::output_edm4hep::output_edm4hep()   {
+  this->iw = bos77::bcs.iw;
+  data_access_namind(this->data);
 }
 
 /// Default destructor
@@ -334,10 +432,8 @@ alpha::output_edm4hep::~output_edm4hep()   {
 
 /// Start event saving
 void alpha::output_edm4hep::begin_event()  {
-  this->event  = std::make_unique<event_edm4hep>();
-  this->event->alpha_tracks = params.qvec_table;
-  this->event->alpha_ecal   = params.peco_table;
-  this->event->alpha_hcal   = params.phco_table;
+  data_access_event_config(this->data);
+  this->event = std::make_unique<event_edm4hep>(this->data);
 
   /// First only create the particles and fill the properties
   for( int itk = qcde.KFMCT; itk <= qcde.KLMCT; ++itk )
@@ -346,10 +442,10 @@ void alpha::output_edm4hep::begin_event()  {
   for( int itk = qcde.KFCHT; itk <= qcde.KLCHT; ++itk )
     this->event->get_particle_reco(itk);
   /// Create all ECAL clusters from PECO
-  for( uint32_t i=1; i <= this->event->alpha_ecal->size(); ++i )
+  for( uint32_t i=1; i <= this->data.peco.table<class peco>()->size(); ++i )
     this->event->get_ecal_cluster(i);
   /// Create all HCAL clusters from PHCO
-  for( uint32_t i=1; i <= this->event->alpha_ecal->size(); ++i )
+  for( uint32_t i=1; i <= this->data.phco.table<class peco>()->size(); ++i )
     this->event->get_hcal_cluster(i);
 
   
@@ -370,7 +466,7 @@ void alpha::output_edm4hep::end_event()  {
 /// After creation add all links to the MC particles
 void alpha::output_edm4hep::fill_particles_mc()   {
   for(int itk = qcde.KFMCT; itk <= qcde.KLMCT; ++itk )  {
-    auto* track = this->event->alpha_tracks->at(itk);
+    auto* track = this->data.qvec.row<class qvec>(itk);
     auto  part  = this->event->get_particle_mc(itk);
     for( uint32_t im=0; im<track->knmoth(); ++im )  {
       const auto& mot = event->get_particle_mc(track->kmoth(im));
@@ -389,7 +485,7 @@ void alpha::output_edm4hep::fill_tracks()   {
 
 /// After creation add all links to the ECAL clusters from PECO
 void alpha::output_edm4hep::fill_clusters_ecal()   {
-  const auto* clusters = params.peco_table;
+  const auto* clusters = this->data.peco.table<class peco>();
   for(uint32_t i=1; i <= clusters->size(); ++i )   {
     const auto* cluster = clusters->at(i);
     

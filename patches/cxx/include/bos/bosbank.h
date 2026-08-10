@@ -219,7 +219,7 @@ namespace bos77  {
       return (const T*)ptr;
     }
 
-    /// String represntation for printouts
+    /// String representation for printouts
     std::string to_string(const std::string& prefix="BOS")  const;
 
     /// Number of columns defined in the sub-header
@@ -258,7 +258,19 @@ namespace bos77  {
   inline int32_t header_words()   {
     return bos77::bankheader_words;
   }
-  
+
+  /// Access BOS common with abolute offset
+  int32_t* absolute_offset( std::size_t offset );
+ 
+  /// Resolve hashed name index of the bank
+  int32_t     namind(const std::string& bname);
+  /// Resolve hashed name index of the bank
+  int32_t     namind(const char* bank);
+  /// Link to bank data offset by index
+  int32_t     nlink(const std::string& bank, int which);
+  /// Link to bank data offset by index
+  int32_t     nlink(const char* bank, int which);
+    
   /// Access bank names in bank list
   std::string nlistb(uint32_t index, char list);
   /// Access bank names in bank list
@@ -266,17 +278,16 @@ namespace bos77  {
   /// Access bank names in bank list
   std::string nlist(uint32_t index, const char* list);
 
-  /// Resolve name index of the bank
-  int32_t     namind(const std::string& bname);
-  /// Resolve name index of the bank
-  int32_t     namind(const char* bank);
-  /// Link to bank data offset by index
-  int32_t     nlink(const char* bank, int which);
-    
-  /// Access bank by index
+  /// Access bank from BOS common by index: Get bank instance 'num' of bank type 'bnam'
   bank*       get_bank(const std::string& bank, int which);
-  /// Access bank from BOS common by index
+  /// Access bank from BOS common by index: Get bank instance 'num' of bank type 'bnam'
   bank*       get_bank(const char* bank, int which);
+
+  /// Access BOS bank com BOS common by name
+  int32_t*    get_bank_pointer_from_name( const char* name );
+
+  /// Access BOS bank com BOS common by hashed index
+  int32_t*    get_bank_pointer_from_namind( int32_t nami );
 
 
   /// Print bank names of a single bank list
@@ -340,10 +351,6 @@ namespace bos77  {
   extern sysbos_t&    sysbos;
   extern const std::string& bos_bank_lists;
 #endif
-
-  int32_t* get_bank_pointer_from_name( const char* name );
-  int32_t* get_bank_pointer_from_namind( int32_t naqvec );
-  int32_t* absolute_offset( std::size_t offset );
 
 } // End namespace bos
 

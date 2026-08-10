@@ -33,6 +33,9 @@
 using bos77::bcs;
 
 namespace {
+
+  bool print_f77 = false;
+  
   std::string hex_addr(const void* addr)  {
     char text[32];
     if( addr )
@@ -41,6 +44,7 @@ namespace {
       ::snprintf(text, sizeof(text), "%-6s", "-----");
     return { text };
   }
+  
   void print_track(int which, const char* prefix = nullptr)  {
     using namespace alpha;
     const auto* track  = params.qvec_table->at(which);
@@ -57,6 +61,7 @@ namespace {
     ::printf("PDLT:%c/%s ", true_false(track->xpdlt()), hex_addr(pdlt).c_str());
     ::printf("PMLT:%c/%s ", true_false(track->xpmlt()), hex_addr(pmlt).c_str());
   }
+  
 }
 
 void alpha::tests::initialize()  {
@@ -151,7 +156,7 @@ void alpha::tests::print_charged_tracks( bool print, int32_t first, int32_t last
                 "C++ Track[%3d] %9.3f %9.3f %9.3f || %9.3f  %9.3f  %9.3f  ||    ",
                 i, qx, qy, qz, p->px, p->py, p->pz );
       ::fflush(stdout);
-      f77_print_track_(i);
+      ( print_f77 ) ? f77_print_track_(i) : (void)::printf("\n");
     }
   }
 }
@@ -177,7 +182,7 @@ void alpha::tests::print_peco(bool print)  {
                i, hit->eraw(), hit->ecorr(), hit->theta(), hit->phi(),
                hit->kdrg(), hit->ccode(), hit->rbits(),
                hit->pcOB(), hit->esta1(), hit->esta2());
-      f77_print_peco_(i);
+      ( print_f77 ) ? f77_print_peco_(i) : (void)::printf("\n");
     }
   }
 }
@@ -189,11 +194,11 @@ void alpha::tests::print_phco(bool print)  {
     for(uint32_t i=1; i <= phco.size(); ++i )   {
       auto hit = phco.at(i);
       ::printf("+++ PHCO %-3d energy:%7.3f corr:%7.3f theta: %4.2f phi: %4.2f"
-               " region:%1d corr:%4d rel:%02X id: %6d noise:%02X\n",
+               " region:%1d corr:%4d rel:%02X id: %6d noise:%02X ",
                i, hit->eraw(), hit->ecorr(), hit->theta(), hit->phi(),
                hit->kdrg(), hit->ccode(), hit->rbits(),
                hit->pcOB(), hit->noiseFlag());
-      f77_print_phco_(i);
+      ( print_f77 ) ? f77_print_phco_(i) : (void)::printf("\n");
     }
   }
 }
@@ -201,7 +206,7 @@ void alpha::tests::print_phco(bool print)  {
 /// Verify track-mother relationships
 void alpha::tests::print_charged_track_mothers(int32_t itk)  {
   const auto* track = params.qvec_table->at(itk);
-  f77_print_track_mothers_(itk);
+  if( print_f77 ) f77_print_track_mothers_(itk);
   if( track->knmoth() > 0 )  {
     /// Mothers ?? Only for MC tracks
     // KNMOTH(KI)    = IW(KOQVEC+KI*KCQVEC+JQVENO);  --> qvec::number_mothers
@@ -221,7 +226,7 @@ void alpha::tests::print_charged_track_mothers(int32_t itk)  {
 /// Verify track-daughter relationships
 void alpha::tests::print_charged_track_daughters(int32_t itk)  {
   const auto* track = params.qvec_table->at(itk);
-  f77_print_track_daughters_(itk);
+  if( print_f77 ) f77_print_track_daughters_(itk);
   if( track->kndau() > 0 )  {
     printf("C++ Track[%3d] daughters %6.3f %7.3f %7.3f #ndau:%1d ",
            itk, track->px, track->py, track->pz, track->kndau());
@@ -269,31 +274,14 @@ void alpha::tests::print_charged_track_opts1(int32_t itk)  {
   //     QTEXTL(KI,KI1)=RW(IW(KJQDET(KI)+KI1+JQDENT)+JTEXTL)
   //     KTEXNS(KI,KI1)=IW(IW(KJQDET(KI)+KI1+JQDENT)+JTEXNS)
   //     QTEXAD(KI,KI1)=RW(IW(KJQDET(KI)+KI1+JQDENT)+JTEXAD)
-  if( pqdet->kntexs() < 0xff )  {
-    printf("C++ Track[%3d] "
-           "FRFT:%2d d0:%7.2f z0:%7.2f "
-           "FRTL: %1d %1d %2d "
-           "FRID:%p e-:%4.3f pi:%4.3f "
-           "TEXS:%c %2d ",
-           itk, track->ktn(), pfrft->d0(), pfrft->z0(),
-           pfrtl->narcV(), pfrtl->narcI(), pfrtl->narcT(),
-           (void*)pfrid, pfrid->probElec(), pfrid->probpIon(),
-           true_false(pqdet->xtexs()), pqdet->kntexs() );
-  }
-  //
-  const class texs* ptexs;
-  if( pqdet->kntexs() >= 1 )  {
-    ptexs = pqdet->texs(0);
-    ::printf("0: seg:%2d #s:%2d ", ptexs->segmentId(), ptexs->numberSamples());
-  }
-  if( pqdet->kntexs() >= 2 )  {
-    ptexs = pqdet->texs(1);
-    ::printf("0: seg:%2d #s:%2d ", ptexs->segmentId(), ptexs->numberSamples());
-  }
-  if( pqdet->kntexs() >= 3 )  {
-    ptexs = pqdet->texs(2);
-    ::printf("0: seg:%2d #s:%2d ", ptexs->segmentId(), ptexs->numberSamples());
-  }
+
+  printf("C++ Track[%3d] "
+         "FRFT:%2d d0:%7.2f z0:%7.2f "
+         "FRTL: %1d %1d %2d "
+         "FRID:%p e-:%4.3f pi:%4.3f ",
+         itk, track->ktn(), pfrft->d0(), pfrft->z0(),
+         pfrtl->narcV(), pfrtl->narcI(), pfrtl->narcT(),
+         (void*)pfrid, pfrid->probElec(), pfrid->probpIon());
 
   const auto* eidt  = track->xeidt() ? track->eidt() : nullptr;
   const auto* hmad  = track->xhmad() ? track->hmad() : nullptr;
@@ -318,8 +306,6 @@ void alpha::tests::print_charged_track_opts1(int32_t itk)  {
   /// XMUI(KI)=IW(KJQDET(KI)+JQDEMU).NE.KQZER
   //if( XMUI(itk) == true )  {  }
 
-  ::printf("C++ Track[%3d] FRFT:%2d ", itk, track->ktn());
-
   ::printf("EIDT:%c/%s ", true_false(track->xeidt()), hex_addr(eidt).c_str());
   if( eidt ) ::printf("t:%2d ec:%2d ", eidt->frFT(), eidt->peCO());
   ::printf("HMAD:%c/%s ", true_false(track->xhmad()), hex_addr(hmad).c_str());
@@ -328,6 +314,24 @@ void alpha::tests::print_charged_track_opts1(int32_t itk)  {
   if( mcad ) ::printf("t:%2d nh:%2d ", mcad->trackNo(), mcad->nassHit()[0]);
   ::printf("MUID:%c/%s ", true_false(track->xmuid()), hex_addr(muid).c_str());
   if( muid ) :: printf("t:%2d id:%1X ", muid->trackNumber(), muid->idFlag());
+
+  if( pqdet->kntexs() < 0xff )  {
+    printf("TEXS:%c %2d ", true_false(pqdet->xtexs()), pqdet->kntexs() );
+  }
+  //
+  if( pqdet->kntexs() >= 1 )  {
+    const class texs* ptexs = pqdet->texs(0);
+    ::printf("0: seg:%2d #s:%2d ", ptexs->segmentId(), ptexs->numberSamples());
+  }
+  if( pqdet->kntexs() >= 2 )  {
+    const class texs* ptexs = pqdet->texs(1);
+    ::printf("0: seg:%2d #s:%2d ", ptexs->segmentId(), ptexs->numberSamples());
+  }
+  if( pqdet->kntexs() >= 3 )  {
+    const class texs* ptexs = pqdet->texs(2);
+    ::printf("0: seg:%2d #s:%2d ", ptexs->segmentId(), ptexs->numberSamples());
+  }
+
   // Consistency checks:
   if( eidt && eidt->frFT() != track->ktn() )  {
     ::printf(" !!!!! EIDT: ERROR !!!!!");
@@ -342,13 +346,13 @@ void alpha::tests::print_charged_track_opts1(int32_t itk)  {
     ::printf(" !!!!! MUID: ERROR !!!!!");
   }
   ::printf("\n");
-  f77_print_track_opts1_(itk);
+  if( print_f77 ) f77_print_track_opts1_(itk);
 }
 
 /// Check links from QVEC track fit parameters
 void alpha::tests::print_charged_track_trackfit(int32_t itk)  {
   const auto* track = params.qvec_table->at(itk);
-  f77_print_track_trackfit_(itk);
+  if( print_f77 ) f77_print_track_trackfit_(itk);
   if( track->kndau() > 0 )  {
     printf("C++ Track[%3d] FRFT:%2d %s sigm:%6.2f sige:%6.2f sigp:%6.2f kndau:%2d",
            itk, track->ktn(), track->cqtpn().c_str(),
@@ -388,7 +392,8 @@ void alpha::tests::print_charged_track_ecal(int32_t itk)  {
                ec_track_row, ec_row, ec_clu->ecorr(), ec_track->energy);
     }
   }
-  f77_print_track_ecal_(itk);
+  if( print_f77 ) f77_print_track_ecal_(itk);
+  if( qdet->knecal() > 0 )  ::printf("\n");
 }
 
 /// Check links from QVEC to HCAL banks
@@ -413,7 +418,8 @@ void alpha::tests::print_charged_track_hcal(int32_t itk)  {
                hc_track_row, hc_row, hc_clu->ecorr(), hc_track->energy);
     }
   }
-  f77_print_track_hcal_(itk);
+  if ( print_f77 ) f77_print_track_hcal_(itk);
+  if( qdet->knhcal() > 0 ) ::printf("\n");
 }
 
 
@@ -517,13 +523,17 @@ void alpha::tests::print_vertex_relations( bool print, int32_t first, int32_t la
 #include <alpha/efol.h>
 
 void alpha::tests::process_event()  {
+  static bool first = true;
   ::printf("+++++++  Calling %s!\n", __FUNCTION__);
-  tests::print_bank_lists(1);
-  tests::access_bank_lists(1);
-  tests::check_qcde_alignment(1);
+  if( first )  {
+    first = false;
+    tests::print_bank_lists(1);
+    tests::access_bank_lists(1);
+    tests::check_qcde_alignment(1);
+  }
   tests::print_mc_tracks(1);
   tests::print_charged_tracks(0, qcde.KFCHT, qcde.KLCHT);
-  tests::print_peco(0);
+  tests::print_peco(1);
   tests::print_phco(0);
 
   tests::print_charged_track_relations(1, qcde.KFCHT, qcde.KLCHT);

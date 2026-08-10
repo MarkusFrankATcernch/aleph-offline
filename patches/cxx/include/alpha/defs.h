@@ -15,6 +15,7 @@
 
 /// C/C++ include files
 #include <cstdint>
+#include <stdexcept>
 
 /// Framework include files
 #include <bos/bosbank.h>
@@ -98,13 +99,26 @@ namespace alpha  {
     ~object_table() = delete;
 
     /// Access table by name index [aka NAMIND('QVEC') ]
-    static object_table& get(uint32_t indx)  {
-      return *( object_table* ) bos77::get_bank_pointer_from_namind( indx );
+    static object_table& get(uint32_t nam_indx)  {
+      auto* ptr = (object_table*)bos77::get_bank_pointer_from_namind( nam_indx );
+      if( ptr )  {
+        return ptr;
+      }
+      throw std::runtime_error( "Failed to access bank from index" );
     }
 
     /// Access table by name index [aka NAMIND('QVEC') ]
     static object_table& get(const char* name)  {
-      return *( object_table* ) bos77::get_bank_pointer_from_name( name );
+      auto* ptr = (object_table*)bos77::get_bank_pointer_from_name( name );
+      if( ptr )  {
+        return *ptr;
+      }
+      throw std::runtime_error( "Failed to access bank by name: "+std::string(name) );
+    }
+
+    /// Access table by name index [aka NAMIND('QVEC') ]
+    static object_table* ptr(uint32_t namidx)  {
+      return (object_table*)bos77::get_bank_pointer_from_namind( namidx );
     }
 
     /// Check if the container is empty
