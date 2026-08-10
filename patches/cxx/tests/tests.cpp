@@ -14,11 +14,8 @@
 /// Framework include files
 #include <tests/tests.h>
 
-#include <alpha/defs.h>
-#include <alpha/qcde.h>
-#include <bos/bosbank.h>
+#include <alpha/alpha.h>
 
-#include <alpha/qvec.h>
 #include <alpha/eidt.h>
 #include <alpha/hmad.h>
 #include <alpha/mcad.h>
@@ -105,16 +102,15 @@ void alpha::tests::access_bank_lists(bool print)  {
       char bank_list = bos77::bos_bank_lists[h];
       std::string names;
       std::size_t total_mem = 0;
-
+      alpha::aublis(bank_list);
       names.reserve(255);
-      ::printf(" +++ %s: BANKLIST: %c\n", __FUNCTION__, bank_list);
+      ::printf("+++ %s: BANKLIST: %c\n", __FUNCTION__, bank_list);
       for( int i = 1; ; ++i )  {
-#if 0
         std::string bnam = bos77::nlistb(i, bank_list);
         if( bnam.empty() )  {
           break;
         }
-        for( int j=1; ; ++j )  {
+        for( int j=0; ; ++j )  {
           auto* bank = bos77::get_bank(bnam, j);
           if( !bank )  {
             break;
@@ -126,7 +122,6 @@ void alpha::tests::access_bank_lists(bool print)  {
                    ((uint8_t*)bank) - (uint8_t*)bos77::bcs.iw,
                    (void*)bank, bank->to_string().c_str());
         }
-#endif
       }
       ::printf(" +++ %s: BANKLIST: %c  %ld words\n\n", __FUNCTION__, bank_list, total_mem);
     }
@@ -523,10 +518,10 @@ void alpha::tests::print_vertex_relations( bool print, int32_t first, int32_t la
 
 void alpha::tests::process_event()  {
   ::printf("+++++++  Calling %s!\n", __FUNCTION__);
+  tests::print_bank_lists(1);
+  tests::access_bank_lists(1);
   tests::check_qcde_alignment(1);
   tests::print_mc_tracks(1);
-  tests::print_bank_lists(0);
-  tests::access_bank_lists(0);
   tests::print_charged_tracks(0, qcde.KFCHT, qcde.KLCHT);
   tests::print_peco(0);
   tests::print_phco(0);

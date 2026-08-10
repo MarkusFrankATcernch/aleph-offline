@@ -25,7 +25,8 @@
 /// ALPHA namespace declaration
 namespace alpha  {
 
-
+  void aublis(const char list);
+  void aublis(const std::string& list);
   
 }      // End namespace alpha
 #endif // ALPHA_ALPHA_ALPHA_H

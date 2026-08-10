@@ -267,7 +267,7 @@ namespace bos77  {
   std::string nlist(uint32_t index, const char* list);
 
   /// Resolve name index of the bank
-  int32_t     namind(const std::string bname);
+  int32_t     namind(const std::string& bname);
   /// Resolve name index of the bank
   int32_t     namind(const char* bank);
   /// Link to bank data offset by index
