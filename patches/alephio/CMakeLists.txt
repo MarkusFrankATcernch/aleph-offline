@@ -9,7 +9,7 @@
 # ==================================================================================================
 #
 SET( alephio_dir ${CMAKE_CURRENT_SOURCE_DIR} )
-
+#
 message(STATUS "+++ ALEPHIO:    Build library from sources: ${alephio_dir}" )
 file( GLOB alephio_files ${alephio_dir}/alph/*.F
                          ${alephio_dir}/ard/*.F
@@ -26,7 +26,7 @@ add_library( Aleph::alephio.${ALEPHIO_VERSION} ALIAS alephio.${ALEPHIO_VERSION} 
 target_compile_definitions( alephio.${ALEPHIO_VERSION} PUBLIC ${ALEPH_DEBUG_DEFS} )
 target_include_directories( alephio.${ALEPHIO_VERSION} PUBLIC ${alephio_dir}/../inc )
 target_include_directories( alephio.${ALEPHIO_VERSION} PUBLIC ${alephio_dir}/inc )
-target_link_libraries(      alephio.${ALEPHIO_VERSION} PUBLIC Aleph::bos77 Aleph::packlib Aleph::mathlib )
+target_link_libraries(      alephio.${ALEPHIO_VERSION} PUBLIC Aleph::bos77 ${ALEPH_CERN_LIBRARIES} )
 target_compile_options(     alephio.${ALEPHIO_VERSION} PUBLIC
                         $<$<COMPILE_LANGUAGE:C>:  -Wno-return-mismatch -Wno-unused -Wno-implicit-int -Wno-return-type>
 )

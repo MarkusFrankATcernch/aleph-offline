@@ -8,12 +8,15 @@
 #
 # ==================================================================================================
 #
+find_package( CERNLIB REQUIRED )
+#
 SET( aleph_dir ${CMAKE_CURRENT_SOURCE_DIR} )
 message(STATUS "+++ ALEPHLIB:   Build library from sources: ${aleph_dir}" )
 #
 #
 file( GLOB alephlib_files    ${aleph_dir}/alef/*.F
 			     ${aleph_dir}/c/*.c
+                             ${aleph_dir}/c/*.cpp
                              ${aleph_dir}/comp/*.F
 			     ${aleph_dir}/dedx/*.F
 			     ${aleph_dir}/ecal/*.F
@@ -56,11 +59,12 @@ add_library( Aleph::alephlib.${ALEPHLIB_VERSION} ALIAS alephlib.${ALEPHLIB_VERSI
 #
 target_include_directories( alephlib.${ALEPHLIB_VERSION} PUBLIC ${aleph_dir}/../inc )
 target_include_directories( alephlib.${ALEPHLIB_VERSION} PUBLIC ${aleph_dir}/inc )
+target_compile_options(     alephlib.${ALEPHLIB_VERSION} PUBLIC  -fPIC )
 target_link_libraries(      alephlib.${ALEPHLIB_VERSION}
    PUBLIC        Aleph::alephio.${ALEPHIO_VERSION}
                  Aleph::bos77
-		 Aleph::packlib
-		 Aleph::mathlib )
+		 ${ALEPH_CERN_LIBRARIES} ${ALEPH_CERN_SIMLIBRARIES}
+)
 #
 #
 install(DIRECTORY inc  DESTINATION include)

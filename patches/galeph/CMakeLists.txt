@@ -8,12 +8,12 @@
 #
 # ==================================================================================================
 #
+find_package( X11 REQUIRED )
 SET( galeph_dir ${CMAKE_CURRENT_SOURCE_DIR} )
 message(STATUS "+++ GALEPH:     Build library from sources: ${galeph_dir}" )
-
+#
 SET( tpc_dir    ${CMAKE_CURRENT_SOURCE_DIR}/../tpcsim )
-
-
+#
 file( GLOB galeph_files ${galeph_dir}/a_/*.F
 			     ${galeph_dir}/calo/*.F
 			     ${galeph_dir}/draw/*.F
@@ -40,31 +40,21 @@ target_include_directories( galephlib.${GALEPH_VERSION} PUBLIC ${galeph_dir}/inc
 target_link_libraries(      galephlib.${GALEPH_VERSION}
    PUBLIC Aleph::alephlib.${ALEPHLIB_VERSION}
           Aleph::alephio.${ALEPHIO_VERSION}
-	  Aleph::bos77
-	  Aleph::mathlib
-	  Aleph::packlib )
+          ${ALEPH_CERN_LIBRARIES} ${ALEPH_CERN_SIMLIBRARIES} ${ALEPH_CERN_X11LIBRARIES}
+)
+target_link_options( galephlib.${GALEPH_VERSION}  PRIVATE "-Wl,-Bstatic" )
 #
-SET(HAVE_GEANT3 ON)
-if( HAVE_GEANT3 )
-  add_executable( galeph${GALEPH_VERSION} ${galeph_dir}/gal/galeph.F )
-  target_link_libraries( galeph${GALEPH_VERSION}
+add_executable( galeph${GALEPH_VERSION} ${galeph_dir}/gal/galeph.F )
+target_link_libraries( galeph${GALEPH_VERSION}
      PRIVATE Aleph::galephlib.${GALEPH_VERSION} 
              Aleph::alephlib.${ALEPHLIB_VERSION}
              Aleph::alephio.${ALEPHIO_VERSION}
              Aleph::alephlib.${ALEPHLIB_VERSION}
-	     Aleph::geant3
-	     Aleph::jetset
-   	     Aleph::bos77
- 	     Aleph::hbook
- 	     Aleph::jetset
-	     Aleph::mathlib
-	     Aleph::packlib
-	     -lc -lm
-	     )
+             ${ALEPH_CERN_LIBRARIES} ${ALEPH_CERN_SIMLIBRARIES} ${ALEPH_CERN_X11LIBRARIES}
+)
 install(TARGETS  galeph${GALEPH_VERSION} EXPORT Aleph
   RUNTIME DESTINATION bin
 )
-endif()
 #
 install(DIRECTORY  inc  DESTINATION include)
 install(TARGETS  galephlib.${GALEPH_VERSION} EXPORT Aleph

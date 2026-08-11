@@ -37,7 +37,7 @@ file( GLOB userlib_files     ${user_dir}/src/*.F
 			     ${user_dir}/src/*.cpp	
 			     ${user_dir}/tests/*.F
 			     ${user_dir}/tests/*.cpp )
-add_library( userlib ${ALEPH_LIBRARY_TYPE} ${userlib_files} )
+add_library( userlib SHARED ${userlib_files} )
 add_library( Aleph::userlib ALIAS userlib )
 #
 target_include_directories( userlib
@@ -51,8 +51,6 @@ target_link_libraries(      userlib
            Aleph::alephlib.${ALEPHLIB_VERSION}
 	   Aleph::alephio.${ALEPHIO_VERSION}
 	   Aleph::bos77
-	   Aleph::mathlib
-	   Aleph::packlib
            EDM4HEP::edm4hep
            EDM4HEP::edm4hepDict
            podio::podio
@@ -62,9 +60,13 @@ target_link_libraries(      userlib
            ROOT::Rint
            ROOT::Tree
            ROOT::Geom
+           ${ALEPH_CERN_LIBRARIES}
 )
 #
-add_executable( alpha_user ${alpha_dir}/pack/qmain.F ${user_dir}/src/quuser.cpp )
+add_executable( alpha_user ${alpha_dir}/pack/qmain.F
+                           ${user_dir}/src/quuser.cpp
+                           ${ALEPH_PROGRAM_SOURCES} 
+)
 target_link_libraries( alpha_user
    PRIVATE Aleph::userlib
            Aleph::alphalib.${ALPHA_VERSION}
@@ -72,14 +74,10 @@ target_link_libraries( alpha_user
            Aleph::julialib.${JULIA_VERSION}
            Aleph::alephio.${ALEPHIO_VERSION}
            Aleph::alephlib.${ALEPHLIB_VERSION}
-	   Aleph::packlib
  	   Aleph::bos77
- 	   Aleph::hbook
- 	   Aleph::jetset
-	   Aleph::mathlib
-	   Aleph::packlib
-	   -lc -lm
-	  )
+           ${ALEPH_CERN_LIBRARIES}
+)
+#target_link_options(alpha_user PUBLIC "-Wl,--defsym=bcs_=0x12345")
 #
 #
 install(DIRECTORY  include/alpha  DESTINATION include)

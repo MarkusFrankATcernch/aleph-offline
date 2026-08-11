@@ -18,7 +18,7 @@ file( GLOB uphy_files    ${uphy_dir}/bcalinfo/*.F
 			     ${uphy_dir}/lcalid/*.F
 			     ${uphy_dir}/matrix/*.F
 			     ${uphy_dir}/qbmtag/*.F
-			     ${uphy_dir}/qfitw2/*.F
+# 			     ${uphy_dir}/qfitw2/*.F
 			     ${uphy_dir}/qfitww/*.F
 			     ${uphy_dir}/qfndip/*.F
 			     ${uphy_dir}/qjcone/*.F
@@ -40,9 +40,10 @@ target_link_libraries(      uphy.${UPHY_VERSION}
                             Aleph::alphalib.${ALPHA_VERSION}
                             Aleph::alephlib.${ALEPHLIB_VERSION}
 			    Aleph::alephio.${ALEPHIO_VERSION}
-			    Aleph::bos77
-			    Aleph::mathlib
-			    Aleph::packlib
+ 			    Aleph::bos77
+                            ${CERNLIB_PACKLIB}
+                            ${CERNLIB_KERNLIB}
+                            ${CERNLIB_MATHLIB}
 )
 #
 install(TARGETS    alphalib.${ALPHA_VERSION} alpha.${ALPHA_VERSION} EXPORT Aleph

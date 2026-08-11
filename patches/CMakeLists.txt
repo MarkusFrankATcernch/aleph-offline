@@ -26,11 +26,14 @@ if ( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
     SET(OPTS "${OPTS}  -Wno-unused -Wno-conversion -Wno-maybe-uninitialized -fno-bounds-check -std=legacy")
     SET(OPTS "${OPTS}  -Wno-unused-dummy-argument -Wno-intrinsic-shadow -fno-range-check")
 
-    set(CMAKE_Fortran_FLAGS "${OPTS}" )
-    set(CMAKE_C_FLAGS   "-Wall -Wno-pointer-to-int-cast -Wno-builtin-declaration-mismatch -Wno-implicit-function-declaration")
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra" )
+    # set(GLOBAL_OPTS "-mx32")
+    set(GLOBAL_OPTS "-mcmodel=small")
+    set(CMAKE_Fortran_FLAGS "${OPTS} ${GLOBAL_OPTS}" )
+    set(CMAKE_C_FLAGS   "-Wall -Wno-pointer-to-int-cast -Wno-builtin-declaration-mismatch -Wno-implicit-function-declaration  ${GLOBAL_OPTS}")
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra  ${GLOBAL_OPTS}" )
+    add_link_options( "${GLOBAL_OPTS}" )
 
-    IF( PLATFORM_64 )
+    if( PLATFORM_64 )
       message(STATUS "Compiling for 64 bit platforms...")
 
       set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fbacktrace -fallow-argument-mismatch -fd-lines-as-comments -fallow-invalid-boz" )
@@ -64,8 +67,26 @@ SET( KIN_VERSION 001 )
 SET( GEN_VERSION 001 )
 SET( UPHY_VERSION 001 )
 #
-# add_subdirectory(   cernlib )
 find_package( CERNLIB REQUIRED )
+
+get_filename_component(CERNLIB_LIBDIR "${CERNLIB_MATHLIB}" DIRECTORY CACHE)
+
+set( ALEPH_PROGRAM_SOURCES "../bos77/src/ibloc.cpp" )
+set( ALEPH_CERN_LIBRARIES  "-Wl,-Bstatic -L${CERNLIB_LIBDIR} -lpacklib -lkernlib -lmathlib -llapack" )
+set( ALEPH_CERN_SIMLIBRARIES  "-Wl,-Bstatic -L${CERNLIB_LIBDIR} libgeant321.a -ljetset74 -lpdflib804 -lpythia6205 -lpacklib" )
+set( ALEPH_CERN_X11LIBRARIES  "-Wl,-Bstatic -L${CERNLIB_LIBDIR} -lgraflib -lgrafX11 -lpawlib  X11 -lXm" )
+
+
+set( ALEPH_CERN_LIBRARIES  "-Wl,-Bstatic ${CERNLIB_LIBDIR}/libpacklib.a ${CERNLIB_LIBDIR}/libkernlib.a ${CERNLIB_LIBDIR}/libmathlib.a ${CERNLIB_LIBDIR}/liblapack.a -Wl,-Bdynamic" )
+set( ALEPH_CERN_SIMLIBRARIES  "-Wl,-Bstatic ${CERNLIB_LIBDIR}/libgeant321.a \
+                                            ${CERNLIB_LIBDIR}/libjetset74.a \
+                                            ${CERNLIB_LIBDIR}/libpdflib804.a \
+                                            ${CERNLIB_LIBDIR}/libpacklib.a ${CERNLIB_LIBDIR}/libkernlib.a -Wl,-Bdynamic"
+                                            )
+set( ALEPH_CERN_X11LIBRARIES  "-Wl,-Bstatic ${CERNLIB_LIBDIR}/libgraflib.a \
+                                            ${CERNLIB_LIBDIR}/libgrafX11.a \
+                                            ${CERNLIB_LIBDIR}/libpawlib.a   -Wl,-Bdynamic -lX11 -lXm" )
+
 add_subdirectory(   bos77 )
 add_subdirectory(   alephio )
 add_subdirectory(   alephlib )

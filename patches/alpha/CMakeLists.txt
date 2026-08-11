@@ -28,24 +28,17 @@ target_link_libraries(      alphalib.${ALPHA_VERSION}
                             Aleph::alephlib.${ALEPHLIB_VERSION}
 			    Aleph::alephio.${ALEPHIO_VERSION}
 			    Aleph::bos77
-			    Aleph::mathlib
-			    Aleph::packlib
+			    ${ALEPH_CERN_LIBRARIES}
 )
 #
-add_executable( alpha.${ALPHA_VERSION} ${alpha_dir}/pack/qmain.F )
+add_executable( alpha.${ALPHA_VERSION} ${alpha_dir}/pack/qmain.F ${ALEPH_PROGRAM_SOURCES} )
 target_link_libraries( alpha.${ALPHA_VERSION}
    PRIVATE Aleph::alphalib.${ALPHA_VERSION}
            Aleph::alephlib.${ALEPHLIB_VERSION}
            Aleph::julialib.${JULIA_VERSION}
            Aleph::alephio.${ALEPHIO_VERSION}
-           Aleph::alephlib.${ALEPHLIB_VERSION}
-	   Aleph::packlib
  	   Aleph::bos77
- 	   Aleph::hbook
- 	   Aleph::jetset
-	   Aleph::mathlib
-	   Aleph::packlib
-	   -lc -lm
+           ${ALEPH_CERN_LIBRARIES}
 	  )
 #
 #

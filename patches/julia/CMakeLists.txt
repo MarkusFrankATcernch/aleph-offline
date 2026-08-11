@@ -43,12 +43,8 @@ target_include_directories( julialib.${JULIA_VERSION} PUBLIC ${julia_dir}/inc )
 target_link_libraries(      julialib.${JULIA_VERSION}
    PUBLIC  Aleph::alephio.${ALEPHIO_VERSION}
  	   Aleph::alephlib.${ALEPHLIB_VERSION}
- 	   Aleph::hbook
- 	   Aleph::jetset
-	   Aleph::mathlib
            Aleph::bos77
- 	   Aleph::mathlib
- 	   Aleph::packlib c m )
+)
 #
 #
 add_executable(             julia.${JULIA_VERSION} ${julia_dir}/a_/aamain.F )
@@ -58,8 +54,9 @@ target_link_libraries( julia.${JULIA_VERSION}
            Aleph::julialib.${JULIA_VERSION} 
            Aleph::alephio.${ALEPHIO_VERSION}
            Aleph::alephlib.${ALEPHLIB_VERSION}
-	   c m
-	  )
+           Aleph::bos77
+           ${ALEPH_CERN_LIBRARIES}
+)
 #
 install(DIRECTORY  inc  DESTINATION include)
 install(TARGETS    julia.${JULIA_VERSION} julialib.${JULIA_VERSION} EXPORT Aleph

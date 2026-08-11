@@ -8,8 +8,6 @@
 #
 # ==================================================================================================
 #
-
-
 SET( dbase_dir         ${CMAKE_CURRENT_SOURCE_DIR} )
 SET( sbank_dir         ${dbase_dir} )
 #
@@ -27,12 +25,8 @@ target_link_libraries(      sbank
  	                    Aleph::alephlib.${ALEPHLIB_VERSION}
 			    Aleph::alephio.${ALEPHIO_VERSION}
  	                    Aleph::bos77
-			    Aleph::hbook
-                            Aleph::jetset
-	                    Aleph::mathlib
-	                    Aleph::packlib
-	                    Aleph::packlib
-	                    -lcurses -lc -lm
+                            ${ALEPH_CERN_LIBRARIES}
+                            -Wl,-Bdynamic -lcurses -lc -lm
 )
 #
 install( TARGETS sbank EXPORT Aleph
