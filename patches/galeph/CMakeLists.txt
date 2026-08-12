@@ -42,7 +42,7 @@ target_link_libraries(      galephlib.${GALEPH_VERSION}
           Aleph::alephio.${ALEPHIO_VERSION}
           ${ALEPH_CERN_LIBRARIES} ${ALEPH_CERN_SIMLIBRARIES} ${ALEPH_CERN_X11LIBRARIES}
 )
-target_link_options( galephlib.${GALEPH_VERSION}  PRIVATE "-Wl,-Bstatic" )
+target_link_options( galephlib.${GALEPH_VERSION}  PRIVATE ${ALEPH_LIBRARY_LINKOPTS} )
 #
 add_executable( galeph${GALEPH_VERSION} ${galeph_dir}/gal/galeph.F )
 target_link_libraries( galeph${GALEPH_VERSION}
@@ -50,7 +50,7 @@ target_link_libraries( galeph${GALEPH_VERSION}
              Aleph::alephlib.${ALEPHLIB_VERSION}
              Aleph::alephio.${ALEPHIO_VERSION}
              Aleph::alephlib.${ALEPHLIB_VERSION}
-             ${ALEPH_CERN_LIBRARIES} ${ALEPH_CERN_SIMLIBRARIES} ${ALEPH_CERN_X11LIBRARIES}
+             ${ALEPH_CERN_SIMLIBRARIES} ${ALEPH_CERN_X11LIBRARIES}
 )
 install(TARGETS  galeph${GALEPH_VERSION} EXPORT Aleph
   RUNTIME DESTINATION bin

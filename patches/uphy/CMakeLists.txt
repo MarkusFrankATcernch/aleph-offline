@@ -41,9 +41,7 @@ target_link_libraries(      uphy.${UPHY_VERSION}
                             Aleph::alephlib.${ALEPHLIB_VERSION}
 			    Aleph::alephio.${ALEPHIO_VERSION}
  			    Aleph::bos77
-                            ${CERNLIB_PACKLIB}
-                            ${CERNLIB_KERNLIB}
-                            ${CERNLIB_MATHLIB}
+                            ${ALEPH_CERN_LIBRARIES}
 )
 #
 install(TARGETS    alphalib.${ALPHA_VERSION} alpha.${ALPHA_VERSION} EXPORT Aleph

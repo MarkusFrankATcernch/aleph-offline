@@ -63,7 +63,7 @@ target_compile_options(     alephlib.${ALEPHLIB_VERSION} PUBLIC  -fPIC )
 target_link_libraries(      alephlib.${ALEPHLIB_VERSION}
    PUBLIC        Aleph::alephio.${ALEPHIO_VERSION}
                  Aleph::bos77
-		 ${ALEPH_CERN_LIBRARIES} ${ALEPH_CERN_SIMLIBRARIES}
+		 ${ALEPH_CERN_SIMLIBRARIES}
 )
 #
 #

@@ -25,7 +25,7 @@ target_link_libraries(      sbank
  	                    Aleph::alephlib.${ALEPHLIB_VERSION}
 			    Aleph::alephio.${ALEPHIO_VERSION}
  	                    Aleph::bos77
-                            ${ALEPH_CERN_LIBRARIES}
+                            ${ALEPH_CERN_SIMLIBRARIES}
                             -Wl,-Bdynamic -lcurses -lc -lm
 )
 #

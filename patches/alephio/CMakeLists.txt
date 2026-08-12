@@ -26,10 +26,10 @@ add_library( Aleph::alephio.${ALEPHIO_VERSION} ALIAS alephio.${ALEPHIO_VERSION} 
 target_compile_definitions( alephio.${ALEPHIO_VERSION} PUBLIC ${ALEPH_DEBUG_DEFS} )
 target_include_directories( alephio.${ALEPHIO_VERSION} PUBLIC ${alephio_dir}/../inc )
 target_include_directories( alephio.${ALEPHIO_VERSION} PUBLIC ${alephio_dir}/inc )
-target_link_libraries(      alephio.${ALEPHIO_VERSION} PUBLIC Aleph::bos77 ${ALEPH_CERN_LIBRARIES} )
 target_compile_options(     alephio.${ALEPHIO_VERSION} PUBLIC
-                        $<$<COMPILE_LANGUAGE:C>:  -Wno-return-mismatch -Wno-unused -Wno-implicit-int -Wno-return-type>
+  $<$<COMPILE_LANGUAGE:C>:  -Wno-return-mismatch -Wno-unused -Wno-implicit-int -Wno-return-type>
 )
+target_link_libraries(      alephio.${ALEPHIO_VERSION} PUBLIC Aleph::bos77 ${ALEPH_CERN_LIBRARIES} )
 #
 install(DIRECTORY  inc  DESTINATION include)
 install(TARGETS    alephio.${ALEPHIO_VERSION} EXPORT Aleph

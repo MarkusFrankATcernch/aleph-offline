@@ -37,7 +37,7 @@ file( GLOB userlib_files     ${user_dir}/src/*.F
 			     ${user_dir}/src/*.cpp	
 			     ${user_dir}/tests/*.F
 			     ${user_dir}/tests/*.cpp )
-add_library( userlib SHARED ${userlib_files} )
+add_library( userlib STATIC  ${userlib_files} )
 add_library( Aleph::userlib ALIAS userlib )
 #
 target_include_directories( userlib

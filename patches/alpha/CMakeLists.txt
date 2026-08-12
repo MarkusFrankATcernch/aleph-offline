@@ -31,7 +31,10 @@ target_link_libraries(      alphalib.${ALPHA_VERSION}
 			    ${ALEPH_CERN_LIBRARIES}
 )
 #
-add_executable( alpha.${ALPHA_VERSION} ${alpha_dir}/pack/qmain.F ${ALEPH_PROGRAM_SOURCES} )
+add_executable( alpha.${ALPHA_VERSION} ${alpha_dir}/pack/qmain.F
+                                       ${alpha_dir}/pack/quibos.F
+                                       ${alpha_dir}/pack/quihis.F
+                                       ${ALEPH_PROGRAM_SOURCES} )
 target_link_libraries( alpha.${ALPHA_VERSION}
    PRIVATE Aleph::alphalib.${ALPHA_VERSION}
            Aleph::alephlib.${ALEPHLIB_VERSION}

@@ -55,7 +55,7 @@ target_link_libraries( julia.${JULIA_VERSION}
            Aleph::alephio.${ALEPHIO_VERSION}
            Aleph::alephlib.${ALEPHLIB_VERSION}
            Aleph::bos77
-           ${ALEPH_CERN_LIBRARIES}
+           ${ALEPH_CERN_SIMLIBRARIES}
 )
 #
 install(DIRECTORY  inc  DESTINATION include)
