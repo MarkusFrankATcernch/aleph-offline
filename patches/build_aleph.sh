@@ -211,19 +211,18 @@ aleph-info()  {
     echo "+++      gen-headers-aleph to generate header files corresponding to BOS banks";
 }
 # ==================================================================================================
-#. /home/frankm/Aleph/offline/setaleph.sh;
-node=
+export ALEPH_SOFT=`dirname ${BASH_SOURCE[0]}`;
+. ${ALEPH_SOFT}/setaleph.sh;
+#
 if test -n "`uname -a | grep -e 'lxplus.*cern.ch'`"; then
-    export ALEPH=/afs/cern.ch/work/f/frankb/frankm/Aleph/offline;
     export LCG_VIEW=/cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-el9-gcc15-opt;
     export CERNLIB_DIR=/cvmfs/dphep.cern.ch/cernlib/releases/almalinux-9-x86_64/cm/std/gcc/new;
-    export ALEPH_BUILD_DIR=${ALEPH}/gitlab;
     export SBANK_LBF=/eos/experiment/aleph/sw/reference/doc/sbank.lbf;
 elif test -n "`uname -a | grep Ubuntu`"; then
-    export ALEPH=${HOME}/Aleph/offline;
     export LCG_VIEW=/cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-ubuntu2404-gcc13-opt;
     export CERNLIB_DIR=/cvmfs/dphep.cern.ch/cernlib/releases/ubuntu-24-x86_64/cm/std/gcc/new;
-    export ALEPH_BUILD_DIR=${ALEPH}/gitlab;
 fi;
+export ALEPH_BUILD_DIR=`pwd`/gitlab;
+#
 aleph-info;
 # ==================================================================================================

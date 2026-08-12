@@ -15,7 +15,11 @@ export STAGELRECL=32040
 export STAGEBLKSIZ=32040
 export STAGE_HOST=stagealeph
 
-export ALEPH_HOME=/home/frankm/Aleph/offline;
+if test -n "`uname -a | grep -e 'lxplus.*cern.ch'`"; then
+  export ALEPH_HOME=/afs/cern.ch/work/f/frankb/frankm/Aleph/offline;
+elif test -n "`uname -a | grep Ubuntu`"; then
+  export ALEPH_HOME=/home/frankm/Aleph/offline;
+fi;
 #
 #
 if test -e ${ALEPH_HOME}; then
