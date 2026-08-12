@@ -626,7 +626,7 @@ global_debug = args.debug
 # pdb.set_trace()
 
 if banks is not None:
-  lines    = open( lbf_file, "r" ).readlines();
+  lines    = open( args.lbf_file, "r" ).readlines();
   for bank_name in banks:
     if bank_name in bank_exclusions:
       print( f'+++ CANNOT generate headers for bank type {bank_name}. IGNORED.' )

@@ -22,13 +22,15 @@ aleph-do-checkout_package()  {
     repo=${2};
     if test -d ${repo}; then
         cd ${repo};
-        git pull;
+        git pull origin cmake-build;
+	git checkout -b cmake-build;
         cd -;
     else
         git clone ${git_dir}/${repo}.git;
         cd ${repo};
-        git fetch    origin cmake-build;
-        git checkout origin/cmake-build;
+        git fetch       origin cmake-build;
+        git checkout    origin/cmake-build;
+        git checkout -b cmake-build;
         cd -;
     fi;
     cd ${curr};
@@ -136,7 +138,11 @@ gen-headers-aleph()  {
     curr=`pwd`;
     mkdir -p ${ALEPH_BUILD_DIR}/build64;
     cd ${ALEPH_BUILD_DIR}/build64;
-    python ../dbase/scripts/gen_header.py -o ../aleph_headers/alpha -a;
+    LBF_OPT=;
+    if test -n "${SBANK_LBF}"; then
+	LBF_OPT="-l ${SBANK_LBF}";
+    fi;
+    python ../dbase/scripts/gen_header.py -o ../aleph_headers/alpha -a ${LBF_OPT};
     cd ${curr};
 }
 # ==================================================================================================
@@ -179,7 +185,7 @@ build-aleph()  {
 }
 # ==================================================================================================
 aleph-pathes()  {
-    . ${CERNLIB_DIR}/setup.sh;
+    . ${LCG_VIEW}/setup.sh;
     if test -z "${LD_LIBRARY_PATH}"; then
 	export LD_LIBRARY_PATH=${ALEPH_BUILD_DIR}/install64/lib:${CERNLIB_DIR}/lib;
     else
@@ -205,9 +211,19 @@ aleph-info()  {
     echo "+++      gen-headers-aleph to generate header files corresponding to BOS banks";
 }
 # ==================================================================================================
-. /home/frankm/Aleph/offline/setaleph.sh;
-export LCG_VIEW=/cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-ubuntu2404-gcc13-opt;
-export CERNLIB_DIR=/cvmfs/dphep.cern.ch/cernlib/releases/ubuntu-24-x86_64/cm/std/gcc/new;
-export ALEPH_BUILD_DIR=${ALEPH}/gitlab;
+#. /home/frankm/Aleph/offline/setaleph.sh;
+node=
+if test -n "`uname -a | grep -e 'lxplus.*cern.ch'`"; then
+    export ALEPH=/afs/cern.ch/work/f/frankb/frankm/Aleph/offline;
+    export LCG_VIEW=/cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-el9-gcc15-opt;
+    export CERNLIB_DIR=/cvmfs/dphep.cern.ch/cernlib/releases/almalinux-9-x86_64/cm/std/gcc/new;
+    export ALEPH_BUILD_DIR=${ALEPH}/gitlab;
+    export SBANK_LBF=/eos/experiment/aleph/sw/reference/doc/sbank.lbf;
+elif test -n "`uname -a | grep Ubuntu`"; then
+    export ALEPH=${HOME}/Aleph/offline;
+    export LCG_VIEW=/cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-ubuntu2404-gcc13-opt;
+    export CERNLIB_DIR=/cvmfs/dphep.cern.ch/cernlib/releases/ubuntu-24-x86_64/cm/std/gcc/new;
+    export ALEPH_BUILD_DIR=${ALEPH}/gitlab;
+fi;
 aleph-info;
 # ==================================================================================================
