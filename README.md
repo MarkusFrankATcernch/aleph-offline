@@ -1,4 +1,4 @@
-* Patches to the ALEPH offline software
+*** Patches to the ALEPH offline software
 
 Found necessary changes to the aleph offline software to 
 build and exceute the full processing chain:
