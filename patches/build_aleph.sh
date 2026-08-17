@@ -87,13 +87,13 @@ aleph-patch()   {
     if test -f ${ALEPH_BUILD_DIR}/alpha/qfn/btag_fit.F; then
         mv ${ALEPH_BUILD_DIR}/alpha/qfn/btag_fit.F ${ALEPH_BUILD_DIR}/alpha/qfn/btag_fit.F.exclude;
     fi;
-    exec_echo cp -r ${ALEPH}/aleph-offline/patches/* ${ALEPH_BUILD_DIR}/;
+    exec_echo cp -r ${ALEPH_BUILD_DIR}/../aleph-offline/patches/* ${ALEPH_BUILD_DIR}/;
     cd ${curr};
 }
 #
 #
 # ==================================================================================================
-verify-checkout()  {
+aleph-verify-checkout()  {
     curr=`pwd`;
     cd ${ALEPH_BUILD_DIR};
     echo "+++ Check software base at `pwd`";
@@ -183,8 +183,9 @@ aleph-build()  {
     aleph-install;
     #
     #
+    aleph-cards;
     cd ${ALEPH_BUILD_DIR}/build64;
-    ./alpha/alpha.124;
+    ./alpha/alpha;
 }
 # ==================================================================================================
 aleph-pathes()  {
@@ -204,15 +205,16 @@ aleph-pathes()  {
 # ==================================================================================================
 #
 aleph-info()  {
-    echo "+++ LCG_VIEW:              ${LCG_VIEW}";
-    echo "+++ CERNLIB_DIR:           ${CERNLIB_DIR}";
-    echo "+++ ALEPH_BUILD_DIR:       ${ALEPH_BUILD_DIR}";
-    echo "+++ type aleph-build       to build and checkout in the current working directory.";
-    echo "+++      aleph-install     to build aleph stuff only.";
-    echo "+++      aleph-pathes      to set PATH and LD_LIBRARY_PATH";
-    echo "+++      aleph-patch       to patch checkouts";
-    echo "+++      aleph-gen-headers to generate header files corresponding to BOS banks";
-    echo "+++      cernlib-install   to build cernlib standalone with cmake build.";
+    echo "+++ LCG_VIEW:                   ${LCG_VIEW}";
+    echo "+++ CERNLIB_DIR:                ${CERNLIB_DIR}";
+    echo "+++ ALEPH_BUILD_DIR:            ${ALEPH_BUILD_DIR}";
+    echo "+++ type aleph-build            to build and checkout in the current working directory.";
+    echo "+++      aleph-install          to build aleph stuff only.";
+    echo "+++      aleph-pathes           to set PATH and LD_LIBRARY_PATH";
+    echo "+++      aleph-patch            to patch checkouts";
+    echo "+++      aleph-gen-headers      to generate header files corresponding to BOS banks";
+    echo "+++      aleph-verify-checkout  check sttaus all subdirectories known.";
+    echo "+++      cernlib-install        to build cernlib standalone with cmake build.";
 }
 # ==================================================================================================
 #
@@ -268,18 +270,33 @@ aleph-tests()  {
 }
 #
 # ==================================================================================================
-export ALEPH_SOFT=${HOME}/Aleph/offline;
-. ${ALEPH_SOFT}/setaleph.sh;
 #
 if test -n "`uname -a | grep -e 'lxplus.*cern.ch'`"; then
+    #
     export LCG_VIEW=/cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-el9-gcc15-opt;
     export CERNLIB_DIR=/cvmfs/dphep.cern.ch/cernlib/releases/almalinux-9-x86_64/cm/std/gcc/new;
     export SBANK_LBF=/eos/experiment/aleph/sw/reference/doc/sbank.lbf;
+    export ALEPH_SOFT=/afs/cern.ch/work/f/frankb/frankm/Aleph/offline;
+    export ALEPH_DBASE=/eos/experiment/aleph/sw/Linux;
+    #
 elif test -n "`uname -a | grep Ubuntu`"; then
+    #
     export LCG_VIEW=/cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-ubuntu2404-gcc13-opt;
     export CERNLIB_DIR=/cvmfs/dphep.cern.ch/cernlib/releases/ubuntu-24-x86_64/cm/std/gcc/new;
+    export ALEPH_SOFT=${HOME}/Aleph/offline;
+    export ALEPH_DBASE=${ALEPH_SOFT}/Linux;
+    #
 fi;
+#
+#
+#
 export ALEPH_BUILD_DIR=${ALEPH_SOFT}/gitlab;
+#
+export ADBSCONS=${ALEPH_DBASE}/dbase/adbs314.daf;
+export BANKALFMT=${ALEPH_DBASE}/../reference/dbase/bankal.fmt;
+export BOSKEY=${ALEPH_DBASE}/../reference/dbase/boskey.ddl;
+export DBASBANK=${ALEPH_DBASE}/../reference/phy/dbas.bank;
+export BEAMPOSITION=${ALEPH_DBASE}/../reference/phy/boskey.ddl;
 #
 aleph-info;
 # ==================================================================================================
