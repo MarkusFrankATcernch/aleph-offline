@@ -7,8 +7,26 @@ build and exceute the full processing chain:
 - Julia step to reconstruct the simulated events
 - Aleph step to read the reconstructed data
 
-Steps to build the Aleph offline software
 
+Aleph repositories are:
+    - ssh://git@gitlab.cern.ch:7999/aleph/software/inc;
+    - ssh://git@gitlab.cern.ch:7999/aleph/software/bos77;
+    - ssh://git@gitlab.cern.ch:7999/aleph/software/alephio
+    - ssh://git@gitlab.cern.ch:7999/aleph/software/alephlib
+    - ssh://git@gitlab.cern.ch:7999/aleph/software/dbase
+    - ssh://git@gitlab.cern.ch:7999/aleph/software/kin
+    - ssh://git@gitlab.cern.ch:7999/aleph/software/galeph
+    - ssh://git@gitlab.cern.ch:7999/aleph/software/julia
+    - ssh://git@gitlab.cern.ch:7999/aleph/software/alpha
+    - ssh://git@gitlab.cern.ch:7999/aleph/software/phy
+    - ssh://git@gitlab.cern.ch:7999/aleph/software/uphy
+    - ssh://git@gitlab.cern.ch:7999/aleph/software/look
+    - ssh://git@gitlab.cern.ch:7999/aleph/software/mini
+    - ssh://git@gitlab.cern.ch:7999/aleph/software/tpcsim
+
+The changes are incorporated in the braches cmake-build.
+
+Steps to build the Aleph offline software
 ```
 $> mkdir -p Aleph/offline
 $> cd Aleph/offline
