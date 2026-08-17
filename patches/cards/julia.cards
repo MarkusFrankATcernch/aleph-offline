@@ -1,0 +1,6 @@
+* Take ADBSCONS from environment ADBSCONS. Not from cards
+* FDBA '/afs/cern.ch/aleph/OSF1/dbase/adbs300.daf'
+* FDBA '/afs/cern.ch/aleph/OSF1/dbase/adbstest.daf'
+FILI 'galeph-test.epio | EPIO'
+FILO 'julia-test.epio  | EPIO'
+ENDQ

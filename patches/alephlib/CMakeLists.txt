@@ -54,21 +54,21 @@ file( GLOB alephlib_files    ${aleph_dir}/alef/*.F
 			     ${aleph_dir}/ytop/*.F
 )
 #
-add_library( alephlib.${ALEPHLIB_VERSION} ${ALEPH_LIBRARY_TYPE} ${alephlib_files} )
-add_library( Aleph::alephlib.${ALEPHLIB_VERSION} ALIAS alephlib.${ALEPHLIB_VERSION} )
+add_library( alephlib ${ALEPH_LIBRARY_TYPE} ${alephlib_files} )
+add_library( Aleph::alephlib ALIAS alephlib )
 #
-target_include_directories( alephlib.${ALEPHLIB_VERSION} PUBLIC ${aleph_dir}/../inc )
-target_include_directories( alephlib.${ALEPHLIB_VERSION} PUBLIC ${aleph_dir}/inc )
-target_compile_options(     alephlib.${ALEPHLIB_VERSION} PUBLIC  -fPIC )
-target_link_libraries(      alephlib.${ALEPHLIB_VERSION}
-   PUBLIC        Aleph::alephio.${ALEPHIO_VERSION}
+target_include_directories( alephlib PUBLIC ${aleph_dir}/../inc )
+target_include_directories( alephlib PUBLIC ${aleph_dir}/inc )
+target_compile_options(     alephlib PUBLIC  -fPIC )
+target_link_libraries(      alephlib
+   PUBLIC        Aleph::alephio
                  Aleph::bos77
 		 ${ALEPH_CERN_SIMLIBRARIES}
 )
 #
 #
-install(DIRECTORY inc  DESTINATION include)
-install(TARGETS   alephlib.${ALEPHLIB_VERSION} EXPORT Aleph
+install(DIRECTORY inc      DESTINATION include)
+install(TARGETS   alephlib EXPORT Aleph
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
 )

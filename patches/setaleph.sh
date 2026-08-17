@@ -42,7 +42,8 @@ export ADBS8990=${ALEPH}/Linux/dbase/adbs8990.daf
 
 export DBASBANK=${ALEPH}/phy/dbas.bank
 export BANKALFMT=${ALEPH}/DBASE/bankal.fmt
-export data_base=${ALEPH}/DBASE/adbs314.daf
+export data_base=${ALEPH}/Linux/dbase/adbs314.daf
+export ADBSCONS=${data_base};
 export GENATTR=${ALEPH}/DBASE/genattr.ddl
 export BOSKEY=${ALEPH}/DBASE/boskey.ddl
 export DBASBANK=${ALEPH}/phy/dbas.bank

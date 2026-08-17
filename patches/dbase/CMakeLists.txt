@@ -21,9 +21,9 @@ target_include_directories( sbank PUBLIC ${dbase_dir}/../inc )
 target_include_directories( sbank PUBLIC ${dbase_dir}/inc )
 #
 target_link_libraries(      sbank
-   PRIVATE                  Aleph::alephio.${ALEPHIO_VERSION}
- 	                    Aleph::alephlib.${ALEPHLIB_VERSION}
-			    Aleph::alephio.${ALEPHIO_VERSION}
+   PRIVATE                  Aleph::alephio
+ 	                    Aleph::alephlib
+			    Aleph::alephio
  	                    Aleph::bos77
                             ${ALEPH_CERN_SIMLIBRARIES}
                             -Wl,-Bdynamic -lcurses -lc -lm

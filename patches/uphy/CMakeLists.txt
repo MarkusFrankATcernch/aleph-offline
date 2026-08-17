@@ -30,21 +30,21 @@ file( GLOB uphy_files    ${uphy_dir}/bcalinfo/*.F
 			     ${uphy_dir}/smearfit/*.F
 			     ${uphy_dir}/wmuid/*.F
 )
-add_library( uphy.${UPHY_VERSION} ${ALEPH_LIBRARY_TYPE} ${uphy_files} )
-add_library( Aleph::uphy.${UPHY_VERSION} ALIAS uphy.${UPHY_VERSION} )
-target_compile_options(uphy.${UPHY_VERSION} PRIVATE -Wno-line-truncation -Wno-tabs -fdec )
-target_include_directories(uphy.${UPHY_VERSION} PRIVATE ${uphy_dir}/qufsim )
+add_library( uphy ${ALEPH_LIBRARY_TYPE} ${uphy_files} )
+add_library( Aleph::uphy ALIAS uphy )
+target_compile_options(uphy PRIVATE -Wno-line-truncation -Wno-tabs -fdec )
+target_include_directories(uphy PRIVATE ${uphy_dir}/qufsim )
 #
-target_link_libraries(      uphy.${UPHY_VERSION}
-     PUBLIC                 Aleph::julialib.${JULIA_VERSION}
-                            Aleph::alphalib.${ALPHA_VERSION}
-                            Aleph::alephlib.${ALEPHLIB_VERSION}
-			    Aleph::alephio.${ALEPHIO_VERSION}
+target_link_libraries(      uphy
+     PUBLIC                 Aleph::julialib
+                            Aleph::alphalib
+                            Aleph::alephlib
+			    Aleph::alephio
  			    Aleph::bos77
                             ${ALEPH_CERN_LIBRARIES}
 )
 #
-install(TARGETS    alphalib.${ALPHA_VERSION} alpha.${ALPHA_VERSION} EXPORT Aleph
+install(TARGETS  uphy EXPORT Aleph
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

@@ -19,34 +19,34 @@ file( GLOB alphalib_files    ${alpha_dir}/enfl/*.F
 			     ${alpha_dir}/qpi0/*.F
 			     ${alpha_dir}/qvs/*.F
 			     ${alpha_dir}/util/*.F )
-add_library( alphalib.${ALPHA_VERSION} ${ALEPH_LIBRARY_TYPE} ${alphalib_files} )
-add_library( Aleph::alphalib.${ALPHA_VERSION} ALIAS alphalib.${ALPHA_VERSION} )
+add_library( alphalib ${ALEPH_LIBRARY_TYPE} ${alphalib_files} )
+add_library( Aleph::alphalib ALIAS alphalib )
 #
-target_include_directories( alphalib.${ALPHA_VERSION} PUBLIC ${alpha_dir}/inc )
-target_link_libraries(      alphalib.${ALPHA_VERSION}
-     PUBLIC                 Aleph::julialib.${JULIA_VERSION}
-                            Aleph::alephlib.${ALEPHLIB_VERSION}
-			    Aleph::alephio.${ALEPHIO_VERSION}
+target_include_directories( alphalib PUBLIC ${alpha_dir}/inc )
+target_link_libraries(      alphalib
+     PUBLIC                 Aleph::julialib
+                            Aleph::alephlib
+			    Aleph::alephio
 			    Aleph::bos77
 			    ${ALEPH_CERN_LIBRARIES}
 )
 #
-add_executable( alpha.${ALPHA_VERSION} ${alpha_dir}/pack/qmain.F
+add_executable( alpha ${alpha_dir}/pack/qmain.F
                                        ${alpha_dir}/pack/quibos.F
                                        ${alpha_dir}/pack/quihis.F
                                        ${ALEPH_PROGRAM_SOURCES} )
-target_link_libraries( alpha.${ALPHA_VERSION}
-   PRIVATE Aleph::alphalib.${ALPHA_VERSION}
-           Aleph::alephlib.${ALEPHLIB_VERSION}
-           Aleph::julialib.${JULIA_VERSION}
-           Aleph::alephio.${ALEPHIO_VERSION}
+target_link_libraries( alpha
+   PRIVATE Aleph::alphalib
+           Aleph::alephlib
+           Aleph::julialib
+           Aleph::alephio
  	   Aleph::bos77
            ${ALEPH_CERN_LIBRARIES}
 	  )
 #
 #
 install(DIRECTORY  inc  DESTINATION include)
-install(TARGETS    alphalib.${ALPHA_VERSION} alpha.${ALPHA_VERSION} EXPORT Aleph
+install(TARGETS    alphalib alpha EXPORT Aleph
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

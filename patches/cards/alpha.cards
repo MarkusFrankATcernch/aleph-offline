@@ -1,0 +1,19 @@
+*  Examples of data cards for ALPHA on UNIX machines :
+*  a * in column 1 means : this card is a comment
+* example to read a file from cartridge using an EDIR :
+* the example below works on all machines , the GIME is ignored outside CERNVM
+* ( in all cases you should ask SCANBOOK to generate these cards for you )
+FILI ' julia-test.epio | EPIO'
+* to get the Energy Flow package results :
+*ENFL
+* to obtain jets with the Energy Flow package results :
+*EFLJ
+* to obtain the interaction point from the QFNDIP package :
+*QFND
+* both cards above (EFLJ,QFND) are mandatory if you use QFNDIP or QIPBTAG !
+*
+* example of other useful cards :
+*FILO 'rwaleph.epio | EPIO'
+NEVT 10
+DEBU  0
+ENDQ

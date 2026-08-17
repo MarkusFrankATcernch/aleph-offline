@@ -133,7 +133,7 @@ unsigned int chkloc(iadr)
       }
       close(in);
       if( text ) free(text);
-      printf("+++ Found base offset 0x%016x for data segments. "
+      printf("+++ Found base offset 0x%016lx for data segments. "
              "LOCF checks if address is with data segments.\n", base_address);
       fflush(stdout);
    }

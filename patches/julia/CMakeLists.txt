@@ -34,32 +34,32 @@ file( GLOB julia_files ${julia_dir}/a_/*.F
 			     ${julia_dir}/y_/*.F
 			     ${julia_dir}/vglob/*.F
 )
-add_library( julialib.${JULIA_VERSION} ${ALEPH_LIBRARY_TYPE} ${julia_files} )
-add_library( Aleph::julialib.${JULIA_VERSION} ALIAS julialib.${JULIA_VERSION} )
+add_library( julialib ${ALEPH_LIBRARY_TYPE} ${julia_files} )
+add_library( Aleph::julialib ALIAS julialib )
 #
-target_include_directories( julialib.${JULIA_VERSION} PUBLIC ${julia_dir}/inc )
+target_include_directories( julialib PUBLIC ${julia_dir}/inc )
 #
 # Necessary for include files!
-target_link_libraries(      julialib.${JULIA_VERSION}
-   PUBLIC  Aleph::alephio.${ALEPHIO_VERSION}
- 	   Aleph::alephlib.${ALEPHLIB_VERSION}
+target_link_libraries(      julialib
+   PUBLIC  Aleph::alephio
+ 	   Aleph::alephlib
            Aleph::bos77
 )
 #
 #
-add_executable(             julia.${JULIA_VERSION} ${julia_dir}/a_/aamain.F )
-target_include_directories( julia.${JULIA_VERSION} PUBLIC ${julia_dir}/inc )
-target_link_libraries( julia.${JULIA_VERSION}
-   PUBLIC  Aleph::alephlib.${ALEPHLIB_VERSION}
-           Aleph::julialib.${JULIA_VERSION} 
-           Aleph::alephio.${ALEPHIO_VERSION}
-           Aleph::alephlib.${ALEPHLIB_VERSION}
+add_executable(             julia ${julia_dir}/a_/aamain.F )
+target_include_directories( julia PUBLIC ${julia_dir}/inc )
+target_link_libraries( julia
+   PUBLIC  Aleph::alephlib
+           Aleph::julialib 
+           Aleph::alephio
+           Aleph::alephlib
            Aleph::bos77
            ${ALEPH_CERN_SIMLIBRARIES}
 )
 #
 install(DIRECTORY  inc  DESTINATION include)
-install(TARGETS    julia.${JULIA_VERSION} julialib.${JULIA_VERSION} EXPORT Aleph
+install(TARGETS    julia julialib EXPORT Aleph
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

@@ -20,19 +20,19 @@ file( GLOB alephio_files ${alephio_dir}/alph/*.F
                          ${alephio_dir}/pres/*.F
 )
 #
-add_library( alephio.${ALEPHIO_VERSION} ${ALEPH_LIBRARY_TYPE} ${alephio_files} )
-add_library( Aleph::alephio.${ALEPHIO_VERSION} ALIAS alephio.${ALEPHIO_VERSION} )
+add_library( alephio ${ALEPH_LIBRARY_TYPE} ${alephio_files} )
+add_library( Aleph::alephio ALIAS alephio )
 #
-target_compile_definitions( alephio.${ALEPHIO_VERSION} PUBLIC ${ALEPH_DEBUG_DEFS} )
-target_include_directories( alephio.${ALEPHIO_VERSION} PUBLIC ${alephio_dir}/../inc )
-target_include_directories( alephio.${ALEPHIO_VERSION} PUBLIC ${alephio_dir}/inc )
-target_compile_options(     alephio.${ALEPHIO_VERSION} PUBLIC
+target_compile_definitions( alephio PUBLIC ${ALEPH_DEBUG_DEFS} )
+target_include_directories( alephio PUBLIC ${alephio_dir}/../inc )
+target_include_directories( alephio PUBLIC ${alephio_dir}/inc )
+target_compile_options(     alephio PUBLIC
   $<$<COMPILE_LANGUAGE:C>:  -Wno-return-mismatch -Wno-unused -Wno-implicit-int -Wno-return-type>
 )
-target_link_libraries(      alephio.${ALEPHIO_VERSION} PUBLIC Aleph::bos77 ${ALEPH_CERN_LIBRARIES} )
+target_link_libraries(      alephio PUBLIC Aleph::bos77 ${ALEPH_CERN_LIBRARIES} )
 #
-install(DIRECTORY  inc  DESTINATION include)
-install(TARGETS    alephio.${ALEPHIO_VERSION} EXPORT Aleph
+install(DIRECTORY  inc     DESTINATION include)
+install(TARGETS    alephio EXPORT Aleph
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
 )

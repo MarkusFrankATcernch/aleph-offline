@@ -41,21 +41,23 @@ aleph-do-checkout_package()  {
 aleph-do-checkout()  {
     aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software inc;
     aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software bos77;
+    aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software alephio
     aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software alephlib
     aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software dbase
-    aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software alephio
-    aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software alpha
-    aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software julia
+    aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software kin
     aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software galeph
+    aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software julia
+    aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software alpha
+    aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software phy
+    aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software uphy
     aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software look
     aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software mini
     aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software tpcsim
-    aleph-do-checkout_package ssh://git@gitlab.cern.ch:7999/aleph/software uphy
 }
 #
 #
 # ==================================================================================================
-patch-checkout()   {
+aleph-patch()   {
     curr=`pwd`;
     cd ${ALEPH_BUILD_DIR};
     if test -f ${ALEPH_BUILD_DIR}/alephlib/ldes/lcalmv.F; then
@@ -99,17 +101,18 @@ verify-checkout()  {
         cd $i;
         printf "================================= %s \n" "`pwd`";
         #rm -rf $i;
+        
         git status;
         #git checkout -b cmake-build;
 	#git commit -a -m "Use CERNLIB from git@gitlab.cern.ch:7999/DPHEP/cernlib";
-	#git push -f origin cmake-build;
+	#git push origin cmake-build;
         cd ..;
     done;
     cd ${curr};
 }
 # ==================================================================================================
 #
-install-cernlib()  {
+cernlib-install()  {
     curr=`pwd`;
     cernlib_dir=${ALEPH_BUILD_DIR}/cernlib;
     #
@@ -134,7 +137,7 @@ install-cernlib()  {
 }
 # ==================================================================================================
 #
-gen-headers-aleph()  {
+aleph-gen-headers()  {
     curr=`pwd`;
     mkdir -p ${ALEPH_BUILD_DIR}/build64;
     cd ${ALEPH_BUILD_DIR}/build64;
@@ -147,7 +150,7 @@ gen-headers-aleph()  {
 }
 # ==================================================================================================
 #
-install-aleph()  {
+aleph-install()  {
     curr=`pwd`;
     mkdir -p ${ALEPH_BUILD_DIR}/build64;
     cd ${ALEPH_BUILD_DIR}/build64;
@@ -163,21 +166,21 @@ install-aleph()  {
 }
 # ==================================================================================================
 #
-build-aleph()  {
+aleph-build()  {
     mkdir -p ${ALEPH_BUILD_DIR};
     #
     aleph-do-checkout;
     #
-    patch-checkout;
+    aleph-patch;
     #
     . ${LCG_VIEW}/setup.sh;
     #
     #
-    # install-cernlib;
+    # cernlib-install;
     #
-    gen-headers-aleph;
+    aleph-gen-headers;
     #
-    install-aleph;
+    aleph-install;
     #
     #
     cd ${ALEPH_BUILD_DIR}/build64;
@@ -199,19 +202,73 @@ aleph-pathes()  {
     fi;
 }
 # ==================================================================================================
+#
 aleph-info()  {
     echo "+++ LCG_VIEW:              ${LCG_VIEW}";
     echo "+++ CERNLIB_DIR:           ${CERNLIB_DIR}";
     echo "+++ ALEPH_BUILD_DIR:       ${ALEPH_BUILD_DIR}";
-    echo "+++ type build-aleph       to build and checkout in the current working directory.";
-    echo "+++      install-cernlib   to build cernlib only.";
-    echo "+++      install-aleph     to build aleph stuff only.";
+    echo "+++ type aleph-build       to build and checkout in the current working directory.";
+    echo "+++      aleph-install     to build aleph stuff only.";
     echo "+++      aleph-pathes      to set PATH and LD_LIBRARY_PATH";
-    echo "+++      patch-checkout    to patch checkouts";
-    echo "+++      gen-headers-aleph to generate header files corresponding to BOS banks";
+    echo "+++      aleph-patch       to patch checkouts";
+    echo "+++      aleph-gen-headers to generate header files corresponding to BOS banks";
+    echo "+++      cernlib-install   to build cernlib standalone with cmake build.";
 }
 # ==================================================================================================
-export ALEPH_SOFT=`dirname ${BASH_SOURCE[0]}`;
+#
+aleph-cards()  {
+    export ALPHACARDS=${ALEPH_BUILD_DIR}/cards/analysis.cards;
+    export KINGALCARDS=${ALEPH_BUILD_DIR}/cards/pyth05.cards;
+    export GALEPHCARDS=${ALEPH_BUILD_DIR}/cards/galeph.cards;
+    export JULIACARDS=${ALEPH_BUILD_DIR}/cards/julia.cards;
+    echo   "+++ ALPHACARDS:        ${ALPHACARDS}";
+    echo   "+++ KINGALCARDS:       ${KINGALCARDS}";
+    echo   "+++ GALEPHCARDS:       ${GALEPHCARDS}";
+    echo   "+++ JULIACARDS:        ${JULIACARDS}";
+}
+#
+# ==================================================================================================
+aleph-tests()  {
+    aleph-cards;
+    rm -f pyth05-test.epio galeph-test.epio julia-test.epio;
+    rm -f pyth05.log       galeph.log       julia.log        alpha.log;
+    #
+    #
+    KINGALCARDS=${ALEPH_BUILD_DIR}/cards/pyth05.cards ${ALEPH_BUILD_DIR}/build64/kin/pyth05 2>&1 > pyth05.log;
+    if test -z "`grep 'Kingal start event      2000' pyth05.log`"; then
+        echo "+++ KINGAL step with pythia 5 FAILED. Log file: pyth05.log";
+        return;
+    fi;
+    echo "+++ KINGAL step with pythia 5 SUCCEEDED. Log file: pyth05.log";
+    if test -e pyth05-test.epio; then
+        GALEPHCARDS=${ALEPH_BUILD_DIR}/cards/galeph.cards ${ALEPH_BUILD_DIR}/build64/galeph/galeph 2>&1 > galeph.log;
+    fi;
+    if test -z "`grep '+++ASIEVE+++ EVENT#  1000' galeph.log`"; then
+        echo "+++ GALEPH simulation step FAILED. Log file: galeph.log";
+        return;
+    fi;
+    echo "+++ GALEPH simulation step SUCCEEDED. Log file: galeph.log";
+
+    if test -e galeph-test.epio; then
+        JULIACARDS=${ALEPH_BUILD_DIR}/cards/julia.cards ${ALEPH_BUILD_DIR}/build64/julia/julia 2>&1 > julia.log;
+    fi;
+    if test -z "`grep 'RLOOPR-Evt  1000' julia.log`"; then
+        echo "+++ JULIA reconstruction step FAILED. Log file: julia.log";
+        return;
+    fi;
+    echo "+++ JULIA reconstruction step SUCCEEDED. Log file: julia.log";
+    if test -e julia-test.epio; then
+        ALPHACARDS=${ALEPH_BUILD_DIR}/cards/alpha.cards ${ALEPH_BUILD_DIR}/build64/alpha/alpha 2>&1 > alpha.log;
+    fi;
+    if test -z "`grep 'KNEVT :      3' alpha.log`"; then
+        echo "+++ ALPHA analysis step FAILED. Log file: alpha.log";
+        return;
+    fi;
+    echo "+++ ALPHA analysis step SUCCEEDED. Log file: alpha.log";
+}
+#
+# ==================================================================================================
+export ALEPH_SOFT=${HOME}/Aleph/offline;
 . ${ALEPH_SOFT}/setaleph.sh;
 #
 if test -n "`uname -a | grep -e 'lxplus.*cern.ch'`"; then
@@ -222,7 +279,7 @@ elif test -n "`uname -a | grep Ubuntu`"; then
     export LCG_VIEW=/cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-ubuntu2404-gcc13-opt;
     export CERNLIB_DIR=/cvmfs/dphep.cern.ch/cernlib/releases/ubuntu-24-x86_64/cm/std/gcc/new;
 fi;
-export ALEPH_BUILD_DIR=`pwd`/gitlab;
+export ALEPH_BUILD_DIR=${ALEPH_SOFT}/gitlab;
 #
 aleph-info;
 # ==================================================================================================

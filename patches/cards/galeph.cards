@@ -1,0 +1,15 @@
+*---------------- Galeph Cards ------------------------------        
+FILI ' pyth05-test.epio | EPIO '
+FILO ' galeph-test.epio | EPIO '   
+DATE ${dategeom}          ! Put 90 if 1990 geometry      
+* TIME 100
+* FDBA ' adbs314.daf | DAF '         
+NEVT  1000
+DEBU  1 10 1
+PRINT 'INPU'  'OUTP'  'KINE'     
+DISPLAY 0 /          
+TPCSIM   
+PROC   'DIGI' 'HITS'  'TRAC'  'TRIG'      
+SETS  'VDET' 'ITC ' 'TPC ' 'ECAL' 'HCAL' 'MUON' 'LCAL' 'SICA'        
+*------------------------------------------------------------        
+ENDQ

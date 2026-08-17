@@ -46,10 +46,10 @@ target_include_directories( userlib
 	   ${user_dir}/../aleph_headers
 )
 target_link_libraries(      userlib
-   PUBLIC  Aleph::alphalib.${ALPHA_VERSION}
-	   Aleph::julialib.${JULIA_VERSION}
-           Aleph::alephlib.${ALEPHLIB_VERSION}
-	   Aleph::alephio.${ALEPHIO_VERSION}
+   PUBLIC  Aleph::alphalib
+	   Aleph::julialib
+           Aleph::alephlib
+	   Aleph::alephio
 	   Aleph::bos77
            EDM4HEP::edm4hep
            EDM4HEP::edm4hepDict
@@ -69,11 +69,11 @@ add_executable( alpha_user ${alpha_dir}/pack/qmain.F
 )
 target_link_libraries( alpha_user
    PRIVATE Aleph::userlib
-           Aleph::alphalib.${ALPHA_VERSION}
-           Aleph::alephlib.${ALEPHLIB_VERSION}
-           Aleph::julialib.${JULIA_VERSION}
-           Aleph::alephio.${ALEPHIO_VERSION}
-           Aleph::alephlib.${ALEPHLIB_VERSION}
+           Aleph::alphalib
+           Aleph::alephlib
+           Aleph::julialib
+           Aleph::alephio
+           Aleph::alephlib
  	   Aleph::bos77
            ${ALEPH_CERN_LIBRARIES}
 )
