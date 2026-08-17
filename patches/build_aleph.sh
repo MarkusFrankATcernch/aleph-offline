@@ -208,7 +208,12 @@ aleph-info()  {
     echo "+++ LCG_VIEW:                   ${LCG_VIEW}";
     echo "+++ CERNLIB_DIR:                ${CERNLIB_DIR}";
     echo "+++ ALEPH_BUILD_DIR:            ${ALEPH_BUILD_DIR}";
-    echo "+++ type aleph-build            to build and checkout in the current working directory.";
+    echo "+++ ALEPH_SOFT:                 ${ALEPH_SOFT}";
+    echo "+++ ALEPH_DBASE:                ${ALEPH_DBASE}";
+    echo "+++ ";
+    
+    echo "+++ Shortcut commands:";
+    echo "+++      aleph-build            to build and checkout in the current working directory.";
     echo "+++      aleph-install          to build aleph stuff only.";
     echo "+++      aleph-pathes           to set PATH and LD_LIBRARY_PATH";
     echo "+++      aleph-patch            to patch checkouts";
@@ -232,6 +237,8 @@ aleph-cards()  {
 # ==================================================================================================
 aleph-tests()  {
     aleph-cards;
+    #
+    #
     rm -f pyth05-test.epio galeph-test.epio julia-test.epio;
     rm -f pyth05.log       galeph.log       julia.log        alpha.log;
     #
