@@ -294,7 +294,7 @@ fi;
 #
 export ALEPH_BUILD_DIR=${ALEPH_SOFT}/gitlab;
 #
-export ADBSCONS=${ALEPH_DBASE}/reference/dbase/adbs314.daf;
+export ADBSCONS=${ALEPH_DBASE}/Linux/dbase/adbs314.daf;
 export SBANK_LBF=${ALEPH_DBASE}/reference/doc/sbank.lbf;
 export BANKALFMT=${ALEPH_DBASE}/reference/dbase/bankal.fmt;
 export BOSKEY=${ALEPH_DBASE}/reference/dbase/boskey.ddl;
