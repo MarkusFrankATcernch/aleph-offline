@@ -1,28 +1,28 @@
 **Patches to the ALEPH offline software**
 
-Found necessary changes to the aleph offline software to 
+Found necessary changes to the Aleph offline software to 
 build and exceute the full processing chain:
-- Kingal step to generate MC events
-- Galeph step to simulate the detector response
-- Julia step to reconstruct the simulated events
-- Aleph step to read the reconstructed data
+- **Kingal** step to generate MC events
+- **Galeph** step to simulate the detector response
+- **Julia** step to reconstruct the simulated events
+- **Aleph** step to read the reconstructed data
 
 
-Aleph repositories are:
-    - ssh://git@gitlab.cern.ch:7999/aleph/software/inc;
-    - ssh://git@gitlab.cern.ch:7999/aleph/software/bos77;
-    - ssh://git@gitlab.cern.ch:7999/aleph/software/alephio
-    - ssh://git@gitlab.cern.ch:7999/aleph/software/alephlib
-    - ssh://git@gitlab.cern.ch:7999/aleph/software/dbase
-    - ssh://git@gitlab.cern.ch:7999/aleph/software/kin
-    - ssh://git@gitlab.cern.ch:7999/aleph/software/galeph
-    - ssh://git@gitlab.cern.ch:7999/aleph/software/julia
-    - ssh://git@gitlab.cern.ch:7999/aleph/software/alpha
-    - ssh://git@gitlab.cern.ch:7999/aleph/software/phy
-    - ssh://git@gitlab.cern.ch:7999/aleph/software/uphy
-    - ssh://git@gitlab.cern.ch:7999/aleph/software/look
-    - ssh://git@gitlab.cern.ch:7999/aleph/software/mini
-    - ssh://git@gitlab.cern.ch:7999/aleph/software/tpcsim
+**Aleph** repositories are:
+- ssh://git@gitlab.cern.ch:7999/aleph/software/inc;
+- ssh://git@gitlab.cern.ch:7999/aleph/software/bos77;
+- ssh://git@gitlab.cern.ch:7999/aleph/software/alephio
+- ssh://git@gitlab.cern.ch:7999/aleph/software/alephlib
+- ssh://git@gitlab.cern.ch:7999/aleph/software/dbase
+- ssh://git@gitlab.cern.ch:7999/aleph/software/kin
+- ssh://git@gitlab.cern.ch:7999/aleph/software/galeph
+- ssh://git@gitlab.cern.ch:7999/aleph/software/julia
+- ssh://git@gitlab.cern.ch:7999/aleph/software/alpha
+- ssh://git@gitlab.cern.ch:7999/aleph/software/phy
+- ssh://git@gitlab.cern.ch:7999/aleph/software/uphy
+- ssh://git@gitlab.cern.ch:7999/aleph/software/look
+- ssh://git@gitlab.cern.ch:7999/aleph/software/mini
+- ssh://git@gitlab.cern.ch:7999/aleph/software/tpcsim
 
 The changes are incorporated in the braches cmake-build.
 
@@ -65,5 +65,25 @@ rm: cannot remove 'julia-test.epio': No such file or directory
 ```
 
 For detail consult the above mentioned log files.
+
+To see the setup:
+```
+[frankm@lxplus9111 offline]$ aleph-info
++++ LCG_VIEW:                   /cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-el9-gcc15-opt
++++ CERNLIB_DIR:                /cvmfs/dphep.cern.ch/cernlib/releases/almalinux-9-x86_64/cm/std/gcc/new
++++ ALEPH_BUILD_DIR:            /afs/cern.ch/work/f/frankb/frankm/Aleph/offline/gitlab
++++ ALEPH_SOFT:                 /afs/cern.ch/work/f/frankb/frankm/Aleph/offline
++++ ALEPH_DBASE:                /eos/experiment/aleph/sw/Linux
++++ 
++++ Shortcut commands:
++++      aleph-build            to build and checkout in the current working directory.
++++      aleph-install          to build aleph stuff only.
++++      aleph-pathes           to set PATH and LD_LIBRARY_PATH
++++      aleph-patch            to patch checkouts
++++      aleph-gen-headers      to generate header files corresponding to BOS banks
++++      aleph-verify-checkout  check sttaus all subdirectories known.
++++      cernlib-install        to build cernlib standalone with cmake build.
+[frankm@lxplus9111 offline]$ 
+```
 
 Markus Frank
