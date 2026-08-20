@@ -65,9 +65,10 @@ namespace alpha  {
   template <typename POINTER, typename VALUE=POINTER*>
   class object_table : public bos77::bank_header  {
   public:
-    using pointer_type = POINTER*;
-    using value_type   = VALUE;
-    using table_type   = object_table<POINTER, VALUE>;
+    using const_pointer_type = const POINTER*;
+    using pointer_type       = POINTER*;
+    using value_type         = VALUE;
+    using table_type         = object_table<POINTER, VALUE>;
 
     /// Payload table: Number of words per object (columns)
     int32_t  _obj_words    { 0 };
@@ -75,14 +76,14 @@ namespace alpha  {
     int32_t  _num_objects  { 0 };
 
   public:
-    int32_t  row[1];
+    int32_t  _row[1];
 
-    bool check_bounds(int /* idx */)  const {
+    bool check_bounds(uint32_t /* idx */)  const {
       return true;//(idx >= 0 && idx <= this->_num_objects) ? true : false;
     }
-    int32_t* _access_pointer(int idx)  const  {
+    int32_t* _access_pointer(uint32_t idx)  const  {
       if ( check_bounds(idx) )  {
-        const auto* p = row + (this->_obj_words * (idx-1));
+        const auto* p = this->_row + (this->_obj_words * idx);
         return (int32_t*)p;
       }
       return nullptr;
@@ -124,17 +125,26 @@ namespace alpha  {
     /// Check if the container is empty
     bool     empty()  const                {  return this->_num_objects == 0;    }
 
+    /// Get object index in table (starting from NULL!). -1 if not in table
+    int32_t index(const_pointer_type obj)  const;
     /** Direct object access  */
     /// Number of objects
-    uint32_t size()  const                 {  return this->_num_objects;         }
+    uint32_t size()  const                    {  return this->_num_objects;      }
+    /// Number of words per object
+    uint32_t words_per_object()  const        {  return this->_obj_words;        }
     /// Direct access by row to object entry in the table 
-    value_type operator[](int idx)         {  return _access_object(idx);        }
+    value_type operator[](uint32_t idx)       {  return _access_object(idx);     }
     /// Direct access by row to object entry in the table  (CONST)
-    value_type operator[](int idx) const   {  return _access_object(idx);        }
+    value_type operator[](uint32_t idx) const {  return _access_object(idx);     }
     /// Direct access by row to object entry in the table 
-    value_type at(int idx)                 {  return _access_object(idx);        }
+    value_type at(uint32_t idx)               {  return _access_object(idx);     }
     /// Direct access by row to object entry in the table  (CONST)
-    const value_type at(int idx) const     {  return _access_object(idx);        }
+    const value_type at(uint32_t idx) const   {  return _access_object(idx);     }
+
+    /// Direct access by row to object entry in the table: USE for loops with QCDE ranges
+    value_type row(uint32_t idx)              {  return _access_object(idx-1);   }
+    /// Direct access by row to object entry in the table  (CONST): USE for loops with QCDE ranges
+    const value_type row(uint32_t idx) const  {  return _access_object(idx-1);   }
 #if 0
     /** Iterative object access  */
     /// Bank iterator: start iteration
@@ -166,56 +176,20 @@ namespace alpha  {
     using iterator_type = iterator;
   };
   
-  inline char true_false(bool value)  {  return value ? 'T' : 'F';  }
-
-  class qvec;
-  class qvrt;
-  class qdet;
-  class peco;
-  class phco;
-  class pgac;
-  class pcqa;
-  class pdlt;
-  class pmlt;
-  class efol;
-
-  struct constants_t   {
-    int32_t naqzer;
-    int32_t kqzer;
-
-    int32_t naqvec;
-    int32_t naqvrt;
-    int32_t naqdet;
-    int32_t naqlin;
-    int32_t napeco;
-    int32_t naphco;
-    int32_t napgac;
-    int32_t napcqa;
-    int32_t napmdt;
-    int32_t napdlt;
-    int32_t napmlt;
-    int32_t naefol;
-
-    int32_t kmatix[6][6];
-    
-    template <typename T> const T* table(int32_t offset)  const {
-      return (T*)(&bos77::bcs.iw[0] + offset - bos77::bankheader_words);
-    }
-
-    const object_table<class qvec>* qvec_table;
-    const object_table<class qvrt>* qvrt_table;
-    const object_table<class qdet>* qdet_table;
-    const object_table<class qlin>* qlin_table;
-    const object_table<class peco>* peco_table;
-    const object_table<class phco>* phco_table;
-    const object_table<class pgac>* pgac_table;
-    const object_table<class pcqa>* pcqa_table;
-    const object_table<class pdlt>* pdlt_table;
-    const object_table<class pmlt>* pmlt_table;
-    const object_table<class efol>* efol_table;
-
-  };
-  extern constants_t&  params;
+  /// Get object index in table (starting from NULL!). -1 if not in table
+  template <typename POINTER, typename VALUE>
+  int32_t object_table<POINTER,VALUE>::index(const_pointer_type obj)  const  {
+    const int32_t* ptr = (const int32_t*)obj;
+    int64_t offset = (ptr - &this->_row[0]);
+    int32_t which = offset/this->_obj_words;
+    if( (offset%this->_obj_words) != 0 )   // Wrong table pointer. This must be NULL
+      return -1;
+    else if( which < 0 )                  // negative offset impossible: wrong table pointer
+      return -1;
+    else if( which > this->_num_objects ) // outside of object table: wrong table pointer
+      return -1;
+    return which;
+  }
 }      // End namespace alpha
 
 /// Default destructor

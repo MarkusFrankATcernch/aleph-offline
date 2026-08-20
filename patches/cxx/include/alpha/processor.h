@@ -22,14 +22,15 @@
 /// ALPHA namespace declaration
 namespace alpha  {
 
-  class event_processor;
-  
-  
   template <typename TYPE> class processor  {
   public:
-    static void initialize();
-    static void handle_event(constants_t& params);
-    static void terminate();
+    bool debug = false;
+    bool print = false;
+  public:
+    processor(bool deb, bool prt) : debug(deb), print(prt) {}
+    virtual void initialize();
+    virtual void handle_event(constants_t& params);
+    virtual void terminate();
   };
 
 }      // End namespace alpha

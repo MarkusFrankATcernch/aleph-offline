@@ -17,8 +17,6 @@
 #include <cstdint>
 #include <string>
 
-
-
 extern "C"  {
   void    bosta_();
   int32_t namind_(const char* bname, int);
@@ -153,11 +151,18 @@ namespace bos77  {
       return this->_num_words*sizeof(uint32_t);
     }
 
+    /// Data payload length in bytes
+    std::size_t data_num_words()  const  {
+      return this->_num_words;
+    }
+
     /// Offset to next bank (in bytes)
     int32_t offset2next()  const  {
       return this->_offset_next*sizeof(int32_t);
     }
-      
+
+    /// Access to next bank of the same type: Works only if the offset work is correct (Aleph offline)
+    const bank_header* next_bank_offset()   const;
   };
 
   /// Definition of the BOS bank
@@ -175,9 +180,6 @@ namespace bos77  {
 
   public:
 
-    /// Pointer to next bank: Works only if the offset work is correct (Aleph offline)
-    const bank* next_offset()  const;
-      
     /// Pointer to next bank: Works only if banks are contiguous (Aleph online)
     const bank* next()  const  {
       const uint8_t* ptr = (const uint8_t*)this;
@@ -190,6 +192,11 @@ namespace bos77  {
       return (const T*)(ptr + this->total_length());
     }
       
+    /// Access to next bank of the same type: Works only if the offset work is correct (Aleph offline)
+    template <typename T=bank> const T* knext()  const  {
+      return (T*)this->bank_header::next_bank_offset();
+    }
+    
     const bank* end()  const  {
       const uint8_t* ptr = (const uint8_t*)this;
       return (const bank*)(ptr + this->total_length() - sizeof(uint32_t));
@@ -232,8 +239,6 @@ namespace bos77  {
       const int32_t* iptr = (const int32_t*)this;
       return iptr[5];
     }
-    /// Access to next row
-    const bank* knext()   const;
   };
 
   /// Definition of the BOS bank "+FMT"
@@ -296,6 +301,9 @@ namespace bos77  {
   void        print_bank_lists(const char* lists);
   /// Print bank names of all known BOS bank lists
   void        print_bank_lists(const std::string& lists);
+
+  /// Print all banks identified by 'bnam'
+  std::size_t print_banks_of_type(const std::string& bnam);
     
   /// Definition of the BOS system data structure from inc/sysbos.h
   /**

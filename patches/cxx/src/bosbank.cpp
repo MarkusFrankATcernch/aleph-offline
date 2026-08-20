@@ -15,6 +15,7 @@
 #include <bos/bosbank.h>
 
 #include <sstream>
+#include <iomanip>
 #include <iostream>
 
 extern "C"  {
@@ -33,16 +34,39 @@ namespace bos77  {
 
 namespace bos77  {
 
+  /// Access to next bank of the same type: Works only if the offset work is correct (Aleph offline)
+  const bank_header* bank_header::next_bank_offset()  const  {
+    const void* cptr = (const void*)this;
+    if( cptr != nullptr && this->_offset_next != 0 )  {
+      auto* ptr = &bcs.iw[_offset_next - bankheader_words];
+      return (const bank_header*)ptr;
+    }
+    return nullptr;
+  }
+  
   /// String representation for printouts
   std::string bank::to_string(const std::string& prefix)  const  {
     std::stringstream str;
-    auto nam = this->name();
+    const auto* nam = (char*)&this->_name;
+    const auto* nb  = this->next_bank_offset();
+    std::size_t nw  = this->total_num_words();
+    std::size_t pl  = this->payload_columns()*this->payload_rows();
+
     str << prefix;
     if( !prefix.empty() ) str << " ";
     str << "Bank: " << nam[0] << nam[1] << nam[2] << nam[3]
-       << " row:" << this->row()
-       << " Len:" << this->total_length() << "/" << this->data_length()
-       << " Next:" << this->offset2next();
+        << " row:"  << std::setw(6) << std::left  << this->row()
+        << " Len:"  << std::setw(5) << std::right << this->total_length()
+        << "/"      << std::setw(5) << std::left  << this->data_length();
+    if( nw > 4 && pl+subheader_words == nw )  {
+      str << " Words/row:" << std::setw(4) << std::right << this->payload_columns()
+          << " #row:"      << std::setw(4) << std::right << this->payload_rows();
+    }
+    if( nb )  {
+      str << " KNext:" << std::setw(8) << this->offset2next()
+          << " "       << std::setw(4) << std::left
+          << (const char*)(nb ? nb->name().c_str() : " ");
+    }
     return str.str();
   }
 
@@ -144,6 +168,32 @@ namespace bos77  {
   /// Print bank names of all known BOS bank lists
   void print_bank_lists(const std::string& lists)  {
     print_bank_lists(lists.c_str());
+  }
+
+  /// Print all banks identified by 'bnam'
+  std::size_t print_banks_of_type(const std::string& bnam)  {
+    std::size_t total_mem = 0;
+    int i = 0;
+    const auto* bank = get_bank(bnam, 0);
+    for( ; bank != nullptr; ++i )  {
+      if( !bank )  {
+        break;
+      }
+      const auto* next  = bank->next();
+      const auto* knext = bank->knext();
+      total_mem += bank->total_num_words();
+      ::printf("%4s: %-4d BANK: %-8ld %p  %-60s ",
+               bnam.c_str(), i, ((uint8_t*)bank) - (uint8_t*)bcs.iw,
+               (void*)bank, bank->to_string().c_str());
+      
+      if( next )  {
+        ::printf("NEXT: %-8ld %p %4s ",
+                 ((uint8_t*)next)   - (uint8_t*)bcs.iw,  (void*)next,  next  ? next->name().c_str() : "");
+      }
+      ::printf("\n");
+      bank = knext;
+    }
+    return total_mem;
   }
 
 }

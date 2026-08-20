@@ -17,7 +17,7 @@
 #include <cmath>
 
 /// Framework include files
-#include <alpha/defs.h>
+#include <alpha/alpha.h>
 
 /// ALPHA namespace declaration
 namespace alpha  {
@@ -46,6 +46,24 @@ namespace alpha  {
    *  & JQVEND=18,JQVEDL=19,JQVENO=20,JQVEOL=21,JQVENM=22,JQVEML=23,
    *  & JQVEBM=24,JQVELK=38,JQVEDB=39,JQVEZB=40,JQVESD=41,JQVESZ=42,
    *  & JQVECB=43,JQVEEM=44,JQVECF=54,JQVEEW=55,JQVEUS=56)
+   *
+   *  Main alpha bank(-row) type. Describes all sorts of track-like objects.
+   *
+   *  Provides the attributes to
+   *  - object momentum (px, py, pz, mass, momentum, energy)
+   *  - particle charge
+   *  - MC tracks only: Simulation status
+   *
+   *  Provides the links to the
+   *  - Mother daugther relationships for Monte-Carlo tracks
+   *  - FRFT bank (Julia track fit)
+   *  - PECO bank (associated ECAL clusters)
+   *  - PHCO bank (associated HCAL clusters)
+   *  - EIDT bank (electron identification)
+   *  - MUID bank (muon identification)
+   *  .... and others
+   *
+   *  See the ALPHA manual for details.
    *
    *   \author M.Frank
    *   \version 1.0
@@ -136,8 +154,12 @@ namespace alpha  {
     ~qvec() = delete;
 
   public:
-    /// Ease switching from single to double precision
+    /// Ease switching from single to double precision when using the accessors
+#if defined(ALPHA_GLOBAL_REAL)
+    using real_t = alpha::real_t;
+#else
     using real_t = float;
+#endif
 
     /** Alpha like access functions   */
     /// x momentum component
@@ -164,7 +186,7 @@ namespace alpha  {
     real_t  qbc2()     const   {  return this->chi2_track;                       }
     real_t  qmchif()   const   {  return this->chi2_kinematic;                   }
 
-    bool   xsig()      const   {  return (this->cov[0] > 0e0);                   }
+    bool    xsig()     const   {  return (this->cov[0] > 0e0);                   }
 
     real_t  qx2()      const   {  return this->px * this->px;                    }
     real_t  qy2()      const   {  return this->py * this->py;                    }
@@ -208,7 +230,7 @@ namespace alpha  {
     real_t  qphi()    const    {  return std::atan2(this->qy(), this->qx());     }
 
     /// Particle class (see ALPHA user's manual for details)
-    int32_t kclass()  const    {  return this->track_class;                      }
+    int32_t kclass()  const;
     /// Lund status clode from JETSET
     int32_t klunds()  const    {  return this->lund_status;                      }
     /// Check if track a MC particle
@@ -222,13 +244,13 @@ namespace alpha  {
     std::string cqtpn() const;
     
     /// GALEPH/ JULIA/ ENFLW track number (see ALPHA user's manual for details)
-    int32_t ktn()  const       {  return this->frft_row;                         }
+    int32_t ktn()  const       {  return this->frft_row;                     }
 
     /// Number of mother tracks
     uint32_t knmoth()   const  {  return this->number_mothers;                   }
-    /// Access index of the charged mother track
+    /// Deprecated: Access index of the charged mother track [ALEPH track number call qvec_table->row(kmoth(...))]
     uint32_t kmoth(uint32_t i) const {
-      const auto* qlin = params.qlin_table->at(this->offset_first_mother + i + 1);
+      const auto* qlin = params.qlin_table->at(this->offset_first_mother + i);
       return qlin ? qlin->link : 0;
     }
     /// Direct access to the charged mother track
@@ -236,19 +258,19 @@ namespace alpha  {
 
     /// Number of daughter tracks
     uint32_t          kndau()   const   {  return this->number_daughters;             }
-    /// Access index of the charged daughter track
-    uint32_t          kdau(uint32_t i) const  {
-      const auto* qlin = params.qlin_table->at(this->offset_first_daughter + i + 1);
+    /// Deprecated: Access index of the charged daughter track [ALEPH track number call qvec_table->row(kdau(...))]
+    uint32_t          kdau(uint32_t idau) const  {
+      const auto* qlin = params.qlin_table->at(this->offset_first_daughter + idau);
       return qlin ? qlin->link : 0;
     }
     /// Direct access to the charged daughter track
     const class qvec* daughter(uint32_t i)  const;
 
-    /// Pointer to origin vertex
+    /// Pointer to origin vertex [ALEPH vertex number call qvec_table->row(kdau(...))]
     uint32_t          koriv()  const {  return this->pointer_origin_vtx;              }
     /// Pointer to start vertex
     const class qvrt* origin_vtx()  const;
-    /// Pointer to end vertex
+    /// Pointer to end vertex [ALEPH vertex number call qvec_table->row(kdau(...))]
     uint32_t          kendv()  const {  return this->pointer_end_vtx;                 }
     /// Pointer to end vertex
     const class qvrt* end_vtx()  const;
@@ -379,6 +401,9 @@ namespace alpha  {
     bool              xpmlt()  const;
     /// Access results from the QTRUTH part of QSELEP
     const class pmlt* pmlt()  const;
+
+    /// Get string representation of this track
+    std::string to_string(uint32_t flags=0)  const;
   };
 
   using track_data = bos_wrap_data<qvec>;
@@ -395,13 +420,13 @@ namespace alpha  {
   /// Pointer to start vertex
   inline const class qvrt* qvec::origin_vtx()  const  {
     int32_t idx = this->koriv();
-    return (idx > 0) ? params.qvrt_table->at(idx) : nullptr;
+    return (idx > 0) ? params.qvrt_table->row(idx) : nullptr;
   }
 
   /// Pointer to end vertex
   inline const class qvrt* qvec::end_vtx()  const  {
     int32_t idx = this->kendv();
-    return (idx > 0) ? params.qvrt_table->at(idx) : nullptr;
+    return (idx > 0) ? params.qvrt_table->row(idx) : nullptr;
   }
   
   /// Check if track fit data are available for track I

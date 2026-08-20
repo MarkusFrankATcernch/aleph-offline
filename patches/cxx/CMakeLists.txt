@@ -9,7 +9,7 @@
 # ==================================================================================================
 #
 SET( alpha_dir ${CMAKE_CURRENT_SOURCE_DIR}/../alpha )
-SET( user_dir ${CMAKE_CURRENT_SOURCE_DIR} )
+SET( user_dir  ${CMAKE_CURRENT_SOURCE_DIR} )
 #
 #
 find_package(EDM4HEP REQUIRED)

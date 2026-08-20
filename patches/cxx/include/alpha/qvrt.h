@@ -16,7 +16,7 @@
 /// C/C++ include files
 
 /// Framework include files
-#include <alpha/defs.h>
+#include <alpha/alpha.h>
 
 /// ALPHA namespace declaration
 namespace alpha  {

@@ -16,7 +16,7 @@
 /// C/C++ include files
 
 /// Framework include files
-#include <alpha/defs.h>
+#include <alpha/alpha.h>
 
 /// ALPHA namespace declaration
 namespace alpha  {
@@ -213,27 +213,37 @@ namespace alpha  {
     /// Check if electron identification (bank EIDT) is available for this track
     bool              xeidt()  const       {  return this->offset_eidt != params.kqzer;          }
     /// Access bank with electron identification information (bank EIDT)
-    const class eidt* eidt()  const        {  return bcs_offset<class eidt>(this->offset_eidt);  }
+    const class eidt* eidt()  const        {
+      return this->xeidt() ? bcs_offset<class eidt>(this->offset_eidt) : nullptr;
+    }
 
     /// Check if HCAL data (bank HMAD) are available for this track
     bool              xhmad()  const       {  return this->offset_hmad != params.kqzer;          }
     /// Access bank HCAL data (bank HMAD) available for this track
-    const class hmad* hmad()  const        {  return bcs_offset<class hmad>(this->offset_hmad);  }
+    const class hmad* hmad()  const        {
+      return this->xhmad() ? bcs_offset<class hmad>(this->offset_hmad) : nullptr;
+    }
 
     /// Check if muon chamber data (bank MCAD) are available for this track
     bool              xmcad()  const       {  return this->offset_mcad != params.kqzer;          }
     /// Access bank with muon chamber data (bank MCAD) for this track
-    const class mcad* mcad()  const        {  return bcs_offset<class mcad>(this->offset_mcad);  }
+    const class mcad* mcad()  const        {
+      return this->xmcad() ? bcs_offset<class mcad>(this->offset_mcad) : nullptr;
+    }
 
     /// Check if QMUIDO information (bank MUID) is available for this track
     bool              xmuid()  const       {  return this->offset_muid != params.kqzer;          }
     /// Access QMUIDO information (bank MUID) for this track
-    const class muid* muid()  const        {  return bcs_offset<class muid>(this->offset_muid);  }
+    const class muid* muid()  const        {
+      return this->xmuid() ? bcs_offset<class muid>(this->offset_muid) : nullptr;
+    }
 
     /// Check if energy flow (EFOL) data are available for track” I ( of the EFT section )
     bool              xefol()  const       {  return this->offset_efol != params.kqzer;          }
     /// Access energy flow (EFOL) data are available for track” I ( of the EFT section )
-    const class efol* efol()  const        {  return bcs_offset<class efol>(this->offset_efol);  }
+    const class efol* efol()  const        {
+      return this->xefol() ? bcs_offset<class efol>(this->offset_efol) : nullptr;
+    }
 
     /// Check if V0 data are available for track I
     bool              xyv0v()  const;
@@ -245,14 +255,18 @@ namespace alpha  {
       return params.pcqa_table && this->offset_pcqa != params.kqzer;
     }
     /// Access PCQA data are available for track I
-    const class pcqa* pcqa()  const        {  return bcs_offset<class pcqa>(this->offset_pcqa);    }
+    const class pcqa* pcqa()  const        {
+      return this->xpcqa() ? bcs_offset<class pcqa>(this->offset_pcqa) : nullptr;
+    }
 
     /// Check if GAMPECK data are available for “track” I of the GAT section
     bool              xpgac()  const       {
-      return params.pgac_table && this->offset_pgac != params.kqzer;
+      return params.pgac_table && this->offset_pgac != params.kqzer && this->offset_pgac != 0;
     }
     /// Access GAMPECK data are available for “track” I of the GAT section
-    const class pgac* pgac()  const        {  return bcs_offset<class pgac>(this->offset_pgac);  }
+    const class pgac* pgac()  const        {
+      return this->xpgac() ? bcs_offset<class pgac>(this->offset_pgac) : nullptr;
+    }
 
     /// Check if PDLT data are available for “track”
     bool              xpdlt()  const       {
@@ -260,8 +274,8 @@ namespace alpha  {
     }
     /// Access PDLT data are available for “track”
     const class pdlt* pdlt()  const        {
-      if( params.pdlt_table )  {
-        return params.pdlt_table->at(this->offset_pdlt+1);
+      if( this->xpdlt() )  {
+        return params.pdlt_table->at(this->offset_pdlt);
       }
       return nullptr;
     }
@@ -273,8 +287,8 @@ namespace alpha  {
     }
     /// Access PMLT data are available for “track”
     const class pmlt* pmlt()  const        {
-      if( params.pmlt_table )  {
-        return params.pmlt_table->at(this->offset_pmlt+1);
+      if( this->xpmlt() )  {
+        return params.pmlt_table->at(this->offset_pmlt);
       }
       return nullptr;
     }
@@ -288,46 +302,36 @@ namespace alpha  {
 /// ALPHA namespace declaration
 namespace alpha  {
 
-  inline const class qvec* qdet::ecal_track(uint32_t i)  const  {
-    const auto* qlin = params.qlin_table->at(i + this->offset_first_ecal + 1);
-    return params.qvec_table->at(qlin->link);
-  }
-
   inline uint32_t qdet::ecal_track_rownum(uint32_t i)  const  {
-    return params.qlin_table->at(i + this->offset_first_ecal + 1)->link;
+    return params.qlin_table->at(i + this->offset_first_ecal)->link;
   }
-
+  inline const class qvec* qdet::ecal_track(uint32_t i)  const  {
+    return params.qvec_table->row( this->ecal_track_rownum(i) );
+  }
   /// Access ith associated ECAL bank row object
   inline uint32_t qdet::peco_rownum(uint32_t i)  const  {
     return this->ecal_track(i)->ktn();
   }
-
   /// Access corresponding ECAL data (PECO) for calorimeter object “track”
   inline const class peco* qdet::peco(uint32_t i)  const {
-    const auto* track = this->ecal_track(i);
-    return params.peco_table->at(track->ktn());
+    return params.peco_table->row( this->peco_rownum(i) );
   }
-    
+
+  /// QVEC index of the HCAL track object
+  inline uint32_t          qdet::hcal_track_rownum(uint32_t i)  const  {
+    return params.qlin_table->at(i + this->offset_first_hcal)->link;
+  }
   /// Reference to the HCAL track object
   inline const class qvec* qdet::hcal_track(uint32_t i)  const  {
-    const auto* qlin = params.qlin_table->at(i + this->offset_first_hcal + 1);
-    return params.qvec_table->at(qlin->link);
+    return params.qvec_table->row( this->hcal_track_rownum(i) );
   }
-
-  /// Access corresponding HCAL data (PHCO) for calorimeter object “track”
-  inline const class phco* qdet::phco(uint32_t i)  const  {
-    const auto* track = this->hcal_track(i);
-    return params.phco_table->at(track->ktn());
-  }
-
   /// Access ith associated HCAL bank row object
   inline uint32_t           qdet::phco_rownum(uint32_t i)  const  {
     return this->hcal_track(i)->ktn();
   }
-
-  /// QVEC index of the HCAL track object
-  inline uint32_t           qdet::hcal_track_rownum(uint32_t i)  const  {
-    return params.qlin_table->at(i + this->offset_first_hcal + 1)->link;
+  /// Access corresponding HCAL data (PHCO) for calorimeter object “track”
+  inline const class phco* qdet::phco(uint32_t i)  const  {
+    return params.phco_table->row( this->phco_rownum(i) );
   }
 
 }      // End namespace alpha

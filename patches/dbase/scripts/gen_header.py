@@ -398,7 +398,7 @@ class header_generator:
 #include <sstream>
 
 /// Framework include files
-#include <alpha/defs.h>
+#include <alpha/alpha.h>
 
 /// alpha namespace declaration
 namespace alpha  {bracket_open}

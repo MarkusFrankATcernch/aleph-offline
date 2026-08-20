@@ -1,6 +1,7 @@
 C ======================================================================
       SUBROUTINE F77_PRINT_LOOP_VARS(PREF, NAM, N, F, LL)
       IMPLICIT NONE
+#include "textio.h"
 #include "qdecl.h"
 #include "qcde.h"
       INTEGER N, F, LL, I, J, K
@@ -48,13 +49,15 @@ C ======================================================================
         K=-1
       END IF
       
-      WRITE(6,*) PREF//'  KF'//NAM//'=', F,
+      WRITE(TEXT,*) PREF//'  KF'//NAM//'=', F,
      &  ' KL'//NAM//'=', LL,
      &  ' KN'//NAM//'=', N,
      &  ' F77   KF'//NAM//'=', I,
      &  ' KL'//NAM//'=', J,
      &  ' KN'//NAM//'=', K
-      RETURN
+      LEN = LENOCC(TEXT)
+      WRITE(6, 100) TEXT
+ 100  FORMAT((a))
       END
       
 C ======================================================================
@@ -74,116 +77,236 @@ C ======================================================================
       CALL F77_PRINT_LOOP_VARS('F77', 'MCT', KNMCT, KFMCT, KLMCT)
       CALL F77_PRINT_LOOP_VARS('F77', 'MCV', KNMCV, KFMCV, KLMCV)
       CALL F77_PRINT_LOOP_VARS('F77', 'GAT', KNGAT, KFGAT, KLGAT)
-      RETURN
       END
 
 C ======================================================================
-      SUBROUTINE F77_PRINT_TRACK(WHICH)
+      SUBROUTINE F77_PRINT_TRACK(ITK)
       IMPLICIT NONE
 #include "qdecl.h"
-      INTEGER WHICH
+#include "textio.h"
+      INTEGER ITK
 #include "qcde.h"
 #include "qmacro.h"
-      PRINT 1000, WHICH, QX(WHICH), QY(WHICH), QZ(WHICH)
- 1000 FORMAT('F77 Track[',I3,']',4x,F8.3,2x,F8.3,2x,F8.3)
-      RETURN
+      WRITE(TEXT, 1000) ITK, CQTPN(ITK),
+     &  QX(ITK), QY(ITK), QZ(ITK)
+      LEN = LENOCC(TEXT)
+ 1000 FORMAT('F77 Track[',I3,']',1x,(A),1x,F8.3,2x,F8.3,2x,F8.3)
       END
 
 C ======================================================================
-      SUBROUTINE F77_PRINT_TRACK_OPTS1(WHICH)
+      SUBROUTINE F77_PRINT_MC_TRACK(ITK)
       IMPLICIT NONE
 #include "qdecl.h"
-      INTEGER WHICH
+#include "textio.h"
+      INTEGER     ITK, IOVX, IEVX
+      INTEGER*8   LOC, MEM_ADDR
+      CHARACTER*8 CVAL
+      CHARACTER*4 CHAINT
 #include "qcde.h"
 #include "qmacro.h"
-      IF( KNTEX(WHICH) .EQ. 0 ) THEN
-        WRITE(6,1000) WHICH, KTN(WHICH),
-     &    QFRFD0(WHICH), QFRFZ0(WHICH),
-     &    KFRTNV(WHICH), KFRTNI(WHICH), KFRTNT(WHICH),
-     &    QFRIPE(WHICH), QFRIPI(WHICH),
-     &    XTEX(WHICH),   KNTEX(WHICH)
-      ELSE IF( KNTEX(WHICH) .EQ. 1 ) THEN
-        WRITE(6,2000) WHICH, KTN(WHICH),
-     &    QFRFD0(WHICH),   QFRFZ0(WHICH),
-     &    KFRTNV(WHICH),   KFRTNI(WHICH), KFRTNT(WHICH),
-     &    QFRIPE(WHICH),   QFRIPI(WHICH),
-     &    XTEX(WHICH),     KNTEX(WHICH),
-     &    KTEXSI(WHICH,1), MOD(KTEXNS(WHICH,1),99)
-      ELSE IF( KNTEX(WHICH) .EQ. 2 ) THEN
-        WRITE(6,3000) WHICH, KTN(WHICH),
-     &    QFRFD0(WHICH),   QFRFZ0(WHICH),
-     &    KFRTNV(WHICH),   KFRTNI(WHICH), KFRTNT(WHICH),
-     &    QFRIPE(WHICH),   QFRIPI(WHICH),
-     &    XTEX(WHICH),     KNTEX(WHICH),
-     &    KTEXSI(WHICH,1), MOD(KTEXNS(WHICH,1),99),
-     &    KTEXSI(WHICH,2), MOD(KTEXNS(WHICH,2),99)
-      ELSE IF( KNTEX(WHICH) .EQ. 3 ) THEN
-        WRITE(6,4000) WHICH, KTN(WHICH),
-     &    QFRFD0(WHICH),   QFRFZ0(WHICH),
-     &    KFRTNV(WHICH),   KFRTNI(WHICH), KFRTNT(WHICH),
-     &    QFRIPE(WHICH),   QFRIPI(WHICH),
-     &    XTEX(WHICH),     KNTEX(WHICH),
-     &    KTEXSI(WHICH,1), MOD(KTEXNS(WHICH,1),99),
-     &    KTEXSI(WHICH,2), MOD(KTEXNS(WHICH,2),99),
-     &    KTEXSI(WHICH,3), MOD(KTEXNS(WHICH,3),99)
-      ENDIF
- 1000 FORMAT('F77 TRACK[',I3,'] ',
-     &  'FRFT:', I2,1X,
-     &  'D0:',       F7.2,1x'Z0:',F7.2,1X,
-     &  'FRTL:',     1X,I1,1X,I1,1X,I2,1X,
-     &  'FRID:',15x,'e-:',  F5.3,1X,'pi:',F5.3,1X,
-     &  'TEXS:',     L1,1X,I2,1X
-     &  )
- 2000 FORMAT('F77 TRACK[',I3,'] ',
-     &  'FRFT:', I2,1X,
-     &  'D0:',       F7.2,1x'Z0:',F7.2,1X,
-     &  'FRTL:',     1X,I1,1X,I1,1X,I2,1X,
-     &  'FRID:',15x,'e-:',  F5.3,1X,'pi:',F5.3,1X,
-     &  'TEXS:',     L1,1X,I2,1X,
-     &  '0: SEG:',   I2,1X,'#S:',I2,1X
-     &  )
- 3000 FORMAT('F77 TRACK[',I3,'] ',
-     &  'FRFT:', I2,1X,
-     &  'D0:',       F7.2,1x'Z0:',F7.2,1X,
-     &  'FRTL:',     1X,I1,1X,I1,1X,I2,1X,
-     &  'FRID:',15x,'e-:',  F5.3,1X,'pi:',F5.3,1X,
-     &  'TEXS:',     L1,1X,I2,1X,
-     &  '0: SEG:',   I2,1X,'#S:',I2,1X,
-     &  '1: SEG:',   I2,1X,'#S:',I2,1X)
- 4000 FORMAT('F77 TRACK[',I3,'] ',
-     &  'FRFT:', I2,1X,
-     &  'D0:',       F7.2,1x'Z0:',F7.2,1X,
-     &  'FRTL:',     1X,I1,1X,I1,1X,I2,1X,
-     &  'FRID:',15x,'e-:',  F5.3,1X,'pi:',F5.3,1X,
-     &  'TEXS:',     L1,1X,I2,1X,
-     &  '0: SEG:',   I2,1X,'#S:',I2,1X,
-     &  '1: SEG:',   I2,1X,'#S:',I2,1X,
-     &  '2: SEG:',   I2,1X,'#S:',I2,1X
-     &  )
-      RETURN
+
+      IOVX = KORIV(ITK)
+      IEVX = KENDV(ITK)
+      WRITE(TEXT, 10)
+     &  ITK, KCLASS(ITK), KTPCOD(ITK), CQTPN(ITK),
+     &  QX(ITK), QY(ITK), QZ(ITK), IOVX, IEVX
+
+      IF( IOVX .NE. 0 ) THEN
+        WRITE(TEXT(LENOCC(TEXT)+1:), 11)
+     &    'Org', KVN(IOVX), KVINCP(IOVX), KVNDAU(IOVX),
+     &    QVX(IOVX), QVY(IOVX), QVZ(IOVX)
+C       Address of first bank element
+        LOC = 0
+        IF( KVFVER(IOVX).NE.0 ) THEN
+          LOC = MEM_ADDR(IW(KVFVER(IOVX)+1))
+        END IF
+        WRITE(TEXT(LENOCC(TEXT)+1:), 13) 'fver', LOC
+        IF( KVFVER(IOVX).NE.0 ) THEN
+          CVAL = CHAINT(IW(KVFVER(IOVX)+8))
+          IF( CVAL(1:1) .NE. ' ' ) THEN
+            WRITE(TEXT(LENOCC(TEXT)+1:), 12)'vol',CVAL(1:4)
+          END IF
+          CVAL = CHAINT(IW(KVFVER(IOVX)+9))
+          IF( CVAL(1:1) .NE. ' ' ) THEN
+            WRITE(TEXT(LENOCC(TEXT)+1:), 12)'mech',CVAL(1:4)
+          END IF
+        END IF
+      END IF
+      IF( IEVX .NE. 0 ) THEN
+        WRITE(TEXT(LENOCC(TEXT)+1:), 11)
+     &    'End', KVN(IEVX), KVINCP(IEVX), KVNDAU(IEVX),
+     &    QVX(IEVX), QVY(IEVX), QVZ(IEVX)
+C       Address of first bank element
+        LOC = 0
+        IF( KVFVER(IEVX).NE.0 ) THEN
+          LOC = MEM_ADDR(IW(KVFVER(IEVX)+1))
+        END IF
+        WRITE(TEXT(LENOCC(TEXT)+1:), 13) 'fver', LOC
+        IF( KVFVER(IEVX).NE.0 ) THEN
+          CVAL = CHAINT(IW(KVFVER(IEVX)+8))
+          IF( CVAL(1:1) .NE. ' ' ) THEN
+            WRITE(TEXT(LENOCC(TEXT)+1:), 12)'vol',CVAL(1:4)
+          END IF
+          CVAL = CHAINT(IW(KVFVER(IEVX)+9))
+          IF( CVAL(1:1) .NE. ' ' ) THEN
+            WRITE(TEXT(LENOCC(TEXT)+1:), 12)'mech',CVAL(1:4)
+          END IF
+        END IF
+      END IF
+      LEN = LENOCC(TEXT)
+
+ 10   FORMAT('MCT[',I3,']',1X,'cl:',I2,1X,I6,1X,(A),1X,
+     &  F6.1,1X,F6.1,1X,F6.1,1X,'koriv:',I3,1X,'kendv:',I3)
+ 11   FORMAT(1X,(A),':kvn:',I3,1X,'in:',I3,1X,'out:',I3,1X,
+     &  F7.2,1X,F7.2,1X,F7.2)
+ 12   FORMAT(1X,(A),':',A4)
+ 13   FORMAT(1X,(A),':',Z8)
       END
 
 C ======================================================================
-      SUBROUTINE F77_PRINT_VERTEX_1(WHICH)
+      SUBROUTINE F77_PRINT_EIDT(ITK, TEXT)
       IMPLICIT NONE
 #include "qdecl.h"
-      INTEGER WHICH, K1, K2
+      CHARACTER*(*) TEXT
+      INTEGER ITK, LENOCC
+      INTEGER*8  LOC, MEM_ADDR
+#include "qcde.h"
+#include "qmacro.h"
+      WRITE(TEXT(LENOCC(TEXT)+1:), 100) XEID(ITK)
+      IF( XEID(ITK) ) THEN
+        LOC = MEM_ADDR(IW(IW(KJQDET(ITK)+JQDEAE)+JEIDIF))
+        WRITE(TEXT(LENOCC(TEXT)+1:), 101) LOC,
+     &    IW(IW(KJQDET(ITK)+JQDEAE)+JEIDFR),
+     &    IW(IW(KJQDET(ITK)+JQDEAE)+JEIDPE)
+      END IF
+ 100  FORMAT(1X,'EIDT:', L1)
+ 101  FORMAT(1X,Z8,1X,'T:',I2,1X,'EC:',I2,1X)
+      END
+
+C ======================================================================
+      SUBROUTINE F77_PRINT_HMAD(ITK, TEXT)
+      IMPLICIT NONE
+#include "qdecl.h"
+      CHARACTER*(*) TEXT
+      INTEGER ITK, LENOCC
+      INTEGER*8  LOC, MEM_ADDR
+#include "qcde.h"
+#include "qmacro.h"
+      WRITE(TEXT(LENOCC(TEXT)+1:), 100) XHMA(ITK)
+      IF( XHMA(ITK) ) THEN
+        LOC = MEM_ADDR(IW(IW(KJQDET(ITK)+JQDEAH)+JHMANF))
+        WRITE(TEXT(LENOCC(TEXT)+1:), 101)
+     &    LOC, IW(IW(KJQDET(ITK)+JQDEAH)+JHMATN), KHMANF(ITK)
+      END IF
+ 100  FORMAT(1X,'HMAD:', L1)
+ 101  FORMAT(1X,Z8,1X,'T:',I2,1X,'PL:',I2,1X)
+      END
+
+C ======================================================================
+      SUBROUTINE F77_PRINT_MCAD(ITK, TEXT)
+      IMPLICIT NONE
+#include "qdecl.h"
+      CHARACTER*(*) TEXT
+      INTEGER ITK, LENOCC
+      INTEGER*8  LOC, MEM_ADDR
+#include "qcde.h"
+#include "qmacro.h"
+      WRITE(TEXT(LENOCC(TEXT)+1:), 100) XMCA(ITK)
+      IF( XMCA(ITK) ) THEN
+        LOC = MEM_ADDR(IW(IW(KJQDET(ITK)+JQDEAM)+JMCANH))
+        WRITE(TEXT(LENOCC(TEXT)+1:), 101)
+     &    LOC, IW(IW(KJQDET(ITK)+JQDEAH)+JMCATN), KMCANH(ITK,1)
+      END IF
+ 100  FORMAT(1X,'MCAD:', L1)
+ 101  FORMAT(1X,Z8,1X,'T:',I2,1X,'ID:',I2,1X)
+      END
+
+C ======================================================================
+      SUBROUTINE F77_PRINT_MUID(ITK, TEXT)
+      IMPLICIT NONE
+#include "qdecl.h"
+      CHARACTER*(*) TEXT
+      INTEGER ITK, LENOCC
+      INTEGER*8  LOC, MEM_ADDR
+#include "qcde.h"
+#include "qmacro.h"
+      WRITE(TEXT(LENOCC(TEXT)+1:), 100) XMUI(ITK)
+      IF( XMUI(ITK) ) THEN
+        LOC = MEM_ADDR(IW(IW(KJQDET(ITK)+JQDEMU)+JMUIIF))
+        WRITE(TEXT(LENOCC(TEXT)+1:), 101) 
+     &    LOC, IW(IW(KJQDET(ITK)+JQDEAH)+JMUITN), KMUIIF(ITK)
+      END IF
+ 100  FORMAT(1X,'MUID:', L1)
+ 101  FORMAT(1X,Z8,1X,'T:',I2,1X,'ID:',I2,1X)
+      END
+
+C ======================================================================
+      SUBROUTINE F77_PRINT_TRACK_OPTS1(ITK)
+      IMPLICIT NONE
+#include "qdecl.h"
+#include "textio.h"
+      INTEGER I, ITK
+      INTEGER*8  LOC, MEM_ADDR
+#include "qcde.h"
+#include "qmacro.h"
+      WRITE(TEXT, 101) ITK, QDB(ITK), QZB(ITK),
+     &  KTN(ITK),      QFRFD0(ITK), QFRFZ0(ITK)
+
+      LOC = MEM_ADDR(IW(IW(KJQDET(ITK)+JQDEAL)+JFRTIV))
+      WRITE(TEXT(LENOCC(TEXT)+1:), 104)
+     &  LOC, KFRTNV(ITK), KFRTNI(ITK), KFRTNT(ITK)
+
+      LOC = MEM_ADDR(IW(IW(KJQDET(ITK)+JQDEFI)+JFRIBP))
+      WRITE(TEXT(LENOCC(TEXT)+1:), 105)
+     &  LOC, QFRIPE(ITK),   QFRIPI(ITK)
+
+      CALL F77_PRINT_EIDT(ITK, TEXT)
+      CALL F77_PRINT_HMAD(ITK, TEXT)
+      CALL F77_PRINT_MCAD(ITK, TEXT)
+      CALL F77_PRINT_MUID(ITK, TEXT)
+      WRITE(TEXT(LENOCC(TEXT)+1:), 102) XTEX(ITK),     KNTEX(ITK)
+      
+      DO I=1, KNTEX(ITK)
+        WRITE(TEXT(LENOCC(TEXT)+1:), 103)
+     &    I-1, KTEXSI(ITK,I), MOD(KTEXNS(ITK,I),99)
+      END DO
+      LEN = LENOCC(TEXT)
+      
+ 99   FORMAT(1X,(A),':',F5.3)
+ 100  FORMAT(1X,(A),':',Z8)
+ 101  FORMAT('Track[',I3,'] ',
+     &  'd0:',       F6.1,1x, 'z0:',F6.1,1X,
+     &  'FRFT:',     I2,1X,
+     &  'd0:',       F6.1,1x, 'z0:',F6.1,1X)
+ 102  FORMAT(1X,'TEXS:',     L1,1X,I2,1X )
+
+ 103  FORMAT(1X,I1,': SEG:',I2,1X,'#S:',I2,1X)
+ 104  FORMAT(1X,'FRTL:',Z8,1X,I1,1X,I1,1X,I2);
+ 105  FORMAT(1X,'FRID:',Z8,1x,'e-:',  F5.3,1X,'pi:',F5.3)
+      END
+
+C ======================================================================
+      SUBROUTINE F77_PRINT_VERTEX_1(ITK)
+      IMPLICIT NONE
+#include "qdecl.h"
+      INTEGER ITK, K1, K2
+#include "textio.h"
 #include "qcde.h"
 #include "qmacro.h"
       K1 = -1
       K2 = -1
-      IF( KVYV0V(WHICH) .NE. 0 ) THEN
-        K1 = IW(KVYV0V(WHICH)+JYV0K1)
-        K2 = IW(KVYV0V(WHICH)+JYV0K2)
+      IF( KVYV0V(ITK) .NE. 0 ) THEN
+        K1 = IW(KVYV0V(ITK)+JYV0K1)
+        K2 = IW(KVYV0V(ITK)+JYV0K2)
       END IF
-      WRITE(6,1000) WHICH, KVN(WHICH), KVTYPE(WHICH),
-     &  QVX(WHICH), QVY(WHICH),QVZ(WHICH),
-     &  KVYV0V(WHICH), KVFVER(WHICH),
-     &  KVINCP(WHICH), K1, K2, KVNDAU(WHICH),
-     &  QVEM(WHICH,1,1), QVEM(WHICH,1,2), QVEM(WHICH,1,3), 
-     &  QVEM(WHICH,2,1), QVEM(WHICH,2,2), QVEM(WHICH,2,3), 
-     &  QVEM(WHICH,3,1), QVEM(WHICH,3,2), QVEM(WHICH,3,3)
-
+      WRITE(TEXT, 1000) ITK, KVN(ITK), KVTYPE(ITK),
+     &  QVX(ITK), QVY(ITK),QVZ(ITK),
+     &  KVYV0V(ITK), KVFVER(ITK),
+     &  KVINCP(ITK), K1, K2, KVNDAU(ITK),
+     &  QVEM(ITK,1,1), QVEM(ITK,1,2), QVEM(ITK,1,3), 
+     &  QVEM(ITK,2,1), QVEM(ITK,2,2), QVEM(ITK,2,3), 
+     &  QVEM(ITK,3,1), QVEM(ITK,3,2), QVEM(ITK,3,3)
+      LEN = LENOCC(TEXT)
  1000 FORMAT('F77 VERTEX[',I2,'] ',I2, ' TYP:', I1,
      &  ' X:', F7.2, ' Y:', F7.2, ' Z:', F7.2,
      &  ' YV0V:', I16, ' FVER:', I16,
@@ -194,13 +317,15 @@ C ======================================================================
       END
 
 C ======================================================================
-      SUBROUTINE F77_PRINT_VERTEX_2(WHICH)
+      SUBROUTINE F77_PRINT_VERTEX_2(ITK)
       IMPLICIT NONE
 #include "qdecl.h"
-      INTEGER WHICH
+#include "textio.h"
+      INTEGER ITK
 #include "qcde.h"
 #include "qmacro.h"
-      WRITE(6,1000) WHICH
+      WRITE(TEXT, 1000) ITK
+      LEN = LENOCC(TEXT)
 
  1000 FORMAT('F77 VERTEX[',I2,'] ',I2
      &  )
@@ -208,231 +333,117 @@ C ======================================================================
       END
 
 C ======================================================================
-      SUBROUTINE F77_PRINT_TRACK_TRACKFIT(WHICH)
+      SUBROUTINE F77_PRINT_TRACK_TRACKFIT(ITK)
       IMPLICIT NONE
 #include "qdecl.h"
-      INTEGER WHICH, LENOCC
+#include "textio.h"
+      INTEGER       I, ITK
       CHARACTER* 12 NAME
 #include "qcde.h"
 #include "qmacro.h"
-      IF( KNDAU(WHICH) .EQ. 0 ) THEN
+      TEXT = ''
+      LEN = 0
+      IF( KNDAU(ITK) .EQ. 0 ) THEN
         RETURN
       ENDIF
-      NAME = CQTPN(WHICH)
-      IF( KNDAU(WHICH) .EQ. 1 ) THEN
-        WRITE(6,2000) WHICH, KTN(WHICH), NAME(1:LENOCC(NAME)),
-     &    ABS(QSIGMM(WHICH)), QSIGE(WHICH), QSIGP(WHICH),
-     &    KNDAU(WHICH),KDAU(WHICH,1),
-     &    QSMAT(WHICH,0), QSMAT(WHICH,1), QSMAT(WHICH,2),
-     &    QSMAT(WHICH,3), QSMAT(WHICH,4), QSMAT(WHICH,5),
-     &    QSMAT(WHICH,6), QSMAT(WHICH,6), QSMAT(WHICH,8),
-     &    QSMAT(WHICH,9)
-      ELSE IF( KNDAU(WHICH) .EQ. 2 ) THEN
-        WRITE(6,3000) WHICH, KTN(WHICH), NAME(1:LENOCC(NAME)),
-     &    ABS(QSIGMM(WHICH)), QSIGE(WHICH), QSIGP(WHICH),
-     &    KNDAU(WHICH),KDAU(WHICH,1),KDAU(WHICH,2),
-     &    QSMAT(WHICH,0), QSMAT(WHICH,1), QSMAT(WHICH,2),
-     &    QSMAT(WHICH,3), QSMAT(WHICH,4), QSMAT(WHICH,5),
-     &    QSMAT(WHICH,6), QSMAT(WHICH,6), QSMAT(WHICH,8),
-     &    QSMAT(WHICH,9)
-      ELSE IF( KNDAU(WHICH) .EQ. 3 ) THEN
-        WRITE(6,4000) WHICH, KTN(WHICH), NAME(1:LENOCC(NAME)),
-     &    ABS(QSIGMM(WHICH)), QSIGE(WHICH), QSIGP(WHICH),
-     &    KNDAU(WHICH),KDAU(WHICH,1),KDAU(WHICH,2),KDAU(WHICH,3),
-     &    QSMAT(WHICH,0), QSMAT(WHICH,1), QSMAT(WHICH,2),
-     &    QSMAT(WHICH,3), QSMAT(WHICH,4), QSMAT(WHICH,5),
-     &    QSMAT(WHICH,6), QSMAT(WHICH,6), QSMAT(WHICH,8),
-     &    QSMAT(WHICH,9)
-      ELSE IF( KNDAU(WHICH) .EQ. 4 ) THEN
-        WRITE(6,5000) WHICH, KTN(WHICH), NAME(1:LENOCC(NAME)),
-     &    ABS(QSIGMM(WHICH)), QSIGE(WHICH), QSIGP(WHICH),
-     &    KNDAU(WHICH),KDAU(WHICH,1),KDAU(WHICH,2),KDAU(WHICH,3),
-     &    KDAU(WHICH,4),
-     &    QSMAT(WHICH,0), QSMAT(WHICH,1), QSMAT(WHICH,2),
-     &    QSMAT(WHICH,3), QSMAT(WHICH,4), QSMAT(WHICH,5),
-     &    QSMAT(WHICH,6), QSMAT(WHICH,6), QSMAT(WHICH,8),
-     &    QSMAT(WHICH,9)
-      ENDIF
- 2000 FORMAT('F77 TRACK[',I3,']',
+      NAME = CQTPN(ITK)
+      WRITE(TEXT, 100) ITK, KTN(ITK), NAME(1:LENOCC(NAME)),
+     &  ABS(QSIGMM(ITK)), QSIGE(ITK), ABS(QSIGP(ITK)), KNDAU(ITK)
+      DO I = 1, KNDAU(ITK)
+        WRITE(TEXT(LENOCC(TEXT)+1:), 101) KDAU(ITK, I)
+      END DO
+      WRITE(TEXT(LENOCC(TEXT)+1:), 102) 
+     &  QSMAT(ITK,0), QSMAT(ITK,1), QSMAT(ITK,2),
+     &  QSMAT(ITK,3), QSMAT(ITK,4), QSMAT(ITK,5),
+     &  QSMAT(ITK,6), QSMAT(ITK,6), QSMAT(ITK,8),
+     &  QSMAT(ITK,9)
+      LEN = LENOCC(TEXT)
+ 100  FORMAT('F77 TRACK[',I3,']',
      &  ' FRFT:', I2, 1X, (A),' SIGM:',F6.2,' SIGE:',F6.2,' SIGP:',F6.2,
-     &  ' KNDAU:', I2, I3,
-     &  ' COV:', F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X,
-     &  F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2
-     &  )
- 3000 FORMAT('F77 TRACK[',I3,']',
-     &  ' FRFT:', I2, 1X, (A),' SIGM:',F6.2,' SIGE:',F6.2,' SIGP:',F6.2,
-     &  ' KNDAU:',I2, I3, I3,
-     &  ' COV:', F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X,
-     &  F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2
-     &  )
- 4000 FORMAT('F77 TRACK[',I3,']',
-     &  ' FRFT:', I2, 1X, (A),' SIGM:',F6.2,' SIGE:',F6.2,' SIGP:',F6.2,
-     &  ' KNDAU:',I2, I3, I3, I3,
-     &  ' COV:', F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X,
-     &  F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2
-     &  )
- 5000 FORMAT('F77 TRACK[',I3,']',
-     &  ' FRFT:', I2, 1X, (A),' SIGM:',F6.2,' SIGE:',F6.2,' SIGP:',F6.2,
-     &  ' KNDAU:',I2, I3, I3, I3, I3,
-     &  ' COV:', F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X,
-     &  F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2
-     &  )
+     &  ' KNDAU:', I2, 1X)
+ 101  FORMAT(I3,1X)
+ 102  FORMAT(' COV:', F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X,
+     &  F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2,1X, F7.2 )
       RETURN
       END
 
 C ======================================================================
-      SUBROUTINE F77_PRINT_TRACK_MOTHERS(WHICH)
+      SUBROUTINE F77_PRINT_TRACK_MOTHERS_DAUGHTERS(ITK, PREF)
       IMPLICIT NONE
 #include "qdecl.h"
-      INTEGER WHICH, ITK
+#include "textio.h"
+      CHARACTER*(*) PREF
+      INTEGER ITK, I, J, NMOT, NDAU
 #include "qcde.h"
 #include "qmacro.h"
-      IF( KNMOTH(WHICH) .GT. 0 ) THEN
-        ITK = KMOTH(WHICH,1)
-        WRITE(6,1000) WHICH, QX(WHICH), QY(WHICH), QZ(WHICH),
-     &    KNMOTH(WHICH), ITK, QX(ITK), QY(ITK), QZ(ITK)
+      NMOT = KNMOTH(ITK)
+      NDAU = KNDAU(ITK)
+      TEXT = ''
+      IF( (NDAU+NMOT) .GT. 0 ) THEN
+        WRITE(TEXT, 100) PREF, ITK
+        IF( NMOT .GT. 0 ) THEN
+          WRITE(TEXT(LENOCC(TEXT)+1:), 101) '#MOT', NMOT
+          DO I=1,NMOT
+            J = KMOTH(ITK,I)
+            WRITE(TEXT(LENOCC(TEXT)+1:), 102) 'M', J, QX(J)
+          END DO
+        END IF
+        IF( NDAU .GT. 0 ) THEN
+          WRITE(TEXT(LENOCC(TEXT)+1:), 101) '#DAU', NDAU
+          DO I=1,NDAU
+            J = KDAU(ITK,I)
+            WRITE(TEXT(LENOCC(TEXT)+1:), 102) 'D', J, QX(J)
+          END DO
+        END IF
       END IF
- 1000 FORMAT('F77 TRACK[',I3,'] MOTHERS  ',F7.3,1x,F7.3,1x,F7.3,2X,
-     &       '#MOT:',I1,2X,'TRK:',I3,1x,F7.3,1x,F7.3,1x,F7.3,1X)
-      RETURN
+      LEN = LENOCC(TEXT)
+
+ 100  FORMAT((A),'[',I3,']')
+ 101  FORMAT(1X,(A), ':', I2)
+ 102  FORMAT(1X,(A), ':', I3, 1X, 'px:', F7.3)
       END
 
 C ======================================================================
-      SUBROUTINE F77_PRINT_TRACK_DAUGHTERS(WHICH)
+      SUBROUTINE F77_PRINT_TRACK_CALO(WHICH)
       IMPLICIT NONE
 #include "qdecl.h"
-      INTEGER WHICH, ITK1, ITK2, ITK3, ITK4, NDAU
+#include "textio.h"
+      INTEGER WHICH, NECAL, NHCAL, ITK, KTK, I
 #include "qcde.h"
 #include "qmacro.h"
-
-      NDAU = KNDAU(WHICH)
-      IF( NDAU .LE. 0 ) THEN
-        RETURN
-      END IF
-      
-      IF( NDAU .EQ.1 ) THEN
-        ITK1 = KDAU(WHICH,1)
-        WRITE(6,1000) WHICH, QX(WHICH), QY(WHICH), QZ(WHICH),
-     &    NDAU, ITK1, QX(ITK1), QY(ITK1), QZ(ITK1)
-      ELSE IF( NDAU .EQ.2 ) THEN
-        ITK1 = KDAU(WHICH,1)
-        ITK2 = KDAU(WHICH,2)
-        WRITE(6,2000) WHICH, QX(WHICH), QY(WHICH), QZ(WHICH),
-     &    NDAU,
-     &    ITK1, QX(ITK1), QY(ITK1), QZ(ITK1),
-     &    ITK2, QX(ITK2), QY(ITK2), QZ(ITK2)
-      ELSE IF( NDAU .EQ.3 ) THEN
-        ITK1 = KDAU(WHICH,1)
-        ITK2 = KDAU(WHICH,2)
-        ITK3 = KDAU(WHICH,3)
-        WRITE(6,3000) WHICH, QX(WHICH), QY(WHICH), QZ(WHICH),
-     &    NDAU,
-     &    ITK1, QX(ITK1), QY(ITK1), QZ(ITK1),
-     &    ITK2, QX(ITK2), QY(ITK2), QZ(ITK2),
-     &    ITK3, QX(ITK3), QY(ITK3), QZ(ITK3)
-      ELSE IF( NDAU .GE.4 ) THEN
-        ITK1 = KDAU(WHICH,1)
-        ITK2 = KDAU(WHICH,2)
-        ITK3 = KDAU(WHICH,3)
-        ITK4 = KDAU(WHICH,4)
-        WRITE(6,4000) WHICH, QX(WHICH), QY(WHICH), QZ(WHICH),
-     &    NDAU,
-     &    ITK1, QX(ITK1), QY(ITK1), QZ(ITK1),
-     &    ITK2, QX(ITK2), QY(ITK2), QZ(ITK2),
-     &    ITK3, QX(ITK3), QY(ITK3), QZ(ITK3),
-     &    ITK4, QX(ITK4), QY(ITK4), QZ(ITK4)
-      END IF
-
- 1000 FORMAT('F77 TRACK[',I3,'] DAUGHTERS',F7.3,1x,F7.3,1x,F7.3,1X,
-     &  '#NDAU:',I1,2X,
-     &  'TRK:',I3,1x,F7.3,1x,F7.3,1x,F7.3,1X)
- 2000 FORMAT('F77 TRACK[',I3,'] DAUGHTERS',F7.3,1x,F7.3,1x,F7.3,1X,
-     &  '#NDAU:',I1,2X,
-     &  'TRK:',I3,1x,F7.3,1x,F7.3,1x,F7.3,2X,
-     &  'TRK:',I3,1x,F7.3,1x,F7.3,1x,F7.3,1X)
- 3000 FORMAT('F77 TRACK[',I3,'] DAUGHTERS',F7.3,1x,F7.3,1x,F7.3,1X,
-     &  '#NDAU:',I1,2X,
-     &  'TRK:',I3,1x,F7.3,1x,F7.3,1x,F7.3,2X,
-     &  'TRK:',I3,1x,F7.3,1x,F7.3,1x,F7.3,2X,
-     &  'TRK:',I3,1x,F7.3,1x,F7.3,1x,F7.3,1X)
- 4000 FORMAT('F77 TRACK[',I3,'] DAUGHTERS',F7.3,1x,F7.3,1x,F7.3,1X,
-     &  '#NDAU:',I1,2X,
-     &  'TRK:',I3,1x,F7.3,1x,F7.3,1x,F7.3,2X,
-     &  'TRK:',I3,1x,F7.3,1x,F7.3,1x,F7.3,2X,
-     &  'TRK:',I3,1x,F7.3,1x,F7.3,1x,F7.3,2X,
-     &  'TRK:',I3,1x,F7.3,1x,F7.3,1x,F7.3,1X)
-      RETURN
-      END
-
-C ======================================================================
-      SUBROUTINE F77_PRINT_TRACK_ECAL(WHICH)
-      IMPLICIT NONE
-#include "qdecl.h"
-      INTEGER WHICH, NECAL, ITK
-#include "qcde.h"
-#include "qmacro.h"
-
+      TEXT = ''
+      LEN  = 0
       NECAL = KNECAL(WHICH)
-      IF( NECAL .LE. 0 ) THEN
+      NHCAL = KNHCAL(WHICH)
+      IF( NECAL+NHCAL .LE. 0 ) THEN
         RETURN
       ENDIF
-      ITK = KECAL(WHICH,1)
-      IF( NECAL .EQ.1 ) THEN
-        WRITE(6,1000,advance='no') WHICH, NECAL, ITK,
-     .    KTN(ITK), QE(ITK), QE(ITK)
-      ELSE IF( NECAL .EQ.2 ) THEN
-        WRITE(6,2000,advance='no') WHICH, NECAL, ITK, KECAL(WHICH,2)
-      ELSE IF( NECAL .EQ.3 ) THEN
-        WRITE(6,3000,advance='no') WHICH, NECAL, ITK,
-     &    KECAL(WHICH,2), KECAL(WHICH,3)
-      ELSE IF( NECAL .GE.4 ) THEN
-        WRITE(6,4000,advance='no') WHICH, NECAL, ITK,
-     &    KECAL(WHICH,2), KECAL(WHICH,3), KECAL(WHICH,4)
-      END IF
 
- 1000 FORMAT('F77 TRACK[',I3,'] ECAL OBJS',1x,
-     &  '#NEC:',I1,1X,'ECOBJ:',I3,1X,
-     &  'PECO:',I3,1x,'E:',F7.3,1X,F7.3,1X)
- 2000 FORMAT('F77 TRACK[',I3,'] ECAL OBJS',1x,
-     &  '#NEC:',I1,1X,'ECOBJ:',I3,1x,I3)
- 3000 FORMAT('F77 TRACK[',I3,'] ECAL OBJS',1x,
-     &  '#NEC:',I1,1X,'ECOBJ:',I3,1x,I3,1x,I3,1x)
- 4000 FORMAT('F77 TRACK[',I3,'] ECAL OBJS',1x,
-     &  '#NEC:',I1,1X,'ECOBJ:',I3,1x,I3,1x,I3,1x,I3,1x)
-      RETURN
-      END
+      WRITE(TEXT(LENOCC(TEXT)+1:), 100) WHICH
+      DO I=1, NECAL
+        IF( I .EQ. 1 ) THEN
+          WRITE(TEXT(LENOCC(TEXT)+1:), 101) NECAL
+        END IF
+        ITK = KECAL(WHICH,I)
+        KTK = KTN(ITK)
+        WRITE(TEXT(LENOCC(TEXT)+1:), 102) ITK, KTK, QPECEC(ITK), QE(ITK)
+      END DO
 
-C ======================================================================
-      SUBROUTINE F77_PRINT_TRACK_HCAL(WHICH)
-      IMPLICIT NONE
-#include "qdecl.h"
-      INTEGER WHICH, ITK, NHCAL
-#include "qcde.h"
-#include "qmacro.h"
+      DO I=1, NHCAL
+        IF( I .EQ. 1 ) THEN
+          WRITE(TEXT(LENOCC(TEXT)+1:), 201) NHCAL
+        END IF
+        ITK = KHCAL(WHICH,I)
+        KTK = KTN(ITK)
+        WRITE(TEXT(LENOCC(TEXT)+1:), 202) ITK, KTK, QPHCEC(ITK), QE(ITK)
+      END DO
+      LEN = LENOCC(TEXT)
 
-      NHCAL = KNHCAL(WHICH)
-      IF( NHCAL .LE. 0 ) THEN
-        RETURN
-      END IF
-      ITK = KHCAL(WHICH,1)
-      IF( NHCAL .EQ.1 ) THEN
-        WRITE(6,1000) NHCAL, ITK, KTN(ITK), QE(ITK)
-      ELSE IF( NHCAL .EQ.2 ) THEN
-        WRITE(6,2000) NHCAL, ITK, KHCAL(WHICH,2)
-      ELSE IF( NHCAL .EQ.3 ) THEN
-        WRITE(6,3000) NHCAL, ITK,
-     &    KHCAL(WHICH,2), KHCAL(WHICH,3)
-      ELSE IF( NHCAL .GE.4 ) THEN
-        WRITE(6,4000) NHCAL, ITK,
-     &    KHCAL(WHICH,2), KHCAL(WHICH,3), KHCAL(WHICH,4)
-      END IF
-
- 1000 FORMAT('HCAL OBJS #NHC:',I1,1X,'HCOBJ:',I3,1X,
-     &  'PHCO:',I3,1x,'E:',F7.3)
- 2000 FORMAT('HCAL OBJS #NHC:',I1,1X,'HCOBJ:',I3,1x,I3)
- 3000 FORMAT('HCAL OBJS #NHC:',I1,1X,'HCOBJ:',I3,1x,I3,1x,I3,1x)
- 4000 FORMAT('HCAL OBJS #NHC:',I1,1X,'HCOBJ:',I3,1x,I3,1x,I3,1x,I3,1x)
-      RETURN
+ 100  FORMAT('Track[',I3,'] CALO info')
+ 101  FORMAT(1X, 'ECAL',1x,    '#EC:', I1)
+ 102  FORMAT(1X, 'OBJ:',I3,1X, 'PECO:',I3,1x, 'E:',F7.3,1X, 'TE:',F7.3)
+ 201  FORMAT(1X, 'HCAL',1x,    '#HC:', I1)
+ 202  FORMAT(1X, 'OBJ:',I3,1X, 'PHCO:',I3,1x, 'E:',F7.3,1X, 'TE:',F7.3)
       END
 
 C ======================================================================
@@ -440,17 +451,30 @@ C ======================================================================
       IMPLICIT NONE
 #include "bosext.h"
 #include "qdecl.h"
-      INTEGER WHICH, KPECO
+#include "textio.h"
+      INTEGER*8 LOC, MEM_ADDR
+      INTEGER WHICH, ITK, KPECO, NW, NR
 #include "qcde.h"
 #include "qmacro.h"
-      KPECO = NLINK('PECO',1)
-      WRITE(6,1000) WHICH,
-     &  RTABL(KPECO,WHICH,JPECEC),
-     &  RTABL(KPECO,WHICH,JPECTH),
-     &  RTABL(KPECO,WHICH,JPECPH)
-
- 1000 FORMAT('F77[',I2,']',1x,
-     &  'CORR:',F7.3,1X,'THETA:',F5.2,1x,'PHI:',F5.2)
+      ITK = WHICH + 1
+      KPECO = IW(NAPECO) + LMHLEN
+      NW = IW(KPECO - LMHLEN + 1)
+      NR = IW(KPECO - LMHLEN + 2)
+      LOC = MEM_ADDR(IW(KPECO+WHICH*NW+JPECER))
+      WRITE(TEXT,1000) WHICH, LOC,
+     &  RW(KPECO+WHICH*NW+JPECER),
+     &  RW(KPECO+WHICH*NW+JPECEC),
+     &  RW(KPECO+WHICH*NW+JPECTH),
+     &  RW(KPECO+WHICH*NW+JPECPH),
+     &  IW(KPECO+WHICH*NW+JPECKD),
+     &  IW(KPECO+WHICH*NW+JPECCC),
+     &  IW(KPECO+WHICH*NW+JPECRB),
+     &  IW(KPECO+WHICH*NW+JPECPC)
+      LEN = LENOCC(TEXT)
+ 1000 FORMAT('PECO',1X,I3,1X,Z8,1X,
+     &  'ENERGY:', F7.3,1X,  'CORR:', F7.3,1X,
+     &  'THETA:',  F5.2,1X,  'PHI:',  F5.2,1X, 'REGION:',I2,1X,
+     &  'CC:',     I2,1X,    'REL:',  I2,1X,   'ID:',I5)
       RETURN
       END
 
@@ -459,17 +483,34 @@ C ======================================================================
       IMPLICIT NONE
 #include "bosext.h"
 #include "qdecl.h"
-      INTEGER WHICH, KPHCO
+#include "textio.h"
+      INTEGER*8 LOC, MEM_ADDR
+      INTEGER WHICH, ITK, KPHCO, NR, NW
 #include "qcde.h"
 #include "qmacro.h"
-      KPHCO = NLINK('PHCO',1)
-      WRITE(6,1000) WHICH,
-     &  RTABL(KPHCO,WHICH,JPHCEC),
-     &  RTABL(KPHCO,WHICH,JPHCTH),
-     &  RTABL(KPHCO,WHICH,JPHCPH)
+      ITK = WHICH + 1
+      KPHCO = IW(NAPHCO)+LMHLEN
+      NW = IW(KPHCO - LMHLEN + 1)
+      NR = IW(KPHCO - LMHLEN + 2)
+      LOC = MEM_ADDR(IW(KPHCO+WHICH*NW+JPHCER))
+      WRITE(TEXT,1000) WHICH, LOC,
+     &  RW(KPHCO+WHICH*NW+JPHCER),
+     &  RW(KPHCO+WHICH*NW+JPHCEC),
+     &  RW(KPHCO+WHICH*NW+JPHCTH),
+     &  RW(KPHCO+WHICH*NW+JPHCPH),
+     &  IW(KPHCO+WHICH*NW+JPHCKD),
+     &  IW(KPHCO+WHICH*NW+JPHCCC),
+     &  IW(KPHCO+WHICH*NW+JPHCRB),
+     &  IW(KPHCO+WHICH*NW+JPHCNF),
+     &  IW(KPHCO+WHICH*NW+JPHCPC)
+      LEN = LENOCC(TEXT)
 
- 1000 FORMAT('F77[',I2,']',1x,
-     &  'CORR:',F7.3,1X,'THETA:',F5.2,1x,'PHI:',F5.2)
+ 1000 FORMAT('PHCO',1X,I3,1X,Z8,1X,
+     &  'ENERGY:',  F7.3,1X, 'CORR:', F7.3,1X,
+     &  'THETA: ',  F4.2,1x, 'PHI: ', F4.2,1X,
+     &  'REGION:',  I1,1X,   'CC:',   I1,1X,
+     &  'RB:',      I2,1X,   'NOISE:',I2,1X,
+     &  'ID:',      I3)
       RETURN
       END
 
