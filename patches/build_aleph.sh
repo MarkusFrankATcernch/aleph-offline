@@ -272,6 +272,7 @@ aleph-tests()  {
     echo "+++ ALPHA analysis step SUCCEEDED. Log file: alpha.log";
 }
 #
+#
 # ==================================================================================================
 #
 if test -n "`uname -a | grep -e 'lxplus.*cern.ch'`"; then
@@ -289,7 +290,6 @@ elif test -n "`uname -a | grep Ubuntu`"; then
     export ALEPH_DBASE=${ALEPH_SOFT};
     #
 fi;
-#
 #
 #
 export ALEPH_BUILD_DIR=${ALEPH_SOFT}/gitlab;

@@ -14,6 +14,7 @@
 
 /// Framework include files
 #include <alpha/alpha.h>
+#include <bos/bosbank.h>
 
 /// C/C++ include files
 #include <cstring>
@@ -43,6 +44,22 @@ namespace alpha {
 }
 
 extern "C" void aublis_(const char* bank_list, int32_t len);
+
+/// Access BOS bank com BOS common by hashed index (NR=0)
+int32_t* alpha::bank_access_t::get_bank_first()   {
+  bos77::bank* bank = bos77::get_bank_pointer_from_namind( this->nami );
+  if( bank ) bos77::verify_bank_type(bank, this->nami);
+  return (int32_t *)bank;
+}
+
+/// Access next BOS bank from BOS common as indicted in the bank header
+int32_t* alpha::bank_access_t::get_bank_next()   {
+  auto* bank = (bos77::bank*)this->data;
+  auto* next = bank->next_bank_offset();
+  if( next ) bos77::verify_bank_type(next, this->nami);
+  this->data = (int32_t*)next;
+  return this->data;
+}
 
 // trim from both ends of string (right then left)
 std::string& alpha::_trim(std::string& s)  {
@@ -105,23 +122,23 @@ const alpha::object_table<class alpha::qdet>*  alpha::get_qdet()  {
 void alpha::init_event()  {
   using namespace alpha;
   int32_t* iw = bos77::bcs.iw;
-  params.kqzer  = iw[params.naqzer];
+  params.kqzer  = iw[params.naqzer-1];
 
-  int32_t kqvec  = iw[params.naqvec];
-  int32_t kqvrt  = iw[params.naqvrt];
-  int32_t kqdet  = iw[params.naqdet];
-  int32_t kqlin  = iw[params.naqlin];
+  int32_t kqvec  = iw[params.naqvec-1];
+  int32_t kqvrt  = iw[params.naqvrt-1];
+  int32_t kqdet  = iw[params.naqdet-1];
+  int32_t kqlin  = iw[params.naqlin-1];
 
-  int32_t kefol  = iw[params.naefol];
+  int32_t kefol  = iw[params.naefol-1];
 
-  int32_t kpeco  = iw[params.napeco];
-  int32_t kphco  = iw[params.naphco];
-  int32_t kpgac  = iw[params.napgac];
-  int32_t kpcqa  = iw[params.napcqa];
+  int32_t kpeco  = iw[params.napeco-1];
+  int32_t kphco  = iw[params.naphco-1];
+  int32_t kpgac  = iw[params.napgac-1];
+  int32_t kpcqa  = iw[params.napcqa-1];
 
-  int32_t kpdlt  = iw[params.napdlt];
-  int32_t kpmdt  = iw[params.napmdt];
-  int32_t kpmlt  = iw[params.napmlt];
+  int32_t kpdlt  = iw[params.napdlt-1];
+  int32_t kpmdt  = iw[params.napmdt-1];
+  int32_t kpmlt  = iw[params.napmlt-1];
 
   params.qvec_table = params.table<object_table<class qvec> >(kqvec);
   params.qvrt_table = params.table<object_table<class qvrt> >(kqvrt);

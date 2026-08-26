@@ -49,14 +49,17 @@ namespace alpha  {
     void end_event();
     /// Convert event data
     void convert_event();
-    /// After creation add all links to the MC particles
-    void fill_particles_mc();
-    /// After creation add all links to the reconstructed tracks
-    void fill_tracks();
-    /// After creation add all links to the ECAL clusters from PECO
-    void fill_hits_ecal();
-    /// After creation add all links to the HCAL clusters from PHCO
-    void fill_hits_hcal();
-  };
+
+    /// Convert VDET hits and clusters
+    void convert_vdet();
+    /// Convert ITC hits and clusters
+    void convert_itc();
+    /// Convert TPC hits and clusters
+    void convert_tpc();
+    /// Convert ECAL hits and clusters
+    void convert_ecal();
+    /// Convert HCAL hits and clusters
+    void convert_hcal();
+ };
 }      // End namespace alpha
 #endif // ALPHA_OUTPUT_EDM4HEP_H

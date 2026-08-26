@@ -77,9 +77,20 @@ namespace alpha  {
      & XJTHRU
 #endif
   };
-
+  
 #ifndef DEFINE_QCDE_STORAGE
   extern qcde_t& qcde;
 #endif
 }      // End namespace alpha
+
+///  EQUIVALENCE (KFIST,KFCOT), (KLAST,KLCOT)
+#define KFCOT  KFIST
+#define KLCOT  KLAST
+
+/// EQUIVALENCE KFOVT,KFRET), (KLIST,KLRET)
+#define KFRET  KFOVT
+#define KLRET  KLIST
+
+
+
 #endif // ALPHA_BOS_QCDE_H

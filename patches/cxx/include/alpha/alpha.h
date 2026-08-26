@@ -40,13 +40,42 @@ namespace alpha  {
    *    \date    01/08/2026
    */
   struct bank_access_t  {
-      
+  protected:
+    /// Access BOS bank from BOS common by hashed index (NR=0)
+    int32_t* get_bank_first();
+    /// Access next BOS bank from BOS common as indicted in the bank header
+    int32_t* get_bank_next();
+
+  public:      
     int32_t  nami  {       0 };
     int32_t  kq    {       0 };
     int32_t* data  { nullptr };
     bool     debug {   false };
       
-    template<typename T> T* at(int32_t idx)  {
+    /// Load bank for event: must be called for EVERY event. Implicit call to NLINKC.
+    template<typename T=int32_t> T* load(bool throw_if_not=true)  {
+      if( 0 != nami )  {
+	this->data = this->get_bank_first();
+	return (T*)this->data;
+      }
+      if( throw_if_not )  {
+	throw std::runtime_error("Error: BOS bank access failed NAMI not resolved!");
+      }
+      return (T*)this->data;
+    }
+
+    /// Load bank for event: must be called for EVERY event. Implicit call to NLINKC.
+    template<typename T=int32_t> T* knext()  {
+      return (T*)this->get_bank_next();
+    }
+
+    /// Access BOS bank as partitioned object table
+    template<typename T=int32_t> object_table<T>* table()  const  {
+      return (object_table<T>*)(this->data);
+    }
+    
+    /// Access single row from object table. NOTE: C type: offsets start with 0!!!
+    template<typename T> T* at( int32_t idx )  {
       auto* table = this->table<T>();
       if( idx < 0 || idx >= int32_t(table->size()) )  {
         throw std::runtime_error("Error: BOS table: Index out of range!");
@@ -57,7 +86,9 @@ namespace alpha  {
       }
       throw std::runtime_error("Error: non existing cluster in table!");
     }
-    template<typename T> T* row(int32_t idx)  {
+
+    /// Access single row from object table. NOTE: FORTRAN type: offsets start with 1!!!
+    template<typename T> T* row( int32_t idx )  {
       auto* table = this->table<T>();
       if( idx < 0 || idx > int32_t(table->size()) )  {
         throw std::runtime_error("Error: BOS table: Index out of range!");
@@ -68,11 +99,8 @@ namespace alpha  {
       }
       throw std::runtime_error("Error: non existing cluster in table!");
     }
-    template<typename T=int32_t> object_table<T>* table()  const  {
-      return (object_table<T>*)this->data;
-    }
   };
-
+  
   struct constants_t   {
     bank_access_t zero;
     bank_access_t bqvec;
@@ -100,7 +128,8 @@ namespace alpha  {
     
     template <typename T> const T* table(int32_t offset)  const {
       if( offset != 0 )  {
-        return (T*)(bos77::bcs.iw + offset - bos77::bankheader_words);
+        T* ret = (T*)(bos77::bcs.iw + offset - bos77::bankheader_words);
+	return ret;
       }
       return nullptr;
     }

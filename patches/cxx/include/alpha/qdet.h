@@ -164,23 +164,37 @@ namespace alpha  {
     ~qdet() = delete;
 
   public:
-    /// Check if track fit data are available for track I
-    bool              xfrf()  const        {  return this->offset_frft != params.kqzer;          }
+    /// Check if track fit data are available for track
+    bool              xfrft()  const;
     /// Access to the track's corresponding bank FRFT: Global geometrical track fit
-    const class frft* frft()  const        {  return bcs_offset<class frft>(this->offset_frft);  }
+    const class frft* frft()  const;
 
+    /// Check if track FRFT data are available for track
+    bool              xfrtl()  const;
     /// Access to the track's corresponding bank FRTL: Number of coordinates used for the global fit
-    const class frtl* frtl()  const        {  return bcs_offset<class frtl>(this->offset_frtl);  }
+    const class frtl* frtl()  const;
+
+    /// Check if track FRID data are available for track
+    bool              xfrid()  const;
     /// Access to the track's corresponding bank FRID: Charged−particle identification
-    const class frid* frid()  const        {  return bcs_offset<class frid>(this->offset_frid);  }
+    const class frid* frid()  const;
 
     /// Check if dE/dx is available for track I
     bool              xtexs()  const       {  return this->num_segment_texs != 0;                }
-    /// Number of TPC sectors on track I (max: 5 sectors accessible)
+    /// Number of TPC sectors on track (max: 5 sectors accessible)
     uint32_t          kntexs() const       {  return this->num_segment_texs;                     }
     /// Access dE/dX information for each sector
     const class texs* texs(uint32_t i) const { return bcs_offset<class texs>(this->offset_texs[i]); }
 
+    /// Check if charged track associations exist
+    bool              xchgd()   const;
+    /// Number of associated charged track objects
+    uint32_t          knchgd()  const      {  return this->num_associated_charged_tracks;        }
+    /// QVEC index of the associated charged track object
+    uint32_t          charged_track_rownum(uint32_t i)  const;
+    /// Reference to the associated charged track object
+    const class qvec* charged_track(uint32_t i)  const;
+    
     /// Check if ECAL data (PECO) are available for calorimeter object “track”
     bool              xpeco()  const       {  return this->offset_peco != params.kqzer;          }
     /// number of associated ECAL objects
@@ -211,46 +225,48 @@ namespace alpha  {
     uint32_t          hcal_track_rownum(uint32_t i)  const;
 
     /// Check if electron identification (bank EIDT) is available for this track
-    bool              xeidt()  const       {  return this->offset_eidt != params.kqzer;          }
+    bool              xeidt()  const;
     /// Access bank with electron identification information (bank EIDT)
     const class eidt* eidt()  const        {
       return this->xeidt() ? bcs_offset<class eidt>(this->offset_eidt) : nullptr;
     }
 
     /// Check if HCAL data (bank HMAD) are available for this track
-    bool              xhmad()  const       {  return this->offset_hmad != params.kqzer;          }
+    bool              xhmad()  const;
     /// Access bank HCAL data (bank HMAD) available for this track
     const class hmad* hmad()  const        {
       return this->xhmad() ? bcs_offset<class hmad>(this->offset_hmad) : nullptr;
     }
 
     /// Check if muon chamber data (bank MCAD) are available for this track
-    bool              xmcad()  const       {  return this->offset_mcad != params.kqzer;          }
+    bool              xmcad()  const;
     /// Access bank with muon chamber data (bank MCAD) for this track
     const class mcad* mcad()  const        {
       return this->xmcad() ? bcs_offset<class mcad>(this->offset_mcad) : nullptr;
     }
 
     /// Check if QMUIDO information (bank MUID) is available for this track
-    bool              xmuid()  const       {  return this->offset_muid != params.kqzer;          }
+    bool              xmuid()  const;
     /// Access QMUIDO information (bank MUID) for this track
     const class muid* muid()  const        {
       return this->xmuid() ? bcs_offset<class muid>(this->offset_muid) : nullptr;
     }
 
-    /// Check if energy flow (EFOL) data are available for track” I ( of the EFT section )
-    bool              xefol()  const       {  return this->offset_efol != params.kqzer;          }
-    /// Access energy flow (EFOL) data are available for track” I ( of the EFT section )
+    /// Check if energy flow (EFOL) data are available for track” ( of the EFT section )
+    bool              xefol()  const       {
+      return this->offset_efol != params.kqzer;
+    }
+    /// Access energy flow (EFOL) data are available for track” ( of the EFT section )
     const class efol* efol()  const        {
       return this->xefol() ? bcs_offset<class efol>(this->offset_efol) : nullptr;
     }
 
-    /// Check if V0 data are available for track I
+    /// Check if V0 data are available for track
     bool              xyv0v()  const;
-    /// Access V0 data are available for track I
+    /// Access V0 data are available for track
     const class yv0v* yv0v()  const;
 
-    /// Check if PCQA data are available for track I
+    /// Check if PCQA data are available for track
     bool              xpcqa()  const       {
       return params.pcqa_table && this->offset_pcqa != params.kqzer;
     }
@@ -259,11 +275,11 @@ namespace alpha  {
       return this->xpcqa() ? bcs_offset<class pcqa>(this->offset_pcqa) : nullptr;
     }
 
-    /// Check if GAMPECK data are available for “track” I of the GAT section
+    /// Check if GAMPECK data are available for “track” of the GAT section
     bool              xpgac()  const       {
       return params.pgac_table && this->offset_pgac != params.kqzer && this->offset_pgac != 0;
     }
-    /// Access GAMPECK data are available for “track” I of the GAT section
+    /// Access GAMPECK data are available for “track” of the GAT section
     const class pgac* pgac()  const        {
       return this->xpgac() ? bcs_offset<class pgac>(this->offset_pgac) : nullptr;
     }
@@ -279,7 +295,6 @@ namespace alpha  {
       }
       return nullptr;
     }
-  //const class pdlt* pdlt()  const        {  return bcs_offset<class pdlt>(this->offset_pdlt);  }
     
     /// Check if PMLT data are available for “track”
     bool              xpmlt()  const       {
@@ -292,7 +307,6 @@ namespace alpha  {
       }
       return nullptr;
     }
-    //const class pmlt* pmlt()  const        {  return bcs_offset<class pmlt>(this->offset_pmlt);  }
   };
 }      // End namespace alpha
 
@@ -301,10 +315,66 @@ namespace alpha  {
 
 /// ALPHA namespace declaration
 namespace alpha  {
+  /// Check if track fit data are available for track
+  inline bool              qdet::xfrft()  const  {
+    return this->offset_frft != params.kqzer && bcs_offset<class frft>(this->offset_frft) != nullptr;
+  }
+  /// Access to the track's corresponding bank FRFT: Global geometrical track fit
+  inline const class frft* qdet::frft()  const  {
+    return this->xfrft() ? bcs_offset<class frft>(this->offset_frft) : nullptr;
+  }
+  /// Check if track FRFT data are available for track
+  inline bool              qdet::xfrtl()  const  {
+    return this->offset_frtl != params.kqzer && bcs_offset<class frft>(this->offset_frtl) != nullptr;
+  }
+  /// Access to the track's corresponding bank FRTL: Number of coordinates used for the global fit
+  inline const class frtl* qdet::frtl()  const  {
+    return this->xfrtl() ? bcs_offset<class frtl>(this->offset_frtl) : nullptr;
+  }
+  /// Check if track FRID data are available for track
+  inline bool              qdet::xfrid()  const  {
+    return this->offset_frid != params.kqzer && bcs_offset<class frft>(this->offset_frid) != nullptr;
+  }
+  /// Access to the track's corresponding bank FRID: Charged−particle identification
+  inline const class frid* qdet::frid()  const  {
+    return this->xfrid() ? bcs_offset<class frid>(this->offset_frid) : nullptr;
+  }
+  /// Check if electron identification (bank EIDT) is available for this track
+  inline bool              qdet::xeidt()  const  {
+    return this->offset_eidt != params.kqzer && bcs_offset<class frid>(this->offset_eidt) != nullptr;
+  }
+  /// Check if HCAL data (bank HMAD) are available for this track
+  inline bool              qdet::xhmad()  const  {
+    return this->offset_hmad != params.kqzer && bcs_offset<class frid>(this->offset_hmad) != nullptr;
+  }
+  /// Check if muon chamber data (bank MCAD) are available for this track
+  inline bool              qdet::xmcad()  const  {
+    return this->offset_mcad != params.kqzer && bcs_offset<class frid>(this->offset_mcad) != nullptr;
+  }
+  /// Check if QMUIDO information (bank MUID) is available for this track
+  inline bool              qdet::xmuid()  const  {
+    return this->offset_muid != params.kqzer && bcs_offset<class frid>(this->offset_muid) != nullptr;
+  }
+  
+  /// Check if charged track associations exist
+  inline bool qdet::xchgd()  const  {
+    return this->num_associated_charged_tracks &&
+      this->offset_first_associated_track != params.kqzer;
+  }
+  /// QVEC index of the associated charged track object
+  inline uint32_t qdet::charged_track_rownum(uint32_t i)  const  {
+    return params.qlin_table->at(i + this->offset_first_associated_track)->link;
+  }
+  /// Reference to the associated charged track object
+  inline const class qvec* qdet::charged_track(uint32_t i)  const  {
+    return params.qvec_table->row( this->charged_track_rownum(i) );
+  }
 
+  /// QVEC index of the ECAL track object
   inline uint32_t qdet::ecal_track_rownum(uint32_t i)  const  {
     return params.qlin_table->at(i + this->offset_first_ecal)->link;
   }
+  /// Reference to the ECAL track object
   inline const class qvec* qdet::ecal_track(uint32_t i)  const  {
     return params.qvec_table->row( this->ecal_track_rownum(i) );
   }

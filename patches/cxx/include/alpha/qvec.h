@@ -276,24 +276,45 @@ namespace alpha  {
     const class qvrt* end_vtx()  const;
 
     /// Access to detector information
-    const class qdet* qdet() const { return bcs_offset<class qdet>(this->offset_qdet); }
+    const class qdet* qdet() const {
+      auto* det = bcs_offset<class qdet>(this->offset_qdet);
+      long  qd  = long(params.qdet_table);
+      long  len = params.qdet_table->total_length();
+      if( long(det) < qd     ) return nullptr;
+      if( long(det) > qd+len ) return nullptr;
+      return det;
+    }
 
     /// Check if track fit data are available for track I
-    bool              xfrf()  const;
+    bool              xfrft()  const;
     /// Access to the track's corresponding bank FRFT: Global geometrical track fit
     const class frft* frft()  const;
 
+    /// Check if track FRFT data are available for track
+    bool              xfrtl()  const;
     /// Access to the track's corresponding bank FRTL: Number of coordinates used for the global fit
     const class frtl* frtl()  const;
+    
+    /// Check if track FRID data are available for track
+    bool              xfrid()  const;
     /// Access to the track's corresponding bank FRID: Charged−particle identification
     const class frid* frid()  const;
 
     /// Check if dE/dx is available for track I
     bool              xtexs()  const;
-    /// Number of TPC sectors on track I (max: 5 sectors accessible)
+    /// Number of TPC sectors on track (max: 5 sectors accessible)
     uint32_t          kntexs() const;
     /// Access dE/dX information for each sector
     const class texs* texs(uint32_t i)  const;
+
+    /// Check if charged track associations exist
+    bool              xchgd()   const;
+    /// Number of associated charged track objects
+    uint32_t          knchgd()  const;
+    /// QVEC index of the associated charged track object
+    uint32_t          charged_track_rownum(uint32_t i)  const;
+    /// Reference to the associated charged track object
+    const class qvec* charged_track(uint32_t i)  const;
 
     /// Check if ECAL data (PECO) are available for calorimeter object “track”
     bool              xpeco()  const;
@@ -344,9 +365,9 @@ namespace alpha  {
     /// Access QMUIDO information (bank MUID) for this track
     const class muid* muid()  const;
 
-    /// Check if energy flow (EFOL) data are available for track” I ( of the EFT section )
+    /// Check if energy flow (EFOL) data are available for track” ( of the EFT section )
     bool              xefol()  const;
-    /// Access energy flow (EFOL) data are available for track” I ( of the EFT section )
+    /// Access energy flow (EFOL) data are available for track” ( of the EFT section )
     const class efol* efol()  const;
 
     /// Check if V0 data are available for track I
@@ -359,9 +380,9 @@ namespace alpha  {
     /// Access PCQA data are available for track I
     const class pcqa* pcqa()  const;
 
-    /// Check if GAMPECK data are available for “track” I of the GAT section
+    /// Check if GAMPECK data are available for “track” of the GAT section
     bool              xpgac()  const;
-    /// Access GAMPECK data are available for “track” I of the GAT section
+    /// Access GAMPECK data are available for “track” of the GAT section
     const class pgac* pgac()  const;
 
     /// Check if track is a Lepton tagged by QSELEP
@@ -428,23 +449,40 @@ namespace alpha  {
     int32_t idx = this->kendv();
     return (idx > 0) ? params.qvrt_table->row(idx) : nullptr;
   }
-  
+
   /// Check if track fit data are available for track I
-  inline bool              qvec::xfrf() const       {  return this->qdet()->xfrf();      }
+  inline bool              qvec::xfrft() const      {  return this->qdet()->xfrft();     }
   /// Access to the track's corresponding bank FRFT: Global geometrical track fit
   inline const class frft* qvec::frft()  const      {  return this->qdet()->frft();      }
 
   /// Access to the track's corresponding bank FRTL: Number of coordinates used for the global fit
   inline const class frtl* qvec::frtl()  const      {  return this->qdet()->frtl();      }
+  /// Check if track FRFT data are available for track
+  inline bool              qvec::xfrtl()  const     {  return this->qdet()->xfrtl();     }
   /// Access to the track's corresponding bank FRID: Charged−particle identification
   inline const class frid* qvec::frid()  const      {  return this->qdet()->frid();      }
+  /// Check if track FRFT data are available for track
+  inline bool              qvec::xfrid()  const     {  return this->qdet()->xfrid();     }
 
   /// Check if dE/dx is available for track I
   inline bool              qvec::xtexs()  const     {  return this->qdet()->xtexs();     }
-  /// Number of TPC sectors on track I (max: 5 sectors accessible)
+  /// Number of TPC sectors on track (max: 5 sectors accessible)
   inline uint32_t          qvec::kntexs() const     {  return this->qdet()->kntexs();    }
   /// Access dE/dX information for each sector
-  inline const class texs* qvec::texs(uint32_t i) const {  return this->qdet()->texs(i);     }
+  inline const class texs* qvec::texs(uint32_t i) const {  return this->qdet()->texs(i); }
+
+  /// Check if charged track associations exist
+  inline bool              qvec::xchgd()   const    {  return this->qdet()->xchgd();     }
+  /// Number of associated charged track objects
+  inline uint32_t          qvec::knchgd()  const    {  return this->qdet()->knchgd();    }
+  /// QVEC index of the associated charged track object
+  inline uint32_t          qvec::charged_track_rownum(uint32_t i)  const  {
+    return this->qdet()->charged_track_rownum(i);
+  }
+  /// Reference to the associated charged track object
+  inline const class qvec* qvec::charged_track(uint32_t i)  const  {
+    return this->qdet()->charged_track(i);
+  }
 
   /// Check if ECAL data (PECO) are available for calorimeter object “track”
   inline bool              qvec::xpeco()  const     {  return this->qdet()->xpeco();     }
@@ -505,9 +543,9 @@ namespace alpha  {
   /// Access QMUIDO information (bank MUID) for this track
   inline const class muid* qvec::muid()  const      {  return this->qdet()->muid();      }
 
-  /// Check if energy flow (EFOL) data are available for track” I ( of the EFT section )
+  /// Check if energy flow (EFOL) data are available for track” ( of the EFT section )
   inline bool              qvec::xefol()  const      {  return this->qdet()->xefol();    }
-  /// Access energy flow (EFOL) data are available for track” I ( of the EFT section )
+  /// Access energy flow (EFOL) data are available for track” ( of the EFT section )
   inline const class efol* qvec::efol()  const       {  return this->qdet()->efol();     }
 
   /// Check if V0 data are available for track I
@@ -520,9 +558,9 @@ namespace alpha  {
   /// Access PCQA data are available for track I
   inline const class pcqa* qvec::pcqa()  const       {  return this->qdet()->pcqa();     }
 
-  /// Check if GAMPECK data are available for “track” I of the GAT section
+  /// Check if GAMPECK data are available for “track” of the GAT section
   inline bool              qvec::xpgac()  const      {  return this->qdet()->xpgac();    }
-  /// Access GAMPECK data are available for “track” I of the GAT section
+  /// Access GAMPECK data are available for “track” of the GAT section
   inline const class pgac* qvec::pgac()  const       {  return this->qdet()->pgac();     }
 
   /// Check if track is a Lepton tagged by QSELEP

@@ -18,24 +18,81 @@
 #include <string>
 
 extern "C"  {
-  void    bosta_();
-  int32_t namind_(const char* bname, int);
-  int32_t nlink_(const char* bname, int& which, int);
+  void    bosta_ ( );
+  int32_t namind_( const char* bname, int );
+  int32_t nlinc_ ( int32_t&    nami,  int& nr );
+  int32_t nlink_ ( const char* bname, int& nr, int );
 }
 
 namespace bos77  {
 
   /// Forward declarations
   class bank;
+  class bank_header;
   class record;
-
     
-  constexpr static const int32_t bankheader_words = 4;
-  constexpr static const int32_t subheader_words = 2;
+  constexpr static const int32_t bankheader_words      = 4;
+  constexpr static const int32_t subheader_words       = 2;
   constexpr static const int32_t index_payload_columns = 1;
-  constexpr static const int32_t index_payload_rows = 2;
+  constexpr static const int32_t index_payload_rows    = 2;
 
+  /// Number of 40byte header words
+  inline int32_t header_words()   {
+    return bos77::bankheader_words;
+  }
+
+  /// Access BOS common with abolute offset
+  int32_t*    absolute_offset( std::size_t offset );
+ 
+  /// Resolve hashed name index of the bank
+  int32_t     namind( const std::string& bname );
+  /// Resolve hashed name index of the bank
+  int32_t     namind( const char* bank );
+  /// Link to bank data offset by index
+  int32_t     nlinc( int32_t nami, int32_t which );
+  /// Link to bank data offset by index
+  int32_t     nlink( const std::string& bank, int32_t which );
+  /// Link to bank data offset by index
+  int32_t     nlink( const char* bank, int32_t which );
     
+  /// Access bank names in bank list
+  std::string nlistb( uint32_t index, char list );
+  /// Access bank names in bank list
+  std::string nlist( uint32_t index, const std::string& list );
+  /// Access bank names in bank list
+  std::string nlist( uint32_t index, const char* list );
+
+  /// Access bank from BOS common by index: Get bank instance 'num' of bank type 'bnam'
+  bank*       get_bank( const std::string& bank, int32_t which );
+  /// Access bank from BOS common by index: Get bank instance 'num' of bank type 'bnam'
+  bank*       get_bank( const char* bank, int32_t which );
+  /// Access bank from BOS common by index: Get bank instance 'num' of bank name identifier
+  bank*       get_bank( int32_t namind_bank, int32_t which );
+
+  /// Access BOS bank com BOS common by name (NR=0)
+  bank*       get_bank_pointer_from_name( const char* name );
+
+  /// Access BOS bank com BOS common by hashed index (NR=0)
+  bank*       get_bank_pointer_from_namind( int32_t nami );
+
+  /// As a temporary measure chack if we really got the bank in question
+  bool        verify_bank_type(const bank_header* hdr, int32_t name_index);
+  /// As a temporary measure chack if we really got the bank in question
+  bool        verify_bank_type(const bank_header* hdr, const char* name);
+
+  /// Print bank names of a single bank list
+  void        print_bank_list( char list );
+  /// Print bank names of all known BOS bank lists
+  void        print_bank_lists( const char* lists );
+  /// Print bank names of all known BOS bank lists
+  void        print_bank_lists( const std::string& lists );
+
+  /// Print all banks identified by resolved bank name
+  std::size_t print_banks_of_type(int32_t nami);
+  /// Print all banks identified by 'bnam'
+  std::size_t print_banks_of_type( const std::string& bnam );
+    
+  
   /// Definition of the BOS event record
   /**
    *   \author M.Frank
@@ -82,9 +139,6 @@ namespace bos77  {
       const uint8_t* ptr = (const uint8_t*)this;
       return (const bank*)(ptr + this->total_length() - sizeof(record));
     }
-
-    /// String represntation for printouts
-    std::string to_string()  const;
   };
 
 
@@ -226,9 +280,6 @@ namespace bos77  {
       return (const T*)ptr;
     }
 
-    /// String representation for printouts
-    std::string to_string(const std::string& prefix="BOS")  const;
-
     /// Number of columns defined in the sub-header
     int32_t payload_columns()   const   {
       const int32_t* iptr = (const int32_t*)this;
@@ -255,56 +306,21 @@ namespace bos77  {
     std::string bank_name()  const  {
       return std::string(this->_bname, this->_bname+4);
     }
-    /// String represntation for printouts
-    std::string to_string()  const;
   };
 
-  /// Number of 40byte header words
-  inline int32_t header_words()   {
-    return bos77::bankheader_words;
-  }
+  /// String representation for printouts
+  std::string to_string(const bank_header* data, const std::string& prefix="BOS");
 
-  /// Access BOS common with abolute offset
-  int32_t* absolute_offset( std::size_t offset );
- 
-  /// Resolve hashed name index of the bank
-  int32_t     namind(const std::string& bname);
-  /// Resolve hashed name index of the bank
-  int32_t     namind(const char* bank);
-  /// Link to bank data offset by index
-  int32_t     nlink(const std::string& bank, int which);
-  /// Link to bank data offset by index
-  int32_t     nlink(const char* bank, int which);
-    
-  /// Access bank names in bank list
-  std::string nlistb(uint32_t index, char list);
-  /// Access bank names in bank list
-  std::string nlist(uint32_t index, const std::string& list);
-  /// Access bank names in bank list
-  std::string nlist(uint32_t index, const char* list);
+  /// String representation for printouts
+  std::string to_string(const bank* data, const std::string& prefix="BOS");
 
-  /// Access bank from BOS common by index: Get bank instance 'num' of bank type 'bnam'
-  bank*       get_bank(const std::string& bank, int which);
-  /// Access bank from BOS common by index: Get bank instance 'num' of bank type 'bnam'
-  bank*       get_bank(const char* bank, int which);
+  /// String representation for printouts
+  std::string to_string(const format* data, const std::string& prefix="BOS");
 
-  /// Access BOS bank com BOS common by name
-  int32_t*    get_bank_pointer_from_name( const char* name );
-
-  /// Access BOS bank com BOS common by hashed index
-  int32_t*    get_bank_pointer_from_namind( int32_t nami );
+  /// String representation for printouts
+  std::string to_string(const record* data, const std::string& prefix="BOS");
 
 
-  /// Print bank names of a single bank list
-  void        print_bank_list(char list);
-  /// Print bank names of all known BOS bank lists
-  void        print_bank_lists(const char* lists);
-  /// Print bank names of all known BOS bank lists
-  void        print_bank_lists(const std::string& lists);
-
-  /// Print all banks identified by 'bnam'
-  std::size_t print_banks_of_type(const std::string& bnam);
-    
   /// Definition of the BOS system data structure from inc/sysbos.h
   /**
    *   \author M.Frank
@@ -352,7 +368,7 @@ namespace bos77  {
     int32_t   iw[1000];
     float     rw[1000];
   };
-
+  
 
 #ifndef HAVE_BOS_EXTERNS
   extern bcs_t&       bcs;

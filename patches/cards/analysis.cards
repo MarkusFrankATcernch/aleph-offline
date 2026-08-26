@@ -5,9 +5,9 @@
 * ( in all cases you should ask SCANBOOK to generate these cards for you )
 FILI '/home/frankm/Aleph/offline/ALEPH-MC-ZM2000.30.AL.POT | EPIO'
 * to get the Energy Flow package results :
-*ENFL
+ENFL
 * to obtain jets with the Energy Flow package results :
-*EFLJ
+EFLJ
 * to obtain the interaction point from the QFNDIP package :
 *QFND
 * both cards above (EFLJ,QFND) are mandatory if you use QFNDIP or QIPBTAG !

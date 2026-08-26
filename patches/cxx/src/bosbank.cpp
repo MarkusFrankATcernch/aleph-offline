@@ -44,38 +44,6 @@ namespace bos77  {
     return nullptr;
   }
   
-  /// String representation for printouts
-  std::string bank::to_string(const std::string& prefix)  const  {
-    std::stringstream str;
-    const auto* nam = (char*)&this->_name;
-    const auto* nb  = this->next_bank_offset();
-    std::size_t nw  = this->total_num_words();
-    std::size_t pl  = this->payload_columns()*this->payload_rows();
-
-    str << prefix;
-    if( !prefix.empty() ) str << " ";
-    str << "Bank: " << nam[0] << nam[1] << nam[2] << nam[3]
-        << " row:"  << std::setw(6) << std::left  << this->row()
-        << " Len:"  << std::setw(5) << std::right << this->total_length()
-        << "/"      << std::setw(5) << std::left  << this->data_length();
-    if( nw > 4 && pl+subheader_words == nw )  {
-      str << " Words/row:" << std::setw(4) << std::right << this->payload_columns()
-          << " #row:"      << std::setw(4) << std::right << this->payload_rows();
-    }
-    if( nb )  {
-      str << " KNext:" << std::setw(8) << this->offset2next()
-          << " "       << std::setw(4) << std::left
-          << (const char*)(nb ? nb->name().c_str() : " ");
-    }
-    return str.str();
-  }
-
-  /// String represntation for printouts
-  std::string format::to_string()  const  {
-    auto res = this->bank::to_string();
-    return res;
-  }
-
   int32_t* absolute_offset( std::size_t offset )  {
     return bcs.iw + offset;
   }
@@ -83,7 +51,7 @@ namespace bos77  {
   /// Resolve hashed name index of the bank
   int32_t namind(const char* bank)   {
     // Offset here call to iw[namind(xxx))] which starts in F77 with 1
-    return namind_(bank,4) - 1;
+    return namind_(bank,4);
   }
 
   /// Resolve hashed name index of the bank
@@ -105,6 +73,11 @@ namespace bos77  {
     return ::bos77::nlink(bnam.c_str(), num);
   }
 
+  /// Get bank instance 'num' of bank type 'bnam'
+  int32_t nlinc(int32_t nami, int32_t num)  {
+    return ::nlinc_(nami, num);
+  }
+
   /// Access bank names in bank list
   std::string nlistb(uint32_t i, char list)  {
     char ret[32];
@@ -114,12 +87,26 @@ namespace bos77  {
     return std::string(ret, ret+4);
   }
   
+  /// Access bank from BOS common by index: Get bank instance 'num' of bank name identifier
+  bank* get_bank(int32_t nami, int32_t num)  {
+    int32_t off = ::nlinc_(nami, num);
+    if( off )  {
+      off -= bos77::bankheader_words;
+      class bank* bank = (class bank*)(bcs.iw + off);
+      verify_bank_type(bank, nami);
+      return bank;
+    }
+    return nullptr;
+  }
+  
   /// Get bank instance 'num' of bank type 'bnam'
   bank* get_bank(const char* bnam, int32_t num)  {
     int32_t off = bnam ? ::nlink_(bnam, num, 4) : 0;
     if( off )  {
       off -= bos77::bankheader_words;
-      return (bank*)(bcs.iw + off);
+      class bank* bank = (class bank*)(bcs.iw + off);
+      verify_bank_type(bank, bnam);
+      return bank;
     }
     return nullptr;
   }
@@ -130,11 +117,13 @@ namespace bos77  {
   }
 
   /// Access BOS bank com BOS common by hashed index
-  int32_t* get_bank_pointer_from_namind( int32_t nami )  {
-    if( nami > 0 )  {
-      int32_t knami = bcs.iw[nami];
+  bank* get_bank_pointer_from_namind( int32_t name_index )  {
+    if( name_index > 0 )  {
+      int32_t knami = bcs.iw[name_index-1];
       if( knami != 0 )  {
-        int32_t* bank = bcs.iw + knami - bankheader_words;
+        int32_t* ptr = bcs.iw + knami - bos77::bankheader_words;
+	class bank* bank = (class bank*)ptr;
+	verify_bank_type(bank, name_index);
         return bank;
       }
     }
@@ -142,9 +131,33 @@ namespace bos77  {
   }
 
   /// Access BOS bank com BOS common by name
-  int32_t* get_bank_pointer_from_name( const char* bank )  {
+  bank* get_bank_pointer_from_name( const char* bank )  {
     auto indx = ::bos77::namind(bank);
     return ::bos77::get_bank_pointer_from_namind(indx);
+  }
+
+  /// As a temporary measure chack if we really got the bank in question
+  bool verify_bank_type(const bank_header* hdr, int32_t name_index)  {
+    if( hdr )  {
+      int32_t nami = bos77::namind((const char*)&hdr->_name);
+      if( nami != name_index )  {
+	throw std::runtime_error( "verify_bank_type: Failed to access proper bank by index" );
+      }
+      return true;
+    }
+    throw std::runtime_error( "verify_bank_type: Invalid bank!" );
+  }
+  
+  /// As a temporary measure chack if we really got the bank in question
+  bool verify_bank_type(const bank_header* hdr, const char* name)  {
+    if( hdr )  {
+      const char* b = (const char*)&hdr->_name;
+      if( b[0] != name[0] || b[1] != name[1] || b[2] != name[2] || b[3] != name[3] )  {
+	throw std::runtime_error( "verify_bank_type: Failed to access proper bank by index" );
+      }
+      return true;
+    }
+    throw std::runtime_error( "verify_bank_type: Invalid bank!" );
   }
   
   /// Print bank names of all known BOS bank lists
@@ -172,28 +185,65 @@ namespace bos77  {
 
   /// Print all banks identified by 'bnam'
   std::size_t print_banks_of_type(const std::string& bnam)  {
-    std::size_t total_mem = 0;
-    int i = 0;
-    const auto* bank = get_bank(bnam, 0);
-    for( ; bank != nullptr; ++i )  {
-      if( !bank )  {
-        break;
-      }
-      const auto* next  = bank->next();
-      const auto* knext = bank->knext();
-      total_mem += bank->total_num_words();
-      ::printf("%4s: %-4d BANK: %-8ld %p  %-60s ",
-               bnam.c_str(), i, ((uint8_t*)bank) - (uint8_t*)bcs.iw,
-               (void*)bank, bank->to_string().c_str());
-      
-      if( next )  {
-        ::printf("NEXT: %-8ld %p %4s ",
-                 ((uint8_t*)next)   - (uint8_t*)bcs.iw,  (void*)next,  next  ? next->name().c_str() : "");
-      }
-      ::printf("\n");
-      bank = knext;
+    auto total_mem = print_banks_of_type(namind(bnam.c_str()));
+    if( total_mem == 0 )  {
+      std::cout << "BOS Bank: " << bnam << " No banks found!" << std::endl;
     }
     return total_mem;
   }
 
+  /// Print all banks identified by resolved bank name
+  std::size_t print_banks_of_type(int32_t name_index)  {
+    std::size_t total_mem = 0;
+    for( const auto* b=get_bank(name_index, 0); b != nullptr; b=b->knext() )  {
+      if( !b )
+        break;
+      total_mem += b->total_num_words();
+      std::cout << to_string(b) << std::endl;
+    }
+    return total_mem;
+  }
+
+  /// String representation for printouts
+  std::string to_string(const bank_header* data, const std::string& prefix)  {
+    std::stringstream str;
+    const auto* bnk = (const bank*)data;
+    const auto* nam = (char*)&data->_name;
+    const auto* nb  = data->next_bank_offset();
+    std::size_t nw  = bnk->total_num_words();
+    std::size_t pl  = bnk->payload_columns()*bnk->payload_rows();
+
+    str << prefix;
+    if( !prefix.empty() ) str << " ";
+    str << "Bank: " << nam[0] << nam[1] << nam[2] << nam[3]
+        << " row:"  << std::setw(6) << std::left  << data->row()
+        << " Len:"  << std::setw(5) << std::right << data->total_length()
+        << "/"      << std::setw(5) << std::left  << data->data_length();
+    if( nw > 4 && pl+subheader_words == nw )  {
+      str << " Words/row:" << std::setw(4) << std::right << bnk->payload_columns()
+          << " #row:"      << std::setw(4) << std::right << bnk->payload_rows();
+    }
+    if( nb )  {
+      str << " KNext:" << std::setw(8) << data->offset2next()
+          << "/"       << std::setw(4) << std::left
+          << (const char*)(nb ? nb->name().c_str() : " ");
+    }
+    return str.str();
+  }
+
+  /// String representation for printouts
+  std::string to_string(const bank* data, const std::string& prefix)  {
+    return to_string((const bank_header*)data, prefix);
+  }
+  
+  /// String representation for printouts
+  std::string to_string(const format* data, const std::string& prefix)  {
+    return to_string((const bank_header*)data, prefix);
+  }
+#if 0
+  /// String representation for printouts
+  std::string to_string(const record* data, const std::string& prefix)  {
+    return to_string((const bank_header*)this, prefix);
+  }
+#endif
 }

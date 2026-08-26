@@ -473,7 +473,7 @@ C ======================================================================
       LEN = LENOCC(TEXT)
  1000 FORMAT('PECO',1X,I3,1X,Z8,1X,
      &  'ENERGY:', F7.3,1X,  'CORR:', F7.3,1X,
-     &  'THETA:',  F5.2,1X,  'PHI:',  F5.2,1X, 'REGION:',I2,1X,
+     &  'THETA:',  F5.2,1X,  'PHI:',  F5.2,1X, 'REGION:',I3,1X,
      &  'CC:',     I2,1X,    'REL:',  I2,1X,   'ID:',I5)
       RETURN
       END
@@ -508,7 +508,7 @@ C ======================================================================
  1000 FORMAT('PHCO',1X,I3,1X,Z8,1X,
      &  'ENERGY:',  F7.3,1X, 'CORR:', F7.3,1X,
      &  'THETA: ',  F4.2,1x, 'PHI: ', F4.2,1X,
-     &  'REGION:',  I1,1X,   'CC:',   I1,1X,
+     &  'REGION:',  I3,1X,   'CC:',   I1,1X,
      &  'RB:',      I2,1X,   'NOISE:',I2,1X,
      &  'ID:',      I3)
       RETURN

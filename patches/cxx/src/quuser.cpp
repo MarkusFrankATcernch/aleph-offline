@@ -41,7 +41,7 @@ extern "C"  {
     bool debug = false;
     bool print = false;
     event_proc   = std::make_unique<processor<event_processor> >(debug, print);
-    test_proc    = std::make_unique<processor<test_processor> >(debug, print);
+    //test_proc    = std::make_unique<processor<test_processor> >(debug, print);
     edm4hep_proc = std::make_unique<processor<output_edm4hep> >(true, true);
     if ( event_proc   ) event_proc->initialize();
     if ( test_proc    ) test_proc->initialize();

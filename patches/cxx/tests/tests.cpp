@@ -278,7 +278,7 @@ void alpha::tests::print_peco(bool print)  {
     std::string fret = f77::get_peco(i);
     ::snprintf(text, sizeof(text),
                "PECO %3d %8lX ENERGY:%7.3f CORR:%7.3f THETA: %4.2f PHI: %4.2f"
-               " REGION:%2d CC:%2d REL:%2d ID:%5d",
+               " REGION:%3d CC:%2d REL:%2d ID:%5d",
                i, uint64_t(hit), hit->eraw(), hit->ecorr(), hit->theta(), hit->phi(),
                hit->kdrg(), hit->ccode(), hit->rbits(), hit->pcOB());
     check_result(fret, text, print_f77, print);
@@ -295,7 +295,7 @@ void alpha::tests::print_phco(bool print)  {
     std::string fret = f77::get_phco(i);
     ::snprintf(text, sizeof(text),
                "PHCO %3d %8lX ENERGY:%7.3f CORR:%7.3f THETA: %4.2f PHI: %4.2f"
-               " REGION:%1d CC:%1d RB:%2d NOISE:%2d ID:%3d",
+               " REGION:%3d CC:%1d RB:%2d NOISE:%2d ID:%3d",
                i, uint64_t(hit), hit->eraw(), hit->ecorr(), hit->theta(), hit->phi(),
                hit->kdrg(), hit->ccode(), hit->rbits(), hit->noiseFlag(), hit->pcOB());
     check_result(fret, text, print_f77, print);
@@ -681,7 +681,7 @@ void alpha::tests::process_event()  {
     bos77::print_banks_of_type("VCPL");
   }
   bool prt = true;
-  bool nprt = false;
+  //bool nprt = false;
   tests::print_peco(prt);
   tests::print_phco(prt);
 
@@ -725,17 +725,18 @@ void alpha::tests::process_event()  {
   for(int itk=qcde.KFIST; itk<=qcde.KLIST; ++itk)  {
     const auto* track  = params.qvec_table->row(itk);
     print_track(itk, "C++ CaloObj");
+    ::printf("KTN:%2d ", track->ktn());
     ::printf("KNEC:%2d ", track->knecal());
     for(uint32_t iec=0; iec < track->knecal(); ++iec )  {
       const auto* ec_clu = track->peco(iec);
       auto        ec_row = track->peco_rownum(iec);
-      ::printf("%d/%.2f ", ec_row, ec_clu->ecorr());
+      ::printf("%2d/%.2f ", ec_row, ec_clu->ecorr());
     }
     ::printf("KNHC:%2d ", track->knhcal());
     for(uint32_t ihc=0; ihc < track->knhcal(); ++ihc )  {
       const auto* hc_clu = track->phco(ihc);
       auto        hc_row = track->phco_rownum(ihc);
-      ::printf("%d/%.2f ", hc_row, hc_clu->ecorr());
+      ::printf("%2d/%.2f ", hc_row, hc_clu->ecorr());
     }
     ::printf("\n");
   }

@@ -504,7 +504,7 @@ namespace alpha  {bracket_open}
       print( f'ERROR: Bank {bnam} was not found in file {lbf_file}' )
       return None
   
-def generate_header(bank_name, lines, stringifiers):
+def generate_header(bank_name, lines, stringifiers, header=True, print=False):
   bank_lines = []
   got_bank = False
   bmatch   = '| '+bank_name+' |'
@@ -522,6 +522,27 @@ def generate_header(bank_name, lines, stringifiers):
         gen.have_stringifiers = stringifiers
       data = gen.generate(bank_name, bank_lines)
       return data
+  return None
+
+def generate_printout(bank_name, lines):
+  bank_lines = []
+  got_bank = False
+  bmatch   = '| '+bank_name+' |'
+  line     = ''
+  for i in range(len(lines)):
+    line = lines[i][:-1]
+    if line.find(bmatch) > 0:
+      bank_lines.append(lines[i-1][:-1]+lines[i-2][10:-1])
+      bank_lines.append(line)
+      got_bank = True
+    elif got_bank and line.find(bend) == -1:
+      bank_lines.append(line)
+    elif got_bank and line.find(bend) == 0:
+      data = ''
+      for l in bank_lines:
+        data = data + l + '\n'
+      return data
+  return None
 
 import pathlib
 import argparse
@@ -554,7 +575,7 @@ parser.add_argument(
   '--lbf',
   type=str,
   dest='lbf_file',
-  default='/home/frankm/Aleph/offline/doc/sbank.lbf',
+  default=os.environ.get('SBANK_LBF'),
   help='Location of the bank definition file',
 )
 #
@@ -576,6 +597,16 @@ parser.add_argument(
   dest='bank_name',
   default=None,
   help='Bank name for which headers should be generated. Seperate multiple names by comma',
+)
+#
+# Inhibit generate header files (default)
+parser.add_argument(
+  '-p',
+  '--print-info',
+  action='store_true',
+  dest='print_info',
+  default=False,
+  help='Set if you only want to print bank information',
 )
 #
 # Output path
@@ -611,6 +642,11 @@ parser.add_argument(
 #
 args = parser.parse_args()
 #
+printout = 0
+gen_header = True
+if args.print_info:
+  gen_header = False
+  printout = 1
 #
 if args.show_banks:
    print(all_banks.replace('\n',' ').replace('  ',' '))
@@ -631,28 +667,32 @@ if banks is not None:
     if bank_name in bank_exclusions:
       print( f'+++ CANNOT generate headers for bank type {bank_name}. IGNORED.' )
       continue
-    header_data = generate_header(bank_name, lines, args.stringifiers)
-    if not header_data:
-      print( f'Failed to generate header: No bank {bank_name} found!' )
-      #sys.exit(2)
-    else:
-      if args.output:
-        if not os.path.exists(args.output):
-          pit = str(args.output).split(os.sep)
-          dir = pit[0]
-          for p in pit[1:]:
-            if not os.path.exists(dir):
-              os.mkdir(dir)
-            dir = dir + os.sep + p
-            if not os.path.exists(dir):
-              os.mkdir(dir)
-        file_name = args.output / (bank_name.lower() + '.h')
-        file = open(file_name,'w')
-        file.write(header_data)
-        file.close()
-        print( f'Successfully write header file: {str(file_name)}' )
+    if printout == 1:
+      data = generate_printout(bank_name, lines)
+      print( f'{data}' )
+    elif gen_header:
+      header_data = generate_header(bank_name, lines, args.stringifiers)
+      if not header_data:
+        print( f'Failed to generate header: No bank {bank_name} found!' )
+        #sys.exit(2)
       else:
-        print( f'{header_data}' )
+        if args.output:
+          if not os.path.exists(args.output):
+            pit = str(args.output).split(os.sep)
+            dir = pit[0]
+            for p in pit[1:]:
+              if not os.path.exists(dir):
+                os.mkdir(dir)
+                dir = dir + os.sep + p
+                if not os.path.exists(dir):
+                  os.mkdir(dir)
+          file_name = args.output / (bank_name.lower() + '.h')
+          file = open(file_name,'w')
+          file.write(header_data)
+          file.close()
+          print( f'Successfully write header file: {str(file_name)}' )
+        else:
+          print( f'{header_data}' )
 else:
   print( f'No bank names passed for header file generation!' )
   parser.print_help()

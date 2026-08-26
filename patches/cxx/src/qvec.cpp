@@ -29,6 +29,8 @@
 #include <alpha/phco.h>
 #include <alpha/pgac.h>
 #include <alpha/pcqa.h>
+#include <alpha/pmlt.h>
+#include <alpha/pdlt.h>
 
 
 /// C/C++ include files
@@ -94,7 +96,7 @@ const char* fmt_ene(float v)  {
   else if( v >=    1 ) return "%5.1f ";
   else if( v >=  0.1 ) return "%5.1f ";
   else if( v >= 0.01 ) return "%5.2f ";
-  return "%5.3f";
+  return "%5.2f ";
 }
 
 const char* fmt_len(float v)  {
@@ -103,20 +105,21 @@ const char* fmt_len(float v)  {
   else if( v >=    1 ) return "%5.1f ";
   else if( v >=  0.1 ) return "%5.1f ";
   else if( v >= 0.01 ) return "%5.2f ";
-  return "%5.3f";
+  return "%5.2f ";
 }
 
 /// Get string representation of this track
 std::string alpha::qvec::to_string(uint32_t /* flags */)  const {  
   const auto* table = alpha::get_qvec();
-  int32_t which = table->index(this);
+  int32_t which = table->index(this)+1;
   const auto* track = this;
-  if( this != table->at(which) )  {
+  if( this != table->row(which) )  {
     throw std::runtime_error("Bad index calculation!!!!");
   }
   char text[4096];
   std::size_t siz = sizeof(text);
   std::size_t len = ::snprintf(text, siz, "qvec[%3d] ", which);
+  len += ::snprintf(text+len, siz-len, "ktn:%2d ", track->ktn());
   len += ::snprintf(text+len, siz-len, "%12s ", track->cqtpn().c_str());
   len += ::snprintf(text+len, siz-len, fmt_ene(track->px), track->px);
   len += ::snprintf(text+len, siz-len, fmt_ene(track->py), track->py);
@@ -152,69 +155,103 @@ std::string alpha::qvec::to_string(uint32_t /* flags */)  const {
   }
   const class qdet* pdet = track->qdet();
   if( pdet )  {
-    if( which >= qcde.KFCHT && which <= qcde.KLCHT )  {
+    if( which >= qcde.KFIST && which <= qcde.KLAST )  {
+      const char* tag = (which >= qcde.KFIST && which <= qcde.KLIST)
+	? "[CALO non-assoc] " : "[CALO associated]";
+      len += ::snprintf(text+len, siz-len, "%s ", tag);
+      len += ::snprintf(text+len, siz-len, "NFRFT:%2d ", track->knchgd());
+      for(uint32_t ich=0; ich < track->knchgd(); ++ich )  {
+	const auto* trk = track->charged_track(ich);
+	auto        row = track->charged_track_rownum(ich);
+	len += ::snprintf(text+len, siz-len, "%2d/%2d ", row, trk->ktn());
+      }
+      len += ::snprintf(text+len, siz-len, "KNEC:%2d ", track->knecal());
+      for(uint32_t iec=0; iec < track->knecal(); ++iec )  {
+	const auto* ec_clu = track->peco(iec);
+	auto        ec_row = track->peco_rownum(iec);
+	len += ::snprintf(text+len, siz-len, "%2d/%.2f ", ec_row, ec_clu->ecorr());
+      }
+      len += ::snprintf(text+len, siz-len, "KNHC:%2d ", track->knhcal());
+      for(uint32_t ihc=0; ihc < track->knhcal(); ++ihc )  {
+	const auto* ec_clu = track->phco(ihc);
+	auto        ec_row = track->phco_rownum(ihc);
+	len += ::snprintf(text+len, siz-len, "%2d/%.2f ", ec_row, ec_clu->ecorr());
+      }
+    }
+    else if( which >= qcde.KFCHT && which <= qcde.KLCHT )  {
       len += ::snprintf(text+len, siz-len, "[CH] sigm2:%6.2f sige:%6.2f sigp:%6.2f ",
                         track->qsigm2(), track->qsige(), track->qsigp());
+    }
+    else  {
+      len += ::snprintf(text+len, siz-len, "[QVEC] ");
+    }
+    
+    if( track->xfrft() )  {
       const class frft* pfrft = pdet->frft();
       len += ::snprintf(text+len, siz-len, "FRFT:%08lX ",uint64_t(pfrft));
-      if( pfrft )  {
-        len += ::snprintf(text+len, siz-len, "ktn:%2d d0:%7.2f z0:%7.2f ",
-                          track->ktn(), pfrft->d0(), pfrft->z0());
-      }
+      len += ::snprintf(text+len, siz-len, "ktn:%2d d0:%7.2f z0:%7.2f ",
+			track->ktn(), pfrft->d0(), pfrft->z0());
+    }
+    if( track->xfrtl() )  {
       const class frtl* pfrtl = pdet->frtl();
-      len += snprintf(text+len, sizeof(text)-len, "FRTL:%8lX ",uint64_t(pfrtl));
-      if( pfrtl )  {
-        len += snprintf(text+len, sizeof(text)-len, "%2d %1d %2d ",
-                        pfrtl->narcV(), pfrtl->narcI(), pfrtl->narcT());
-      }
+      len += snprintf(text+len, sizeof(text)-len, "FRTL:%08lX ",uint64_t(pfrtl));
+      len += snprintf(text+len, sizeof(text)-len, "%2d %1d %2d ",
+		      pfrtl->narcV(), pfrtl->narcI(), pfrtl->narcT());
+    }
+    if( track->xfrid() )  {
       const class frid* pfrid = pdet->frid();
-      len += snprintf(text+len, sizeof(text)-len, "FRID:%8lX ",uint64_t(pfrid));
-      if( pfrid )  {
-        len += snprintf(text+len, sizeof(text)-len, "e-:%4.3f pi:%4.3f ",
-                        pfrid->probElec(), pfrid->probpIon());
-      }
-      if( track->xeidt() )  {
-        const auto* eidt = track->eidt();
-        len += ::snprintf(text+len, sizeof(text)-len, "EIDT:%8lX ", uint64_t(eidt));
-        len += ::snprintf(text+len, sizeof(text)-len, "t:%2d ec:%2d ", eidt->frFT(), eidt->peCO());
-      }
-      if( track->xhmad() )  {
-        const auto* hmad = track->hmad();
-        len += ::snprintf(text+len, sizeof(text)-len, "HMAD:%8lX ", uint64_t(hmad));
-        len += ::snprintf(text+len, sizeof(text)-len, "t:%2d pl:%2d ",
-                          hmad->trackNo(), hmad->nplaFired());
-      }
-      if( track->xmcad() )  {
-        const auto* mcad = track->mcad();
-        len += ::snprintf(text+len, sizeof(text)-len, "MCAD:%8lX ", uint64_t(mcad));
-        len += ::snprintf(text+len, sizeof(text)-len, "t:%2d nh:%2d ",
-                          mcad->trackNo(), mcad->nassHit()[0]);
-      }
-      if( track->xmuid() )  {
-        const auto* muid = track->muid();
-        len += ::snprintf(text+len, sizeof(text)-len, "MUID:%8lX ", uint64_t(muid));
-        len += ::snprintf(text+len, sizeof(text)-len, "t:%2d id:%2d ",
-                          muid->trackNumber(), muid->idFlag());
-      }
+      len += snprintf(text+len, sizeof(text)-len, "FRID:%08lX ",uint64_t(pfrid));
+      len += snprintf(text+len, sizeof(text)-len, "e-:%4.3f pi:%4.3f ",
+		      pfrid->probElec(), pfrid->probpIon());
+    }
+    if( track->xeidt() )  {
+      const auto* eidt = track->eidt();
+      len += ::snprintf(text+len, sizeof(text)-len, "EIDT:%08lX ", uint64_t(eidt));
+      len += ::snprintf(text+len, sizeof(text)-len, "t:%2d ec:%2d ", eidt->frFT(), eidt->peCO());
+    }
+    if( track->xhmad() )  {
+      const auto* hmad = track->hmad();
+      len += ::snprintf(text+len, sizeof(text)-len, "HMAD:%08lX ", uint64_t(hmad));
+      len += ::snprintf(text+len, sizeof(text)-len, "t:%2d pl:%2d ",
+			hmad->trackNo(), hmad->nplaFired());
+    }
+    if( track->xmcad() )  {
+      const auto* mcad = track->mcad();
+      len += ::snprintf(text+len, sizeof(text)-len, "MCAD:%08lX ", uint64_t(mcad));
+      len += ::snprintf(text+len, sizeof(text)-len, "t:%2d nh:%2d ",
+			mcad->trackNo(), mcad->nassHit()[0]);
+    }
+    if( track->xmuid() )  {
+      const auto* muid = track->muid();
+      len += ::snprintf(text+len, sizeof(text)-len, "MUID:%08lX ", uint64_t(muid));
+      len += ::snprintf(text+len, sizeof(text)-len, "t:%2d id:%2d ",
+			muid->trackNumber(), muid->idFlag());
+    }
 
-      if( pdet->xtexs() )  {
-        len += ::snprintf(text+len, sizeof(text)-len, "TEXS:%2d ", pdet->kntexs() );
-        for(uint32_t i=0; i<pdet->kntexs(); ++i)  {
-          const class texs* ptexs = pdet->texs(i);
-          len += ::snprintf(text+len, siz-len, "%d: SEG:%2d #S:%2d ",
-                            i, ptexs->segmentId(), ptexs->numberSamples());
-        }
+    if( pdet->xtexs() )  {
+      len += ::snprintf(text+len, sizeof(text)-len, "TEXS:%2d ", pdet->kntexs() );
+      for(uint32_t i=0; i<pdet->kntexs(); ++i)  {
+	const class texs* ptexs = pdet->texs(i);
+	len += ::snprintf(text+len, siz-len, "%d: SEG:%2d #S:%2d ",
+			  i, ptexs->segmentId(), ptexs->numberSamples());
       }
-      //
-      if( pdet->xpgac() )  {
-        len += ::snprintf(text+len, siz-len, "PGAC:%8lX ", uint64_t(pdet->pgac()));
-      }
-      if( pdet->xpdlt() )  {
-        len += ::snprintf(text+len, siz-len, "PDLT:%8lX ", uint64_t(pdet->pdlt()));
-      }
-      if( pdet->xpmlt() )  {
-        len += ::snprintf(text+len, siz-len, "PMLT:%8lX ", uint64_t(pdet->pmlt()));
-      }
+    }
+    //
+    if( pdet->xpgac() )  {
+      const auto* pgac = pdet->pgac();
+      float ene = pgac->energyCorrected();
+      len += ::snprintf(text+len, siz-len, "PGAC:%08lX e:", uint64_t(pgac));
+      len += ::snprintf(text+len, siz-len, fmt_ene(ene), ene);
+    }
+    if( pdet->xpdlt() )  {
+      const auto* pdlt = pdet->pdlt();
+      len += ::snprintf(text+len, siz-len, "PDLT:%08lX typ:", uint64_t(pdlt));
+      len += ::snprintf(text+len, siz-len, "%2d ", pdlt->particletype());
+    }
+    if( pdet->xpmlt() )  {
+      const auto* pmlt = pdet->pmlt();
+      len += ::snprintf(text+len, siz-len, "PMLT:%08lX fkin:", uint64_t(pmlt));
+      len += ::snprintf(text+len, siz-len, "%2d ", pmlt->kineTrack());
     }
   }
   return { text };

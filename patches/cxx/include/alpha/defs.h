@@ -103,6 +103,7 @@ namespace alpha  {
     static object_table& get(uint32_t nam_indx)  {
       auto* ptr = (object_table*)bos77::get_bank_pointer_from_namind( nam_indx );
       if( ptr )  {
+	bos77::verify_bank_type(ptr, nam_indx);
         return ptr;
       }
       throw std::runtime_error( "Failed to access bank from index" );
@@ -112,6 +113,7 @@ namespace alpha  {
     static object_table& get(const char* name)  {
       auto* ptr = (object_table*)bos77::get_bank_pointer_from_name( name );
       if( ptr )  {
+	bos77::verify_bank_type(ptr, name);
         return *ptr;
       }
       throw std::runtime_error( "Failed to access bank by name: "+std::string(name) );
