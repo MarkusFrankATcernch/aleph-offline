@@ -45,6 +45,28 @@ namespace alpha {
 
 extern "C" void aublis_(const char* bank_list, int32_t len);
 
+std::string alpha::fmt_ene(float v)  {
+  char  text[128];
+  float vv = (v < 0e0) ? -110e0*v : v;
+  if(      vv >=   10 ) ::snprintf(text,sizeof(text),"%5.0f ",v);
+  else if( vv >=    1 ) ::snprintf(text,sizeof(text),"%5.1f ",v);
+  else if( vv >=  0.1 ) ::snprintf(text,sizeof(text),"%5.2f ",v);
+  else if( vv >= 0.01 ) ::snprintf(text,sizeof(text),"%5.3f ",v);
+  else                  ::snprintf(text,sizeof(text),"%5.3f ",v);
+  return { text };
+}
+
+std::string alpha::fmt_len(float v)  {
+  char  text[128];
+  float vv = (v < 0e0) ? -110e0*v : v;
+  if(      vv >=   10 ) ::snprintf(text,sizeof(text),"%5.0f ",v);
+  else if( vv >=    1 ) ::snprintf(text,sizeof(text),"%5.1f ",v);
+  else if( vv >=  0.1 ) ::snprintf(text,sizeof(text),"%5.1f ",v);
+  else if( vv >= 0.01 ) ::snprintf(text,sizeof(text),"%5.2f ",v);
+  else                  ::snprintf(text,sizeof(text),"%5.2f ",v);
+  return { text };
+}
+
 /// Access BOS bank com BOS common by hashed index (NR=0)
 int32_t* alpha::bank_access_t::get_bank_first()   {
   bos77::bank* bank = bos77::get_bank_pointer_from_namind( this->nami );

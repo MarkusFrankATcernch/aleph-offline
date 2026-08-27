@@ -10,7 +10,10 @@
 //
 //  Author     : Markus Frank
 //==========================================================================
+
+/// Alpha include files
 #include <alpha/vfhl.h>
+#include <alpha/vdzt.h>
 
 /// Create VDET 3D hit from VDCO row
 void alpha::output_edm4hep::event_t::process_vdzt()  {
@@ -69,6 +72,7 @@ void alpha::output_edm4hep::event_t::process_vdzt()  {
   object_table<class vfhl>* vfhl_b = nullptr;
   int32_t      vfhl_nami = this->data.vfhl.nami;
   int32_t      vfhl_nr = -1;
+  std::stringstream log;
   for( this->data.vdzt.load(false); this->data.vdzt.data; this->data.vdzt.knext() )  {
     auto* table = this->data.vdzt.table<class vdzt>();
     uint32_t row   = table->bank_header::row();
@@ -76,7 +80,6 @@ void alpha::output_edm4hep::event_t::process_vdzt()  {
     uint64_t iphi  = ((row/10)%100);
     uint64_t iz    = ((row/1000)%10);
     uint64_t layer = ((row/10000));
-    std::stringstream log;
 
     if( this->data.vdzt.debug )  {
       log << bos77::to_string(table) << " Wafers hits: " << std::endl;
@@ -92,11 +95,11 @@ void alpha::output_edm4hep::event_t::process_vdzt()  {
       int32_t  addr = 0;
 
       if( vfhl_nr != vfhl )  {
-	vfhl_nr = vfhl;
-	vfhl_b  = (object_table<class vfhl>*)bos77::get_bank(vfhl_nami, vfhl);
+        vfhl_nr = vfhl;
+        vfhl_b  = (object_table<class vfhl>*)bos77::get_bank(vfhl_nami, vfhl);
       }
       if( vfhl_b )  {
-	addr = vfhl_b->row(ah->ihit())->hitAdd();
+        addr = vfhl_b->row(ah->ihit())->hitAdd();
       }
 
       hit.setCellID( cell );
@@ -115,46 +118,46 @@ void alpha::output_edm4hep::event_t::process_vdzt()  {
 
       if( this->data.vdzt.debug )  {
         log << "\t [vfhl:" << vfhl
-	    << "." << std::setw(3) << ah->ihit() << "-" << iview
-	    << " lay:" << std::setw(1) << layer
-	    << " phi:" << std::setw(2) << iphi
-	    << " z:"   << std::setw(1) << iz << " "
-	    << " add:" << std::setw(8) << std::hex << addr << std::dec << " ";
-	// VFHL encoding:
-	// addr  = Nstrip<<18 + layer<<17 + wafer<<15 + view<<10 + strip;
-	// strip = (addr&0x3FF);
-	// view  = (addr&0x7FFF)>>10;
-	// wafer = (addr&0x1FFFF)>>15;
-	// Nstrip= (addr>>18);
-	//
-	// Absolute unclear how VFHL hit address relates to VDZT row number
-	if( vfhl_b )  {
-	  int32_t strip = (addr&0x3FF);
-	  int32_t view  = (addr&0x7FFF)>>10;
-	  int32_t wafer = (addr&0x1FFFF)>>15;
-	  int32_t layer = (addr&0x3FFFF)>>17;
-	  int32_t Nstrip= (addr>>18);
-	  log << " strip:"  << std::setw(4) << strip
-	      << " view:"   << std::setw(2) << view
-	      << " waf:"    << std::setw(2) << wafer
-	      << " lay:"    << std::setw(1) << layer
-	      << " NStrip:" << std::setw(2) << Nstrip;
-	  int32_t check = (Nstrip<<18) + (layer<<17) + (wafer<<15) + (view<<10) + strip;
-	  if( check != addr )  {
-	    log << std::endl << "+++ !!!!!! ADDRESS CALCULATION WRONG:"
-		<< std::hex << addr << " <> " << check << std::dec << std::endl;
-	  }
-	}
-	log << "] "
-	    << " pos: " << to_string(pos.x(),"%7.4f")
-	    << "," << to_string(pos.y(),"%7.4f")
-	    << "," << to_string(pos.z(),"%7.4f")
-	    << " pulse:" << to_string(ah->pulseHeight(),"%6.0f")
-	    << std::endl;
+            << "." << std::setw(3) << ah->ihit() << "-" << iview
+            << " lay:" << std::setw(1) << layer
+            << " phi:" << std::setw(2) << iphi
+            << " z:"   << std::setw(1) << iz << " "
+            << " add:" << std::setw(8) << std::hex << addr << std::dec << " ";
+        // VFHL encoding:
+        // addr  = Nstrip<<18 + layer<<17 + wafer<<15 + view<<10 + strip;
+        // strip = (addr&0x3FF);
+        // view  = (addr&0x7FFF)>>10;
+        // wafer = (addr&0x1FFFF)>>15;
+        // Nstrip= (addr>>18);
+        //
+        // Absolute unclear how VFHL hit address relates to VDZT row number
+        if( vfhl_b )  {
+          int32_t strip = (addr&0x3FF);
+          int32_t view  = (addr&0x7FFF)>>10;
+          int32_t wafer = (addr&0x1FFFF)>>15;
+          int32_t layer = (addr&0x3FFFF)>>17;
+          int32_t Nstrip= (addr>>18);
+          log << " strip:"  << std::setw(4) << strip
+              << " view:"   << std::setw(2) << view
+              << " waf:"    << std::setw(2) << wafer
+              << " lay:"    << std::setw(1) << layer
+              << " NStrip:" << std::setw(2) << Nstrip;
+          int32_t check = (Nstrip<<18) + (layer<<17) + (wafer<<15) + (view<<10) + strip;
+          if( check != addr )  {
+            log << std::endl << "+++ !!!!!! ADDRESS CALCULATION WRONG:"
+                << std::hex << addr << " <> " << check << std::dec << std::endl;
+          }
+        }
+        log << "] "
+            << " pos: " << to_string(pos.x(),"%7.4f")
+            << "," << to_string(pos.y(),"%7.4f")
+            << "," << to_string(pos.z(),"%7.4f")
+            << " pulse:" << to_string(ah->pulseHeight(),"%6.0f")
+            << std::endl;
       }
     }
-    if( this->data.vdzt.debug )  {
-      ::printf("%s\n", log.str().c_str());
-    }
+  }
+  if( this->data.vdzt.debug )  {
+    ::printf("%s", log.str().c_str());
   }
 }

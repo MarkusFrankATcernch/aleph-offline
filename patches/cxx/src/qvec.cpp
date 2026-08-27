@@ -90,24 +90,6 @@ float alpha::qvec::qsigm2()   const   {
   return std::abs(sig);
 }
 
-const char* fmt_ene(float v)  {
-  v = std::abs(v);
-  if(      v >=   10 ) return "%5.0f ";
-  else if( v >=    1 ) return "%5.1f ";
-  else if( v >=  0.1 ) return "%5.1f ";
-  else if( v >= 0.01 ) return "%5.2f ";
-  return "%5.2f ";
-}
-
-const char* fmt_len(float v)  {
-  v = std::abs(v);
-  if(      v >=   10 ) return "%5.0f ";
-  else if( v >=    1 ) return "%5.1f ";
-  else if( v >=  0.1 ) return "%5.1f ";
-  else if( v >= 0.01 ) return "%5.2f ";
-  return "%5.2f ";
-}
-
 /// Get string representation of this track
 std::string alpha::qvec::to_string(uint32_t /* flags */)  const {  
   const auto* table = alpha::get_qvec();
@@ -121,10 +103,10 @@ std::string alpha::qvec::to_string(uint32_t /* flags */)  const {
   std::size_t len = ::snprintf(text, siz, "qvec[%3d] ", which);
   len += ::snprintf(text+len, siz-len, "ktn:%2d ", track->ktn());
   len += ::snprintf(text+len, siz-len, "%12s ", track->cqtpn().c_str());
-  len += ::snprintf(text+len, siz-len, fmt_ene(track->px), track->px);
-  len += ::snprintf(text+len, siz-len, fmt_ene(track->py), track->py);
-  len += ::snprintf(text+len, siz-len, fmt_ene(track->pz), track->pz);
-  len += ::snprintf(text+len, siz-len, fmt_ene(track->mass), track->mass);
+  len += ::snprintf(text+len, siz-len, "%s", fmt_ene(track->px).c_str());
+  len += ::snprintf(text+len, siz-len, "%s", fmt_ene(track->py).c_str());
+  len += ::snprintf(text+len, siz-len, "%s", fmt_ene(track->pz).c_str());
+  len += ::snprintf(text+len, siz-len, "%s", fmt_ene(track->mass).c_str());
   len += ::snprintf(text+len, siz-len, "e:%7.2f #m:%2d #d:%2d ",
                     track->energy, track->knmoth(), track->kndau() );
 
@@ -134,17 +116,17 @@ std::string alpha::qvec::to_string(uint32_t /* flags */)  const {
     const auto* end = track->end_vtx();
     if( org )  {
       len += ::snprintf(text+len, siz-len, "Org:(");
-      len += ::snprintf(text+len, siz-len, fmt_len(org->x), org->x);
-      len += ::snprintf(text+len, siz-len, fmt_len(org->y), org->y);
-      len += ::snprintf(text+len, siz-len, fmt_len(org->z), org->z);
+      len += ::snprintf(text+len, siz-len, "%s", fmt_len(org->x).c_str());
+      len += ::snprintf(text+len, siz-len, "%s", fmt_len(org->y).c_str());
+      len += ::snprintf(text+len, siz-len, "%s", fmt_len(org->z).c_str());
       len += ::snprintf(text+len, siz-len, ") typ:%2d in:%3d #out:%2d #:%3d ",
                         org->kvtype(), org->kvincp(), org->kvndau(), org->kvn());
     }
     if( end )  {
       len += ::snprintf(text+len, siz-len, "End:(");
-      len += ::snprintf(text+len, siz-len, fmt_len(end->x), end->x);
-      len += ::snprintf(text+len, siz-len, fmt_len(end->y), end->y);
-      len += ::snprintf(text+len, siz-len, fmt_len(end->z), end->z);
+      len += ::snprintf(text+len, siz-len, "%s", fmt_len(end->x).c_str());
+      len += ::snprintf(text+len, siz-len, "%s", fmt_len(end->y).c_str());
+      len += ::snprintf(text+len, siz-len, "%s", fmt_len(end->z).c_str());
       len += ::snprintf(text+len, siz-len, ") typ:%2d in:%3d #out:%2d #:%3d ",
                         end->kvtype(), end->kvincp(), end->kvndau(), end->kvn());
     }
@@ -157,25 +139,25 @@ std::string alpha::qvec::to_string(uint32_t /* flags */)  const {
   if( pdet )  {
     if( which >= qcde.KFIST && which <= qcde.KLAST )  {
       const char* tag = (which >= qcde.KFIST && which <= qcde.KLIST)
-	? "[CALO non-assoc] " : "[CALO associated]";
+        ? "[CALO non-assoc] " : "[CALO associated]";
       len += ::snprintf(text+len, siz-len, "%s ", tag);
       len += ::snprintf(text+len, siz-len, "NFRFT:%2d ", track->knchgd());
       for(uint32_t ich=0; ich < track->knchgd(); ++ich )  {
-	const auto* trk = track->charged_track(ich);
-	auto        row = track->charged_track_rownum(ich);
-	len += ::snprintf(text+len, siz-len, "%2d/%2d ", row, trk->ktn());
+        const auto* trk = track->charged_track(ich);
+        auto        row = track->charged_track_rownum(ich);
+        len += ::snprintf(text+len, siz-len, "%2d/%2d ", row, trk->ktn());
       }
       len += ::snprintf(text+len, siz-len, "KNEC:%2d ", track->knecal());
       for(uint32_t iec=0; iec < track->knecal(); ++iec )  {
-	const auto* ec_clu = track->peco(iec);
-	auto        ec_row = track->peco_rownum(iec);
-	len += ::snprintf(text+len, siz-len, "%2d/%.2f ", ec_row, ec_clu->ecorr());
+        const auto* ec_clu = track->peco(iec);
+        auto        ec_row = track->peco_rownum(iec);
+        len += ::snprintf(text+len, siz-len, "%2d/%.2f ", ec_row, ec_clu->ecorr());
       }
       len += ::snprintf(text+len, siz-len, "KNHC:%2d ", track->knhcal());
       for(uint32_t ihc=0; ihc < track->knhcal(); ++ihc )  {
-	const auto* ec_clu = track->phco(ihc);
-	auto        ec_row = track->phco_rownum(ihc);
-	len += ::snprintf(text+len, siz-len, "%2d/%.2f ", ec_row, ec_clu->ecorr());
+        const auto* ec_clu = track->phco(ihc);
+        auto        ec_row = track->phco_rownum(ihc);
+        len += ::snprintf(text+len, siz-len, "%2d/%.2f ", ec_row, ec_clu->ecorr());
       }
     }
     else if( which >= qcde.KFCHT && which <= qcde.KLCHT )  {
@@ -190,19 +172,19 @@ std::string alpha::qvec::to_string(uint32_t /* flags */)  const {
       const class frft* pfrft = pdet->frft();
       len += ::snprintf(text+len, siz-len, "FRFT:%08lX ",uint64_t(pfrft));
       len += ::snprintf(text+len, siz-len, "ktn:%2d d0:%7.2f z0:%7.2f ",
-			track->ktn(), pfrft->d0(), pfrft->z0());
+                        track->ktn(), pfrft->d0(), pfrft->z0());
     }
     if( track->xfrtl() )  {
       const class frtl* pfrtl = pdet->frtl();
       len += snprintf(text+len, sizeof(text)-len, "FRTL:%08lX ",uint64_t(pfrtl));
       len += snprintf(text+len, sizeof(text)-len, "%2d %1d %2d ",
-		      pfrtl->narcV(), pfrtl->narcI(), pfrtl->narcT());
+                      pfrtl->narcV(), pfrtl->narcI(), pfrtl->narcT());
     }
     if( track->xfrid() )  {
       const class frid* pfrid = pdet->frid();
       len += snprintf(text+len, sizeof(text)-len, "FRID:%08lX ",uint64_t(pfrid));
       len += snprintf(text+len, sizeof(text)-len, "e-:%4.3f pi:%4.3f ",
-		      pfrid->probElec(), pfrid->probpIon());
+                      pfrid->probElec(), pfrid->probpIon());
     }
     if( track->xeidt() )  {
       const auto* eidt = track->eidt();
@@ -213,27 +195,27 @@ std::string alpha::qvec::to_string(uint32_t /* flags */)  const {
       const auto* hmad = track->hmad();
       len += ::snprintf(text+len, sizeof(text)-len, "HMAD:%08lX ", uint64_t(hmad));
       len += ::snprintf(text+len, sizeof(text)-len, "t:%2d pl:%2d ",
-			hmad->trackNo(), hmad->nplaFired());
+                        hmad->trackNo(), hmad->nplaFired());
     }
     if( track->xmcad() )  {
       const auto* mcad = track->mcad();
       len += ::snprintf(text+len, sizeof(text)-len, "MCAD:%08lX ", uint64_t(mcad));
       len += ::snprintf(text+len, sizeof(text)-len, "t:%2d nh:%2d ",
-			mcad->trackNo(), mcad->nassHit()[0]);
+                        mcad->trackNo(), mcad->nassHit()[0]);
     }
     if( track->xmuid() )  {
       const auto* muid = track->muid();
       len += ::snprintf(text+len, sizeof(text)-len, "MUID:%08lX ", uint64_t(muid));
       len += ::snprintf(text+len, sizeof(text)-len, "t:%2d id:%2d ",
-			muid->trackNumber(), muid->idFlag());
+                        muid->trackNumber(), muid->idFlag());
     }
 
     if( pdet->xtexs() )  {
       len += ::snprintf(text+len, sizeof(text)-len, "TEXS:%2d ", pdet->kntexs() );
       for(uint32_t i=0; i<pdet->kntexs(); ++i)  {
-	const class texs* ptexs = pdet->texs(i);
-	len += ::snprintf(text+len, siz-len, "%d: SEG:%2d #S:%2d ",
-			  i, ptexs->segmentId(), ptexs->numberSamples());
+        const class texs* ptexs = pdet->texs(i);
+        len += ::snprintf(text+len, siz-len, "%d: SEG:%2d #S:%2d T:%2d ",
+                          i, ptexs->segmentId(), ptexs->numberSamples(), ptexs->trackNumber());
       }
     }
     //
@@ -241,7 +223,7 @@ std::string alpha::qvec::to_string(uint32_t /* flags */)  const {
       const auto* pgac = pdet->pgac();
       float ene = pgac->energyCorrected();
       len += ::snprintf(text+len, siz-len, "PGAC:%08lX e:", uint64_t(pgac));
-      len += ::snprintf(text+len, siz-len, fmt_ene(ene), ene);
+      len += ::snprintf(text+len, siz-len, "%s", fmt_ene(ene).c_str());
     }
     if( pdet->xpdlt() )  {
       const auto* pdlt = pdet->pdlt();

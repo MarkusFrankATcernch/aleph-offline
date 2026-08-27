@@ -11,6 +11,8 @@
 //  Author     : Markus Frank
 //==========================================================================
 
+/// Alpha include files
+#include <alpha/pasl.h>
 
 /// Link reconstructed charged tracks from FRFT to MC tracks
 void alpha::output_edm4hep::event_t::process_pasl()  {

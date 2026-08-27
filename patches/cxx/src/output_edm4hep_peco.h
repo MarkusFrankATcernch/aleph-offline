@@ -11,6 +11,8 @@
 //  Author     : Markus Frank
 //==========================================================================
 
+/// Alpha include files
+#include <alpha/peco.h>
 
 /// Create ECAL hit from PECO row
 void alpha::output_edm4hep::event_t::process_peco()  {
@@ -69,14 +71,15 @@ void alpha::output_edm4hep::event_t::process_peco()  {
                          CalObject number
   */
   auto* tab = this->data.peco.load<object_table<class peco> >();
+  if( this->data.peco.debug )  {
+    std::cout << bos77::to_string(tab) << std::endl;
+  }
   for( uint32_t itk=1, siz=tab->size(); itk <= siz; ++itk )  {
-    std::size_t   key  = this->hits_ecal.size();
     auto          hit  = this->hits_ecal.create();
     auto*         ah   = this->data.peco.row<class peco>(itk);
     uint64_t      cell = ah->pcOB();
     PositionPolar pos(1e0, ah->theta(), ah->phi()); // Radius is unknown from bank
 
-    this->alpha2edm4hep_peco[itk] = key;
     hit.setCellID( cell );
     hit.setTime( 0e0 );
     hit.setPosition( { pos.x(), pos.y(), pos.z() } );
@@ -88,5 +91,18 @@ void alpha::output_edm4hep::event_t::process_peco()  {
 		((  0x7 & ah->kdrg())  <<  6) +  // Bit 9 unused.
 		((0x3FF & int(ah->esta1()*1000e0)) << 10) +
 		((0x3FF & int(ah->esta2()*1000e0)) << 20));
+
+    if( this->data.peco.debug )  {
+      char text[512];
+      ::snprintf(text, sizeof(text),
+                 "PECO %3d %8lX Energy:%s Corr:%s [%s,%s] Theta: %4.2f Phi: %4.2f"
+                 " Region:%3d CC:%1d RB:%2d CalObjID:%3d",
+                 itk, uint64_t(ah),
+                 fmt_ene(ah->eraw()).c_str(),  fmt_ene(ah->ecorr()).c_str(),
+                 fmt_ene(ah->esta1()).c_str(), fmt_ene(ah->esta2()).c_str(),
+                 ah->theta(), ah->phi(), ah->kdrg(), ah->ccode(),
+                 ah->rbits(), ah->pcOB());
+      std::cout << text << std::endl;
+    }
   }
 }

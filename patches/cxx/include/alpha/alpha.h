@@ -55,11 +55,11 @@ namespace alpha  {
     /// Load bank for event: must be called for EVERY event. Implicit call to NLINKC.
     template<typename T=int32_t> T* load(bool throw_if_not=true)  {
       if( 0 != nami )  {
-	this->data = this->get_bank_first();
-	return (T*)this->data;
+        this->data = this->get_bank_first();
+        return (T*)this->data;
       }
       if( throw_if_not )  {
-	throw std::runtime_error("Error: BOS bank access failed NAMI not resolved!");
+        throw std::runtime_error("Error: BOS bank access failed NAMI not resolved!");
       }
       return (T*)this->data;
     }
@@ -100,6 +100,9 @@ namespace alpha  {
       throw std::runtime_error("Error: non existing cluster in table!");
     }
   };
+
+  std::string fmt_ene(float v);
+  std::string fmt_len(float v);
   
   struct constants_t   {
     bank_access_t zero;
@@ -129,7 +132,7 @@ namespace alpha  {
     template <typename T> const T* table(int32_t offset)  const {
       if( offset != 0 )  {
         T* ret = (T*)(bos77::bcs.iw + offset - bos77::bankheader_words);
-	return ret;
+        return ret;
       }
       return nullptr;
     }

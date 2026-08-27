@@ -11,6 +11,9 @@
 //  Author     : Markus Frank
 //==========================================================================
 
+/// Alpha include files
+#include <alpha/pfer.h>
+
 /// Create HCAL cluster relations from PECO to FRFT tracks: bank PFHR
 void alpha::output_edm4hep::event_t::process_pfer()  {
   /**

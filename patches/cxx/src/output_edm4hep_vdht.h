@@ -11,6 +11,9 @@
 //  Author     : Markus Frank
 //==========================================================================
 
+/// Alpha include files
+#include <alpha/vdht.h>
+
 /// Create VDET simulation hit from VDHT row (produced by GALEPH)
 void alpha::output_edm4hep::event_t::process_vdht()  {
   /**
@@ -46,7 +49,6 @@ void alpha::output_edm4hep::event_t::process_vdht()  {
   auto* tab = this->data.vdht.load<object_table<class vdht> >();
   auto siz = tab->size();
   for( uint32_t itk=1; itk <= siz; ++itk )  {
-    std::size_t key = this->simhits_vdht.size();
     auto        hit = this->simhits_vdht.create();
     auto*       ah  = this->data.vdht.row<class vdht>(itk);
     int32_t    galt = ah->trackNumber();
@@ -68,6 +70,5 @@ void alpha::output_edm4hep::event_t::process_vdht()  {
     hit.setMomentum( { dir.x(), dir.y(), dir.z() } );
     hit.setCellID( cell );
     hit.setQuality( ah->trackNumber() );
-    this->alpha2edm4hep_vdht[itk] = key;
   }
 }

@@ -16,6 +16,7 @@ SET( CMAKE_FC_COMPILER f77 )
 #
 # ==================================================================================================
 option( PLATFORM_64    "Build for 64 bit platform                       "   ON  )
+option( ALEPH_EDM4HEP  "Build package to save POT to EDM4HEP (WIP)      "   OFF )
 option( CERNLIB_SHARED "Use shared libraries from CERNLIB (experimental)"   OFF )
 # ==================================================================================================
 #
@@ -126,22 +127,24 @@ get_filename_component(CERNLIB_LIBDIR "${CERNLIB_MATHLIB}" DIRECTORY CACHE)
 set( ALEPH_PROGRAM_SOURCES ../cxx/opt/chkloc.c )
 #
 # ==================================================================================================
-# Settings to use CERNLIB SHARED
-# ==================================================================================================
-set( ALEPH_LIBRARY_LINKOPTS   "-Wl,-Bdynamic" )
-set( ALEPH_CERN_LIBRARIES     "-Wl,-Bdynamic -L${CERNLIB_LIBDIR} -lkernlib -lmathlib -llapack -Wl,-Bstatic ${CERNLIB_LIBDIR}/libpacklib.a -Wl,-Bdynamic" )
-set( ALEPH_CERN_SIMLIBRARIES  "-Wl,-Bstatic ${CERNLIB_LIBDIR}/libgeant321.a -Wl,-Bdynamic -L${CERNLIB_LIBDIR} -ljetset74 -lpdflib804 -lpythia6205 -Wl,-Bstatic ${CERNLIB_LIBDIR}/libpacklib.a -Wl,-Bdynamic" )
-set( ALEPH_CERN_X11LIBRARIES  "-Wl,-Bdynamic -L${CERNLIB_LIBDIR} -lgraflib -lgrafX11 -lpawlib -lX11 -lXm" )
-
-# ==================================================================================================
-# Settings to use CERNLIB STATIC
-# ==================================================================================================
-set( ALEPH_LIBRARY_LINKOPTS   "-Wl,-Bstatic" )
-set( ALEPH_CERN_LIBRARIES     "-Wl,-Bstatic ${CERNLIB_LIBDIR}/libpacklib.a   \
+if( CERNLIB_SHARED )
+    # ==============================================================================================
+    # Settings to use CERNLIB SHARED
+    # ==============================================================================================
+    set( ALEPH_LIBRARY_LINKOPTS   "-Wl,-Bdynamic" )
+    set( ALEPH_CERN_LIBRARIES     "-Wl,-Bdynamic -L${CERNLIB_LIBDIR} -lkernlib -lmathlib -llapack -Wl,-Bstatic ${CERNLIB_LIBDIR}/libpacklib.a -Wl,-Bdynamic" )
+    set( ALEPH_CERN_SIMLIBRARIES  "-Wl,-Bstatic ${CERNLIB_LIBDIR}/libgeant321.a -Wl,-Bdynamic -L${CERNLIB_LIBDIR} -ljetset74 -lpdflib804 -lpythia6205 -Wl,-Bstatic ${CERNLIB_LIBDIR}/libpacklib.a -Wl,-Bdynamic" )
+    set( ALEPH_CERN_X11LIBRARIES  "-Wl,-Bdynamic -L${CERNLIB_LIBDIR} -lgraflib -lgrafX11 -lpawlib -lX11 -lXm" )
+else()
+    # ==============================================================================================
+    # Settings to use CERNLIB STATIC
+    # ==============================================================================================
+    set( ALEPH_LIBRARY_LINKOPTS   "-Wl,-Bstatic" )
+    set( ALEPH_CERN_LIBRARIES     "-Wl,-Bstatic ${CERNLIB_LIBDIR}/libpacklib.a   \
                                             ${CERNLIB_LIBDIR}/libmathlib.a   \
                                             ${CERNLIB_LIBDIR}/libkernlib.a   \
                                             -Wl,-Bdynamic" )
-set( ALEPH_CERN_SIMLIBRARIES  "-Wl,-Bstatic ${CERNLIB_LIBDIR}/libgeant321.a  \
+    set( ALEPH_CERN_SIMLIBRARIES  "-Wl,-Bstatic ${CERNLIB_LIBDIR}/libgeant321.a  \
                                             ${CERNLIB_LIBDIR}/libpythia.a    \
                                             ${CERNLIB_LIBDIR}/libjetset74.a  \
                                             ${CERNLIB_LIBDIR}/libpdflib804.a \
@@ -151,11 +154,13 @@ set( ALEPH_CERN_SIMLIBRARIES  "-Wl,-Bstatic ${CERNLIB_LIBDIR}/libgeant321.a  \
                                             ${CERNLIB_LIBDIR}/libmathlib.a   \
                                             ${CERNLIB_LIBDIR}/libkernlib.a   \
                                             -Wl,-Bdynamic" )
-set( ALEPH_CERN_X11LIBRARIES  "-Wl,-Bstatic ${CERNLIB_LIBDIR}/libgraflib.a   \
+    set( ALEPH_CERN_X11LIBRARIES  "-Wl,-Bstatic ${CERNLIB_LIBDIR}/libgraflib.a   \
                                             ${CERNLIB_LIBDIR}/libgrafX11.a   \
                                             ${CERNLIB_LIBDIR}/libpawlib.a    \
                                             -Wl,-Bdynamic -lX11 -lXm" )
+endif()
 #
+# ==================================================================================================
 add_subdirectory( bos77 )
 add_subdirectory( alephio )
 add_subdirectory( alephlib )
@@ -167,4 +172,6 @@ add_subdirectory( uphy )
 add_subdirectory( kin )
 add_subdirectory( look )
 #
-add_subdirectory( cxx )
+if( ALEPH_EDM4HEP )
+  add_subdirectory( cxx )
+endif()

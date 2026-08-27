@@ -11,6 +11,8 @@
 //  Author     : Markus Frank
 //==========================================================================
 
+/// Alpha include files
+#include <alpha/vdco.h>
 
 /// Create VDET 3D hit from VDCO row
 void alpha::output_edm4hep::event_t::process_vdco()  {
@@ -40,19 +42,21 @@ void alpha::output_edm4hep::event_t::process_vdco()  {
      8    TN  I    TrackNumber      [0,100000]
                    associated track in FRFT
   */
+  std::stringstream log;
   auto* tab = this->data.vdco.load<object_table<class vdco> >(true);
+  if( this->data.vdco.debug )  {
+    log << bos77::to_string(tab) << std::endl;
+  }
   for( uint32_t itk=1, siz=tab->size(); itk <= siz; ++itk )  {
     std::size_t     key = this->hits_vdco.size();
     auto            hit = this->hits_vdco.create();
     auto*           ah  = this->data.vdco.row<class vdco>(itk);
-    int32_t         nfrft    = ah->trackNumber();
     double          sigrphi2 = ah->sigRphi2();   // 
     double          sigz2    = ah->sigZ2();      // 
     PositionRhoZPhi pos(_LEN(ah->r()), _LEN(ah->z()), ah->phi());
     PositionRhoZPhi err(std::sqrt(sigrphi2), std::sqrt(sigz2), std::sqrt(sigrphi2));
     uint64_t        cell  = (uint64_t(ah->waferIdent()) << 32) + VDET_COORDINATE;
 
-    this->alpha2edm4hep_vdco[itk] = key;
     hit.setCellID( cell );
     hit.setTime( _TIM(0e0) );
     hit.setEDep( _ENE(0e0) );
@@ -64,6 +68,19 @@ void alpha::output_edm4hep::event_t::process_vdco()  {
         err.z()*err.x(), err.z()*err.y(), err.z()*err.z() } );
     hit.setQuality(ah->qualityFlag());
     hit.setType(VDET_COORDINATE);
-    link_hit_to_frft(nfrft, hit);
+
+    this->alpha2edm4hep_vdco[itk] = key;
+
+    if( this->data.vdco.debug )  {
+      char text[512];
+      ::snprintf(text, sizeof(text), "  VDCO %3d %8lX Wafer:%8d r:%s phi:%5.1f z:%s quality:%6d track:%2d",
+                 itk, uint64_t(ah), ah->waferIdent(),
+                 fmt_len(ah->r()).c_str(), ah->phi(), fmt_len(ah->z()).c_str(),
+                 ah->qualityFlag(), ah->trackNumber() );
+      log << text << std::endl;
+    }
+  }
+  if( this->data.vdco.debug )  {
+    ::printf("%s\n", log.str().c_str());
   }
 }

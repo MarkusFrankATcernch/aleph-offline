@@ -11,6 +11,8 @@
 //  Author     : Markus Frank
 //==========================================================================
 
+/// Alpha include files
+#include <alpha/pidi.h>
 
 /// Process PIDI ITC digitisings (NR=0)
 void alpha::output_edm4hep::event_t::process_pidi()  {

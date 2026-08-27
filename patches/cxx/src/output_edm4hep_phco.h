@@ -11,6 +11,8 @@
 //  Author     : Markus Frank
 //==========================================================================
 
+/// Alpha include files
+#include <alpha/phco.h>
 
 /// Create HCAL cluster from PHCO row
 void alpha::output_edm4hep::event_t::process_phco()  {
@@ -55,16 +57,18 @@ void alpha::output_edm4hep::event_t::process_phco()  {
         9    PC  I    PCOB
                          CalObject number
   */
+  std::stringstream log;
+  bool  dbg = this->data.phco.debug;
   auto* tab = this->data.phco.load<object_table<class phco> >();
-  bos77::print_banks_of_type(this->data.phco.nami);
+  if( dbg )  {
+    log << bos77::to_string(tab) << std::endl;
+  }
   for( uint32_t itk=1, siz=tab->size(); itk <= siz; ++itk )  {
-    std::size_t   key  = this->hits_hcal.size();
     auto          hit  = this->hits_hcal.create();
     auto*         ah   = this->data.phco.row<class phco>(itk);
     uint64_t      cell = ah->pcOB();
     PositionPolar pos(1e0, ah->theta(), ah->phi()); // HCAL Radius unknown from bank
 
-    this->alpha2edm4hep_phco[itk] = key;
     hit.setCellID( cell );
     hit.setTime( 0e0 );
     hit.setPosition( { pos.x(), pos.y(), pos.z() } );
@@ -73,6 +77,19 @@ void alpha::output_edm4hep::event_t::process_phco()  {
     hit.setType(((  0x7 & ah->rbits())) +
 		((  0x7 & ah->ccode()) <<  3) +
 		((  0x7 & ah->noiseFlag())  <<  6));
+
+    if( dbg )  {
+      char text[512];
+      ::snprintf(text, sizeof(text),
+                 "  PHCO %3d %8lX Energy:%7.3f Corr:%7.3f Theta: %4.2f Phi: %4.2f"
+                 " Region:%3d CC:%2d Rel:%2d CalObjID:%5d",
+                 itk, uint64_t(ah), ah->eraw(), ah->ecorr(), ah->theta(), ah->phi(),
+                 ah->kdrg(), ah->ccode(), ah->rbits(), ah->pcOB());
+      log << text << std::endl;
+    }
+  }
+  if( dbg )  {
+    ::printf("%s\n", log.str().c_str());
   }
 }
 

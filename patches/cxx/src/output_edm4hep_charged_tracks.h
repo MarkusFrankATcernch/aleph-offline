@@ -26,6 +26,7 @@ void alpha::output_edm4hep::event_t::process_charged_tracks()  {
     }
     int32_t frft_track = track->ktn();
     auto    trk = this->particles_reco.create();
+
     this->alpha2edm4hep_charged[frft_track] = key;
     trk.setType(track->kclass());
     trk.setNholes(0);                // ???

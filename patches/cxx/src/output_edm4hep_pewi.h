@@ -11,6 +11,8 @@
 //  Author     : Markus Frank
 //==========================================================================
 
+/// Alpha include files
+#include <alpha/pewi.h>
 
 /// Create ECAL wire data from PEWI data
 void alpha::output_edm4hep::event_t::process_pewi()  {
@@ -33,18 +35,37 @@ void alpha::output_edm4hep::event_t::process_pewi()  {
         55   TI  I    TIME0
                       T0 time crossing from ECAL wires(ns)
   */
+  std::stringstream log;
+  bool dbg = this->data.pewi.debug;
   for( this->data.pewi.load(false); this->data.pewi.data; this->data.pewi.knext() )  {
     auto* tab = this->data.pewi.table<class pewi>();
+    if( dbg )  {
+      log << bos77::to_string(tab) << std::endl;
+    }
     std::cout << bos77::to_string(tab) << std::endl;
-    for( uint32_t i=0, siz=tab->size(); i <= siz; ++i )  {
+    for( uint32_t i=0, siz=tab->size(); i < siz; ++i )  {
       const auto* plane = tab->at(i);
       const auto*  edep = plane->planDig();
-      int32_t      t0   = plane->tiME0() * TIMECONV;
-      for( int32_t j=0; j < 44; ++j )  {
-	// Modules:  1-12 ECA, 13-24 barrel, 25-36 ECB
-        uint64_t     cell = (uint64_t(plane->moduleNumbe()) << 32) + j;
-	this->hits_ecal_wire.create(cell, edep[j], t0);
+      int32_t        t0 = plane->tiME0() * TIMECONV;
+      int32_t    module = plane->moduleNumbe();
+      const char *tag;
+      if( module<=12 )      tag = "Endcal A";
+      else if( module<=24 ) tag = "Barrel";
+      else                  tag = "Endcap B";
+      for( int32_t iplane=0; iplane < 44; ++iplane )  {
+        // Modules:  1-12 ECA, 13-24 barrel, 25-36 ECB
+        uint64_t     cell = (uint64_t(module) << 32) + iplane;
+        this->hits_ecal_wire.create(cell, edep[iplane], t0);
+        if( dbg )  {
+          char text[256];
+          ::snprintf(text, sizeof(text), "  PEWI %-10s EC wire: mod:%2d plane:%2d E:%7s GeV T0:%2d ns",
+                     tag, module, iplane, fmt_ene(edep[iplane]/1e6).c_str(), t0);
+          log << text << std::endl;
+        }
       }
     }
+  }
+  if( dbg )  {
+    ::printf("%s\n", log.str().c_str());
   }
 }

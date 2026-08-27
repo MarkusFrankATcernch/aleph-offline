@@ -11,6 +11,8 @@
 //  Author     : Markus Frank
 //==========================================================================
 
+/// Alpha include files
+#include <alpha/vdfk.h>
 
 /// Process VDCO relations to FKIN
 void alpha::output_edm4hep::event_t::process_vdfk()  {
@@ -47,7 +49,7 @@ void alpha::output_edm4hep::event_t::process_vdfk()  {
     if( it == this->alpha2edm4hep_vdco.end() )  {
       throw std::runtime_error("Failed to access VDCO cluster id: "+std::to_string(nvdco));
     }
-    edm4hep::MutableTrackerHit3D vdco = this->hits_vdco[it->second];
+    trackerhit_t vdco = this->hits_vdco[it->second];
     uint64_t cell = vdco.getCellID() & (~VDET_COORDINATE);
     auto mcp = this->particle_mc_fkin(nfkin);
     if( !mcp.isAvailable() ) ++no_fkin;

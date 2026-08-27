@@ -11,6 +11,9 @@
 //  Author     : Markus Frank
 //==========================================================================
 
+/// Alpha include files
+#include <alpha/pgac.h>
+
 /// Convert gammas from PGAC.
 void alpha::output_edm4hep::event_t::process_gammas_pgac()  {
   /**
