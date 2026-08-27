@@ -81,13 +81,15 @@ void alpha::output_edm4hep::event_t::process_tpco()  {
   }
   for( uint32_t i=1; i <= tab->size(); ++i )  {
     class tpco*     ah   = tab->row(i);
-    uint64_t        cell = ah->index();
+    uint64_t        indx = ah->index();
     auto            hit  = this->hits_tpco.create();
     PositionRhoZPhi pos (_LEN(ah->rvalue()), _LEN(ah->zvalue()), ah->phi());
     PositionRhoZPhi err (std::sqrt(ah->sigRphi()), std::sqrt(ah->sigZ()), std::sqrt(ah->sigRphi()));
-    uint32_t        padrow = (cell/100000);
-    uint32_t        sector = (cell/100)%100;
-    uint32_t        pad    = (cell%100);
+    uint32_t        padrow = (indx/100000);
+    uint32_t        sector = (indx/100)%100;
+    uint32_t        pad    = (indx%100);
+    uint64_t        cell   = detector_id(detectorid::TPC) + (sector<<48) + (padrow<<40) + (pad<<32);
+    // cell += uint64_t(ah->rvalue())<<20 + uint64_t(ah->zvalue())<<10 + uint64_t(ah->phi());
 
     hit.setCellID( cell );
     hit.setTime( _TIM(0e0) );

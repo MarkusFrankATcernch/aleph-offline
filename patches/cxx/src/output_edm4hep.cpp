@@ -196,6 +196,25 @@ namespace G4 = TGeant4Unit;
 namespace alpha  {
 
   class edm4hep_processor;
+
+  class  detectorid  {
+    enum  subdetector {
+      VDET = 1,
+      ITC  = 2,
+      TPC  = 3,
+      ECAL = 4,
+      HCAL = 5,
+      MUON = 6,
+      LCAL = 7,
+      SCAL = 8,
+      SATR = 9,
+      BOM  = 10,
+      LAST
+    };
+  };
+  static uint64_t detector_id(detectorid::subdetector det)  {
+    return uint64_t(det)<<56;
+  }
   
   /// Helper class to manager podio output of event data
   /**

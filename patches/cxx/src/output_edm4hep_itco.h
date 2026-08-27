@@ -55,9 +55,9 @@ void alpha::output_edm4hep::event_t::process_itco()  {
   }
   PositionRhoZPhi pos;
   for( uint32_t i=1; i <= tab->size(); ++i )  {
-    class itco*     ah  = tab->row(i);
+    class itco*     ah   = tab->row(i);
+    uint64_t        cell = detector_id(detectorid::ITC) + ah->wireNumber();
     PositionRhoZPhi err(std::sqrt(ah->sigmaRphi()), std::sqrt(ah->sigmaZ()), std::sqrt(ah->sigmaRphi()));
-    uint64_t        cell = ah->wireNumber();
 
     /// Process first hit (or ambiguity)
     auto hit1 = this->hits_itco1.create();
