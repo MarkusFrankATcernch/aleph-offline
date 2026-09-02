@@ -15,7 +15,7 @@
 #include <alpha/pasl.h>
 
 /// Link reconstructed charged tracks from FRFT to MC tracks
-void alpha::output_edm4hep::event_t::process_pasl()  {
+void alpha::edm4hep_output::event_t::process_pasl()  {
   /**
      +------+                               Subschema: ItcPOTBanks                
      | PASL |  JULIA track to FKIN track                                           

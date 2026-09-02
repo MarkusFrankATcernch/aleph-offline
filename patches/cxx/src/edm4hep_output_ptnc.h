@@ -19,7 +19,7 @@
 extern "C" void tctglb_(int32_t& slot, float& rs, float& rphis, float& zs, float& r, float& rphi, float& z);
 
 /// Create Production output Tpc pad Coordinates (NR=0)
-void alpha::output_edm4hep::event_t::process_ptnc()  {
+void alpha::edm4hep_output::event_t::process_ptnc()  {
   /**
 
      Be careful: the resulting pads only contain the geometrical trafo

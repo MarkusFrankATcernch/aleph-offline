@@ -15,7 +15,7 @@
 #include <alpha/pgac.h>
 
 /// Convert gammas from PGAC.
-void alpha::output_edm4hep::event_t::process_gammas_pgac()  {
+void alpha::edm4hep_output::event_t::process_gammas_pgac()  {
   /**
      +------+                              Subschema: EcalJULBanks                
      | PGAC |  Photons from GAMPEX (oct 94)                                        

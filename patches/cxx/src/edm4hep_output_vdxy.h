@@ -16,7 +16,7 @@
 #include <alpha/vdxy.h>
 
 /// Create VDET 3D hit from VDXY row
-void alpha::output_edm4hep::event_t::process_vdxy()  {
+void alpha::edm4hep_output::event_t::process_vdxy()  {
   /**
     +------+  Subschema: VdetPOTBanks
     | VDXY |  MVD hits in r-phi wafer.

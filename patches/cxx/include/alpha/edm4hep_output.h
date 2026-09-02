@@ -37,7 +37,6 @@ namespace alpha  {
     class io_t;
     class event_t;
     class data_access_t;
-    class experiment_t;
 
   public:
     std::unique_ptr<io_t>            io    { };
@@ -47,6 +46,8 @@ namespace alpha  {
 
     std::string output_file  { };
 
+    bool        debug_io            { false };
+    
     bool        save_all            { false };
     
     bool        save_particles      { false };

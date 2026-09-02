@@ -15,7 +15,7 @@
 #include <alpha/vdfk.h>
 
 /// Process VDCO relations to FKIN
-void alpha::output_edm4hep::event_t::process_vdfk()  {
+void alpha::edm4hep_output::event_t::process_vdfk()  {
   /**
                                         Subschema: VdetGALBanks
      +------+

@@ -15,7 +15,7 @@
 #include <alpha/pfer.h>
 
 /// Create HCAL cluster relations from PECO to FRFT tracks: bank PFHR
-void alpha::output_edm4hep::event_t::process_pfer()  {
+void alpha::edm4hep_output::event_t::process_pfer()  {
   /**
      +------+                              Subschema: CobjPOTBanks                
      | PFER |  Fitted track-Ecalobject                                             

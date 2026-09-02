@@ -20,7 +20,7 @@
 #include <alpha/muid.h>
 
 /// Convert charged tracks. They enter the catalog with their FRFT row number
-void alpha::output_edm4hep::event_t::process_charged_tracks()  {
+void alpha::edm4hep_output::event_t::process_charged_tracks()  {
   this->alpha2edm4hep_charged.clear();
   if( this->data.debug_charged_tracks )  {
   std::cout << "+++ Charged Tracks: KFCHT=" << qcde.KFCHT << " KLCHT:" << qcde.KLCHT << std::endl;
@@ -111,9 +111,9 @@ void alpha::output_edm4hep::event_t::process_charged_tracks()  {
       trk.addToSubdetectorHitNumbers(hmad->nplaExp());
       trk.addToSubdetectorHitNumbers(hmad->nplaLast());
       trk.addToSubdetectorHitNumbers(hmad->multHits());
-      trk.addToSubdetectorHitNumbers(hmad->igeomFlag());
+      trk.addToSubdetectorHitNumbers(hmad->igeomflag());
       trk.addToSubdetectorHitNumbers(int(1000e0*hmad->enerDep()));
-      trk.addToSubdetectorHitNumbers(int(1000e0*hmad->ChiSquare()));
+      trk.addToSubdetectorHitNumbers(int(1000e0*hmad->chiSquare()));
       trk.addToSubdetectorHitNumbers(hmad->numbDeg());
       trk.addToSubdetectorHitNumbers(hmad->iexpbmap());
       trk.addToSubdetectorHitNumbers(hmad->itruebmap());
@@ -123,9 +123,12 @@ void alpha::output_edm4hep::event_t::process_charged_tracks()  {
       /// See 'sbank MCAD' for details
       const auto* mcad = track->mcad();
       trk.addToSubdetectorHitNumbers(charged_track_items::MCAD_DATA);
-      trk.addToSubdetectorHitNumbers(mcad->nasshit());
-      trk.addToSubdetectorHitNumbers(int(1000e0*mcad->distHit()));
-      trk.addToSubdetectorHitNumbers(int(1000e0*mcad->distCut()));
+      trk.addToSubdetectorHitNumbers(mcad->nassHit()[0]);
+      trk.addToSubdetectorHitNumbers(int(1000e0*mcad->distHit()[0]));
+      trk.addToSubdetectorHitNumbers(int(1000e0*mcad->distCut()[0]));
+      trk.addToSubdetectorHitNumbers(mcad->nassHit()[1]);
+      trk.addToSubdetectorHitNumbers(int(1000e0*mcad->distHit()[1]));
+      trk.addToSubdetectorHitNumbers(int(1000e0*mcad->distCut()[1]));
       trk.addToSubdetectorHitNumbers(int(1000e0*mcad->angMin()));
       trk.addToSubdetectorHitNumbers(int(1000e0*mcad->angCut()));
     }

@@ -15,7 +15,7 @@
 #include <alpha/hpdi.h>
 
 /// HPDI table bank: Hcal Plane DIgits (RawData)
-void alpha::output_edm4hep::event_t::process_hpdi()  {
+void alpha::edm4hep_output::event_t::process_hpdi()  {
   /**
  +------+                              Subschema: HcalRAWBanks                
  | HPDI |  Hcal Plane DIgits (RawData)                                         

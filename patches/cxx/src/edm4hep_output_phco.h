@@ -15,7 +15,7 @@
 #include <alpha/phco.h>
 
 /// Create HCAL cluster from PHCO row
-void alpha::output_edm4hep::event_t::process_phco()  {
+void alpha::edm4hep_output::event_t::process_phco()  {
   /*
                                         Subschema: HobjPOTBanks                 
    +------+                                                                       

@@ -15,7 +15,7 @@
 #include <alpha/vcpl.h>
 
 /// Process information from VCPL bank
-void alpha::output_edm4hep::event_t::process_vcpl()  {
+void alpha::edm4hep_output::event_t::process_vcpl()  {
   /**
      Subschema: VdetPOTBanks
      +------+ 

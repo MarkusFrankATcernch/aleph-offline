@@ -16,7 +16,7 @@
 #include <alpha/vdzt.h>
 
 /// Create VDET 3D hit from VDCO row
-void alpha::output_edm4hep::event_t::process_vdzt()  {
+void alpha::edm4hep_output::event_t::process_vdzt()  {
   /*
                                         Subschema: VdetPOTBanks
  +------+                                                                       

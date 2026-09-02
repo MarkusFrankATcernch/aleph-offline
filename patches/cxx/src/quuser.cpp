@@ -14,7 +14,7 @@
 /// Framework include files
 #include <alpha/qcde.h>
 #include <alpha/processor.h>
-#include <alpha/output_edm4hep.h>
+#include <alpha/edm4hep_output.h>
 #include <iostream>
 #include <cstring>
 #include <string>
@@ -33,12 +33,12 @@ namespace alpha  {
   const std::string& bos_bank_lists = "CERST";
 
   class test_processor;
-  class output_edm4hep;
+  class edm4hep_output;
   class event_processor;
 
   std::unique_ptr<processor<test_processor> >  test_proc;
   std::unique_ptr<processor<event_processor> > event_proc;
-  std::unique_ptr<output_edm4hep> edm4hep_proc;
+  std::unique_ptr<edm4hep_output> edm4hep_proc;
 
 }
 
@@ -102,7 +102,7 @@ int main(int argc, char** argv)   {
       test_proc = std::make_unique<processor<test_processor> >(debug, true);
     }
     else if( strncmp(p,"edm4hep",1) == 0 ) {
-      edm4hep_proc = std::make_unique<output_edm4hep>();
+      edm4hep_proc = std::make_unique<edm4hep_output>();
     }
     else {
       edm4hep_proc->set_option(argv[i], argv[i+1]);

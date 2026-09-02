@@ -15,6 +15,8 @@
 
 /// Include files
 #include <DD4hep/IDDescriptor.h>
+/// C/C++ include files
+#include <memory>
 
 /// ALPHA namespace declaration
 namespace alpha  {
@@ -30,9 +32,11 @@ namespace alpha  {
     dd4hep::IDDescriptor descriptor;
     const Field*         field_system = nullptr;
     dd4hep::VolumeID     desc_system  = 0UL;
+    std::string          detector_name;
+    int                  detector_id;
   public:
     /// Default constructor
-    detector_t(const char* id);
+    detector_t(const char* det, const char* id, int det_id);
     /// Default destructor
     virtual ~detector_t();
   };
@@ -115,7 +119,7 @@ namespace alpha  {
    *    \author  M.Frank
    *    \date    01/08/2026
    */
-  class output_edm4hep::output_edm4hep::experiment_t  {
+  class experiment_t  {
   public:
     std::unique_ptr<detector_vdet_t> vdet  { };
     std::unique_ptr<detector_itc_t>  itc   { };

@@ -15,7 +15,7 @@
 #include <alpha/vdht.h>
 
 /// Create VDET simulation hit from VDHT row (produced by GALEPH)
-void alpha::output_edm4hep::event_t::process_vdht()  {
+void alpha::edm4hep_output::event_t::process_vdht()  {
   /**
      Subschema: VdetGALBanks                 
      +------+                                                                       

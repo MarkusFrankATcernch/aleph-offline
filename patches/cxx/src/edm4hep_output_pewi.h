@@ -15,7 +15,7 @@
 #include <alpha/pewi.h>
 
 /// Create ECAL wire data from PEWI data
-void alpha::output_edm4hep::event_t::process_pewi()  {
+void alpha::edm4hep_output::event_t::process_pewi()  {
   /**
                                         Subschema: EcalPOTBanks                 
    +------+                                                                       

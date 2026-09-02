@@ -15,7 +15,7 @@
 #include <alpha/etdi.h>
 
 /// ETDI table bank: Ecal Tower DIgits NR=0. (RAW)
-void alpha::output_edm4hep::event_t::process_etdi()  {
+void alpha::edm4hep_output::event_t::process_etdi()  {
   /**
  +------+                              Subschema: EcalRAWBanks                
  | ETDI |  Ecal Tower DIgits NR=0.                                             

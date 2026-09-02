@@ -135,7 +135,6 @@ POT banks:
 
 /// Framework include files
 #include <alpha/edm4hep_output.h>
-#include <alpha/output_encoders.h>
 
 #include <alpha/alpha.h>
 #include <alpha/qcde.h>
@@ -695,7 +694,7 @@ bool alpha::edm4hep_output::set_option(const char* name, const char* value)  {
 
 /// Initialize conversion. Open file
 bool alpha::edm4hep_output::initialize()  {
-  this->io   = std::make_unique<io_t>(true);
+  this->io   = std::make_unique<io_t>(this->debug_io);
   this->data = std::make_unique<data_access_t>("");
 
   if( !this->output_file.empty() )  {

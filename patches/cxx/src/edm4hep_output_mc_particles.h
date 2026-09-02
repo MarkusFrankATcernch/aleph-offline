@@ -13,7 +13,7 @@
 
 
 /// Create MC particle
-void alpha::output_edm4hep::event_t::process_mc_particles()  {
+void alpha::edm4hep_output::event_t::process_mc_particles()  {
   this->fkin2edm4hep_particles.clear();
   this->alpha2edm4hep_particles.clear();
   if( this->data.debug_mc_particles )  {

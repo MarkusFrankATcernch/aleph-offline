@@ -17,7 +17,7 @@
 #include <alpha/vdxy.h>
 
 /// Process VDXY/VDZT relations to FKIN
-void alpha::output_edm4hep::event_t::process_vufk()  {
+void alpha::edm4hep_output::event_t::process_vufk()  {
   /**
               Subschema: VdetGALBanks
     +------+

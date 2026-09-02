@@ -15,7 +15,7 @@
 #include <alpha/itco.h>
 
 /// Create ITC 3D hit from ITCO row
-void alpha::output_edm4hep::event_t::process_itco()  {
+void alpha::edm4hep_output::event_t::process_itco()  {
   /**
  +------+                             Subschema: ItcJuliaBanks                
  | ITCO |  ITc COordinates (Recon. Bank)                                       

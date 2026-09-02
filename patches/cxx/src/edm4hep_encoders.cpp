@@ -16,8 +16,9 @@
 #include <alpha/edm4hep_encoders.h>
 
 /// Default constructor
-alpha::detector_t::detector_t(const char* det, const char* id, int det_id)  {
-  this->descriptor = dd4hep::IDDescriptor(det, id);
+alpha::detector_t::detector_t(const char* det, const char* id, int det_id)
+  : descriptor(det, id), detector_name(det), detector_id(det_id)
+{
   this->field_system = this->descriptor.field("system");
   this->desc_system  = this->descriptor.encode(this->field_system, det_id);
 }
@@ -76,17 +77,16 @@ alpha::detector_hcal_t::detector_hcal_t()
 
  
 /// Default constructor
-alpha::output_edm4hep::experiment_t::experiment_t()   {
+alpha::experiment_t::experiment_t()   {
   const char* muon_id = "system:8,endcap:1";
-  this->exp->vdet = std::make_unique<detector_vdet_t>();
-  this->exp->itc  = std::make_unique<detector_itc_t>();
-  this->exp->tpc  = std::make_unique<detector_tpc_t>();
-  this->exp->ecal = std::make_unique<detector_ecal_t>();
-  this->exp->hcal = std::make_unique<detector_hcal_t>();
-  this->exp->muon = std::make_unique<detector_t>();
-  this->exp->muon->descriptor = dd4hep::IDDescriptor("MUON", muon_id);
+  this->vdet = std::make_unique<detector_vdet_t>();
+  this->itc  = std::make_unique<detector_itc_t>();
+  this->tpc  = std::make_unique<detector_tpc_t>();
+  this->ecal = std::make_unique<detector_ecal_t>();
+  this->hcal = std::make_unique<detector_hcal_t>();
+  this->muon = std::make_unique<detector_t>("MUON",muon_id,detectorid::MUON);
 }
 
 /// Default destructor
-alpha::output_edm4hep::experiment_t::~experiment_t()   {
+alpha::experiment_t::~experiment_t()   {
 }

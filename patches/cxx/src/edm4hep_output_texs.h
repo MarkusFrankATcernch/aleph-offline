@@ -22,7 +22,7 @@ namespace {
 }
 
 /// Production output Tpc track pad dE/dX (NR=0)
-void alpha::output_edm4hep::event_t::process_texs()  {
+void alpha::edm4hep_output::event_t::process_texs()  {
   /**
      +------+                               Subschema: TpcJULBanks                
      | TEXS |  Tpc dE/dX Segment (NR=0) One                                        

@@ -17,12 +17,12 @@
 
 namespace {
   edm4hep::Quantity _dedxOv(int tag, float v, float e)  {
-    return { tag|alpha::output_edm4hep::event_t::DEDX_TRACK_OVERLAP, v, e };
+    return { tag|alpha::edm4hep_output::event_t::DEDX_TRACK_OVERLAP, v, e };
   }
 }
 
 /// Production output Tpc track pad dE/dX (NR=0)
-void alpha::output_edm4hep::event_t::process_t2xs()  {
+void alpha::edm4hep_output::event_t::process_t2xs()  {
   /**
      +------+                               Subschema: TpcJULBanks                
      | T2XS |  Tpc dE/dX Segment for                                               

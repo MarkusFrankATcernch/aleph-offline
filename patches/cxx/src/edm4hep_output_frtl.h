@@ -18,7 +18,7 @@
 #include <alpha/ftcl.h>
 
 /// Process information from FRTL bank
-void alpha::output_edm4hep::event_t::process_frtl()  {
+void alpha::edm4hep_output::event_t::process_frtl()  {
   /**      Subschema: JULPOTFitTrack
  +------+
  | FRTL |  Tpc+Itc+Vdet Geometry Track                                         

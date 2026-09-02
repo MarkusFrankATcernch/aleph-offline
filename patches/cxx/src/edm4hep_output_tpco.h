@@ -16,7 +16,7 @@
 #include <alpha/tpcgeom.h>
 
 /// Create VDET 3D hit from VDCO row
-void alpha::output_edm4hep::event_t::process_tpco()  {
+void alpha::edm4hep_output::event_t::process_tpco()  {
   /**
  +------+                               Subschema: TpcJULBanks                
  | TPCO |  Tpc Pad Coordinates in global                                       

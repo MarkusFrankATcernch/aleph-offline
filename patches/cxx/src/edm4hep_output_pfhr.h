@@ -15,7 +15,7 @@
 #include <alpha/pfhr.h>
 
 /// Create HCAL cluster relations from PHCO to FRFT tracks: bank PFHR
-void alpha::output_edm4hep::event_t::process_pfhr()  {
+void alpha::edm4hep_output::event_t::process_pfhr()  {
   /**
      +------+                              Subschema: CobjPOTBanks                
      | PFHR |  Fitted track-Hcalobject                                             
