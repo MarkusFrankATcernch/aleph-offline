@@ -208,25 +208,32 @@ namespace bos77  {
   std::string to_string(const bank_header* data, const std::string& prefix)  {
     std::stringstream str;
     const auto* bnk = (const bank*)data;
-    const auto* nam = (char*)&data->_name;
-    const auto* nb  = data->next_bank_offset();
-    std::size_t nw  = bnk->total_num_words();
-    std::size_t pl  = bnk->payload_columns()*bnk->payload_rows();
 
     str << prefix;
     if( !prefix.empty() ) str << " ";
-    str << "Bank: " << nam[0] << nam[1] << nam[2] << nam[3]
-        << " row:"  << std::setw(6) << std::left  << data->row()
-        << " Len:"  << std::setw(5) << std::right << data->total_length()
-        << "/"      << std::setw(5) << std::left  << data->data_length();
-    if( nw > 4 && pl+subheader_words == nw )  {
-      str << " Words/row:" << std::setw(4) << std::right << bnk->payload_columns()
-          << " #row:"      << std::setw(4) << std::right << bnk->payload_rows();
+
+    if( bnk )  {
+      const auto* nam = (char*)&data->_name;
+      const auto* nb  = data->next_bank_offset();
+      std::size_t nw  = bnk->total_num_words();
+      std::size_t pl  = bnk->payload_columns()*bnk->payload_rows();
+
+      str << "Bank: " << nam[0] << nam[1] << nam[2] << nam[3]
+          << " row:"  << std::setw(6) << std::left  << data->row()
+          << " Len:"  << std::setw(5) << std::right << data->total_length()
+          << "/"      << std::setw(5) << std::left  << data->data_length();
+      if( nw > 4 && pl+subheader_words == nw )  {
+        str << " Words/row:" << std::setw(4) << std::right << bnk->payload_columns()
+            << " #row:"      << std::setw(4) << std::right << bnk->payload_rows();
+      }
+      if( nb )  {
+        str << " KNext:" << std::setw(8) << data->offset2next()
+            << "/"       << std::setw(4) << std::left
+            << (const char*)(nb ? nb->name().c_str() : " ");
+      }
     }
-    if( nb )  {
-      str << " KNext:" << std::setw(8) << data->offset2next()
-          << "/"       << std::setw(4) << std::left
-          << (const char*)(nb ? nb->name().c_str() : " ");
+    else  {
+      str << "[Invalid bank reference]";
     }
     return str.str();
   }

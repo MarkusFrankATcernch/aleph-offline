@@ -14,7 +14,7 @@
 /// Alpha include files
 #include <alpha/itco.h>
 
-/// Create VDET 3D hit from VDCO row
+/// Create ITC 3D hit from ITCO row
 void alpha::output_edm4hep::event_t::process_itco()  {
   /**
  +------+                             Subschema: ItcJuliaBanks                
@@ -47,16 +47,23 @@ void alpha::output_edm4hep::event_t::process_itco()  {
       8    DT  F    DriftTime        [0.0,512.0]                               
                        Drift Time calc. from TDC (ns.)                         
    */
+  char text[512];
   std::stringstream log;
-  bool  dbg = this->data.itco.debug;
-  auto* tab = this->data.itco.load<object_table<class itco> >(true);
+  PositionRhoZPhi   pos;
+  auto& itc  = *this->exp.itc;
+  auto& desc = itc.descriptor;
+  bool  dbg  = this->data.itco.debug;
+  auto* tab  = this->data.itco.load<object_table<class itco> >(true);
   if( dbg )  {
     log << bos77::to_string(tab) << std::endl;
   }
-  PositionRhoZPhi pos;
+  
   for( uint32_t i=1; i <= tab->size(); ++i )  {
-    class itco*     ah   = tab->row(i);
-    uint64_t        cell = detector_id(detectorid::ITC) + ah->wireNumber();
+    class itco* ah   = tab->row(i);
+    int32_t     layer = (ah->wireNumber()/1000);
+    int32_t     wire  = (ah->wireNumber()%1000);
+    uint64_t    cell  = itc.desc_system + 
+      desc.encode(itc.field_layer,  layer) + desc.encode(itc.field_wire, wire);
     PositionRhoZPhi err(std::sqrt(ah->sigmaRphi()), std::sqrt(ah->sigmaZ()), std::sqrt(ah->sigmaRphi()));
 
     /// Process first hit (or ambiguity)
@@ -86,13 +93,13 @@ void alpha::output_edm4hep::event_t::process_itco()  {
         err.x()*err.x(),
         err.y()*err.x(), err.y()*err.y(),
         err.z()*err.x(), err.z()*err.y(), err.z()*err.z() } );
-    hit2.setQuality(0);
+    hit2.setQuality(1);
     hit2.setType(ITC_COORDINATE);
 
     if( dbg )  {
-      char text[512];
-      ::snprintf(text, sizeof(text), "  ITCO %3d %8lX Wire:%6d r:%s phi:%5.1f/%5.1f z:%s drift:%3.0f ns",
-                 i  , uint64_t(ah), ah->wireNumber(),
+      ::snprintf(text, sizeof(text),
+                 "\tITCO %3d %8lX Cell:%08lX Wire:%6d r:%s phi:%5.1f/%5.1f z:%s drift:%3.0f ns",
+                 i  , uint64_t(ah), cell, ah->wireNumber(),
                  fmt_len(ah->radius()).c_str(), ah->phi1(),
                  ah->phi2(), fmt_len(ah->zhit()).c_str(),
                  ah->driftTime() );

@@ -24,6 +24,12 @@ if(NOT podio_FOUND)
   message(ERROR "podio not found, Building will fail")
 endif()
 #
+
+find_package(DD4hep)
+if(NOT DD4hep_FOUND)
+  message(ERROR "DD4hep not found, Building will fail")
+endif()
+#
 #
 find_package(ROOT REQUIRED)
 if(NOT ROOT_FOUND)
@@ -51,6 +57,7 @@ target_link_libraries(      userlib
            Aleph::alephlib
 	   Aleph::alephio
 	   Aleph::bos77
+           DD4hep::DDCore
            EDM4HEP::edm4hep
            EDM4HEP::edm4hepDict
            podio::podio
@@ -63,8 +70,7 @@ target_link_libraries(      userlib
            ${ALEPH_CERN_LIBRARIES}
 )
 #
-add_executable( alpha_user ${alpha_dir}/pack/qmain.F
-                           ${user_dir}/src/quuser.cpp
+add_executable( alpha_user ${user_dir}/src/quuser.cpp
                            ${ALEPH_PROGRAM_SOURCES} 
 )
 target_link_libraries( alpha_user
@@ -77,7 +83,8 @@ target_link_libraries( alpha_user
  	   Aleph::bos77
            ${ALEPH_CERN_LIBRARIES}
 )
-#target_link_options(alpha_user PUBLIC "-Wl,--defsym=bcs_=0x12345")
+target_compile_options(alpha_user PUBLIC "-fpie")
+target_link_options(alpha_user PUBLIC "-fpie")
 #
 #
 install(DIRECTORY  include/alpha  DESTINATION include)

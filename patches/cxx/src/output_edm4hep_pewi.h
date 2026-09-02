@@ -42,7 +42,6 @@ void alpha::output_edm4hep::event_t::process_pewi()  {
     if( dbg )  {
       log << bos77::to_string(tab) << std::endl;
     }
-    std::cout << bos77::to_string(tab) << std::endl;
     for( uint32_t i=0, siz=tab->size(); i < siz; ++i )  {
       const auto* plane = tab->at(i);
       const auto*  edep = plane->planDig();
@@ -58,7 +57,8 @@ void alpha::output_edm4hep::event_t::process_pewi()  {
         this->hits_ecal_wire.create(cell, edep[iplane], t0);
         if( dbg )  {
           char text[256];
-          ::snprintf(text, sizeof(text), "  PEWI %-10s EC wire: mod:%2d plane:%2d E:%7s GeV T0:%2d ns",
+          ::snprintf(text, sizeof(text),
+                     "\tPEWI %-10s EC wire: mod:%2d plane:%2d E:%7s GeV T0:%2d ns",
                      tag, module, iplane, fmt_ene(edep[iplane]/1e6).c_str(), t0);
           log << text << std::endl;
         }

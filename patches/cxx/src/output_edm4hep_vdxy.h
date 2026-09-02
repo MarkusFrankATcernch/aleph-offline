@@ -72,10 +72,13 @@ void alpha::output_edm4hep::event_t::process_vdxy()  {
                        Iview*2**10 + Istrip
 
   */
+  std::stringstream log;
   object_table<class vfhl>* vfhl_b = nullptr;
   int32_t      vfhl_nami = this->data.vfhl.nami;
   int32_t      vfhl_nr = -1;
-  std::stringstream log;
+  auto& vdet = *this->exp.vdet;
+  auto& desc = vdet.descriptor;
+ 
   for( this->data.vdxy.load(false); this->data.vdxy.data; this->data.vdxy.knext() )  {
     auto* table = this->data.vdxy.table<class vdxy>();
     uint32_t row   = table->bank_header::row();
@@ -83,6 +86,11 @@ void alpha::output_edm4hep::event_t::process_vdxy()  {
     uint64_t iphi  = ((row/10)%100);
     uint64_t iz    = ((row/1000)%10);
     uint64_t layer = ((row/10000));
+    uint64_t cell  = vdet.desc_system +
+      desc.encode(vdet.field_layer, layer) +
+      desc.encode(vdet.field_z,     iz)    +
+      desc.encode(vdet.field_phi,   iphi)  +
+      desc.encode(vdet.field_view,  iview);
 
     if( this->data.vdxy.debug )  {
       log << bos77::to_string(table) << " Wafer hits: " << std::endl;
@@ -95,16 +103,17 @@ void alpha::output_edm4hep::event_t::process_vdxy()  {
       Position    err(_LEN(ah->sigmaX()), _LEN(ah->sigmaY()), _LEN(ah->sigmaU()));
       int32_t     addr = 0;
       int32_t     vfhl = ah->iwaf();
-      uint64_t    cell = iview  + (layer << 4) + (iphi << 12) + (iz << 20);
-      
+      uint64_t    hit_cell = cell;
+
       if( vfhl_nr != vfhl )  {
         vfhl_nr = vfhl;
         vfhl_b  = (object_table<class vfhl>*)bos77::get_bank(vfhl_nami, vfhl);
       }
       if( vfhl_b )  {
         addr = vfhl_b->row(ah->ihit())->hitAdd();
+        hit_cell = cell + desc.encode(vdet.field_strip, (addr>>18)&0x7FFF);
       }
-      hit.setCellID( cell );
+      hit.setCellID( hit_cell );
       hit.setTime( _TIM(0e0) );
       hit.setEDep( ah->pulseHeight() );
       hit.setEDepError( _ENE(0e0) );

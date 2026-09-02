@@ -17,18 +17,18 @@ C ======================================================================
       values(2) = -1;
       values(3) = -1;
       values(4) = -1;
-      RETURN
       END
 
+C ======================================================================
       SUBROUTINE GET_NLIST(RES, JW, IND, NAM)
       INTEGER JW(*), IND
       CHARACTER*4 RES
       CHARACTER*4 NAM
       CHARACTER*4 NLIST
       RES = NLIST(JW, IND, NAM) 
-      RETURN
       END
 
+C ======================================================================
       INTEGER*4 FUNCTION DO_NLINK(JW, NAM, IND)
       INTEGER*4 JW(*), IND
       INTEGER*4 NLINK, NAMIND, AIND
@@ -47,7 +47,6 @@ C ======================================================================
       CHARACTER* (*)  NAME
       NAME = CQPART(CODE)
       LEN = LENOCC(NAME)
-      RETURN
       END
 
 C ======================================================================
@@ -66,6 +65,14 @@ C ======================================================================
 
       SUBROUTINE SET_ALPHA_OPTS()
       CALL QJOPTR('EF',' ')
-      RETURN
       END
       
+C ======================================================================
+      SUBROUTINE TPC_GEOM(RGEOM)
+      REAL RGEOM
+#include "tpgpar.h"
+#include "tpgeom.h"
+      RGEOM = RTPCMN
+      END
+
+C ======================================================================

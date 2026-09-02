@@ -43,7 +43,9 @@ void alpha::output_edm4hep::event_t::process_vdco()  {
                    associated track in FRFT
   */
   std::stringstream log;
-  auto* tab = this->data.vdco.load<object_table<class vdco> >(true);
+  auto* tab  = this->data.vdco.load<object_table<class vdco> >(true);
+  auto& vdet = *this->exp.vdet;
+  auto& desc = vdet.descriptor;
   if( this->data.vdco.debug )  {
     log << bos77::to_string(tab) << std::endl;
   }
@@ -55,7 +57,16 @@ void alpha::output_edm4hep::event_t::process_vdco()  {
     double          sigz2    = ah->sigZ2();      // 
     PositionRhoZPhi pos(_LEN(ah->r()), _LEN(ah->z()), ah->phi());
     PositionRhoZPhi err(std::sqrt(sigrphi2), std::sqrt(sigz2), std::sqrt(sigrphi2));
-    uint64_t        cell  = (uint64_t(ah->waferIdent()) << 32) + VDET_COORDINATE;
+    int32_t         wafid  = ah->waferIdent();
+    int32_t         layer  = (wafid/10000);    // See vadewa.F    ILAY  / I  Layer index of this wafer
+    int32_t         iz     = (wafid/1000)%10;  // See vadewa.F    IWFF  / I  Local wafer-in-face index + VDXY bank doc
+    int32_t         iphi   = (wafid/10)%100;   // See vadewa.F    IFAC  / I  Local face index of this wafer + VDXY bank doc
+    int32_t         iview  = (wafid%10);       // See vadewa.F    IVIEW / I  View number (=1 for z, =2 for r-phi)
+    uint64_t        cell   = vdet.desc_system + 
+      desc.encode(vdet.field_layer,  layer)  +
+      desc.encode(vdet.field_z,      iz)     +
+      desc.encode(vdet.field_phi,    iphi)   +
+      desc.encode(vdet.field_view,   iview);
 
     hit.setCellID( cell );
     hit.setTime( _TIM(0e0) );
@@ -73,8 +84,8 @@ void alpha::output_edm4hep::event_t::process_vdco()  {
 
     if( this->data.vdco.debug )  {
       char text[512];
-      ::snprintf(text, sizeof(text), "  VDCO %3d %8lX Wafer:%8d r:%s phi:%5.1f z:%s quality:%6d track:%2d",
-                 itk, uint64_t(ah), ah->waferIdent(),
+      ::snprintf(text, sizeof(text), "  VDCO %3d %8lX Cell:%08lX Wafer:%8d r:%s phi:%5.1f z:%s quality:%6d track:%2d",
+                 itk, uint64_t(ah), cell, ah->waferIdent(),
                  fmt_len(ah->r()).c_str(), ah->phi(), fmt_len(ah->z()).c_str(),
                  ah->qualityFlag(), ah->trackNumber() );
       log << text << std::endl;

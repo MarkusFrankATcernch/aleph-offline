@@ -13,6 +13,7 @@
 
 /// Alpha include files
 #include <alpha/tpco.h>
+#include <alpha/tpcgeom.h>
 
 /// Create VDET 3D hit from VDCO row
 void alpha::output_edm4hep::event_t::process_tpco()  {
@@ -74,21 +75,27 @@ void alpha::output_edm4hep::event_t::process_tpco()  {
                        system                                                  
    */
   std::stringstream log;
+  auto& tpc = *this->exp.tpc;
+  auto& dsc = tpc.descriptor;
   bool  dbg = this->data.tpco.debug;
   auto* tab = this->data.tpco.load<object_table<class tpco> >(true);
   if( dbg )  {
     log << bos77::to_string(tab) << std::endl;
   }
   for( uint32_t i=1; i <= tab->size(); ++i )  {
-    class tpco*     ah   = tab->row(i);
-    uint64_t        indx = ah->index();
-    auto            hit  = this->hits_tpco.create();
+    class tpco* ah     = tab->row(i);
+    uint64_t    indx   = ah->index();
+    auto        hit    = this->hits_tpco.create();
+    uint32_t    padrow = (indx/100000);
+    uint32_t    sector = (indx/1000)%100;
+    uint32_t    pad    = (indx%1000);
     PositionRhoZPhi pos (_LEN(ah->rvalue()), _LEN(ah->zvalue()), ah->phi());
     PositionRhoZPhi err (std::sqrt(ah->sigRphi()), std::sqrt(ah->sigZ()), std::sqrt(ah->sigRphi()));
-    uint32_t        padrow = (indx/100000);
-    uint32_t        sector = (indx/100)%100;
-    uint32_t        pad    = (indx%100);
-    uint64_t        cell   = detector_id(detectorid::TPC) + (sector<<48) + (padrow<<40) + (pad<<32);
+    int32_t         trno = ah->trackNumber();
+    int32_t         sign = trno != 0 ? int(trno/std::abs(trno)) : 1;
+    // Encode local coordinates
+    uint64_t    cell   = tpc.desc_system   + dsc.encode(tpc.field_sector, sector) +
+      dsc.encode(tpc.field_padrow, padrow) + dsc.encode(tpc.field_pad,    pad);
     // cell += uint64_t(ah->rvalue())<<20 + uint64_t(ah->zvalue())<<10 + uint64_t(ah->phi());
 
     hit.setCellID( cell );
@@ -100,14 +107,17 @@ void alpha::output_edm4hep::event_t::process_tpco()  {
         err.x()*err.x(),
         err.y()*err.x(), err.y()*err.y(),
         err.z()*err.x(), err.z()*err.y(), err.z()*err.z() } );
-    hit.setQuality( ah->originFlag() + (ah->clusterNumbe()<<4) );
-    hit.setType( ITC_COORDINATE );
+    hit.setQuality( sign*(ah->originFlag() + (ah->clusterNumbe()<<4)) );
+    hit.setType( TPC_COORDINATE );
     
     if( dbg )  {
       char text[512];
-      ::snprintf(text, sizeof(text), "  TPCO %3d %8lX %6d Track:%2d Sector:%2d Padrow:%2d Pad:%3d r:%s phi:%5.1f z:%s subclu:%3d",
-                 i, uint64_t(ah), ah->index(), ah->trackNumber(), sector, padrow, pad,
-                 fmt_len(ah->rvalue()).c_str(), ah->phi(), fmt_len(ah->zvalue()).c_str(), ah->clusterNumbe() );
+      ::snprintf(text, sizeof(text),
+                 "\tTPCO %3d %08lX Cell:%08lX Indx:%8ld Sector:%2d Padrow:%2d Pad:%3d Track:%3d "
+                 "r:%s phi:%5.2f z:%s subclu:%3d org:%1d",
+                 i, uint64_t(ah), cell, indx, sector, padrow, pad, ah->trackNumber(),
+                 fmt_len(ah->rvalue()).c_str(), ah->phi(), fmt_len(ah->zvalue()).c_str(),
+                 ah->clusterNumbe(), ah->originFlag() );
       log << text << std::endl;
     }
   }

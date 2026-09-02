@@ -59,7 +59,8 @@ void alpha::output_edm4hep::event_t::process_hpdi()  {
         if(      detector == 1 ) det_name = "Endcap A";
         else if( detector == 2 ) det_name = "Barrel  ";
         
-        ::snprintf(text, sizeof(text), "  HWDI plane hit %s add:%08lX det:%2d mod:%2d plane:%3d E:%s GeV",
+        ::snprintf(text, sizeof(text),
+                   "\tHWDI plane hit %s add:%08lX det:%2d mod:%2d plane:%3d E:%s GeV",
                    det_name, cell, detector, module, plane, fmt_ene(edep/1000e0).c_str());
         log << text << std::endl;
       }
