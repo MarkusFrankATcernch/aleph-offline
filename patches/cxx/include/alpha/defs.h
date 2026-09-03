@@ -125,28 +125,30 @@ namespace alpha  {
     }
 
     /// Check if the container is empty
-    bool     empty()  const                {  return this->_num_objects == 0;    }
+    bool     empty()  const                   {  return this->_num_objects == 0;             }
 
     /// Get object index in table (starting from NULL!). -1 if not in table
     int32_t index(const_pointer_type obj)  const;
     /** Direct object access  */
     /// Number of objects
-    uint32_t size()  const                    {  return this->_num_objects;      }
+    uint32_t size()  const                    {  return this->_num_objects;                  }
     /// Number of words per object
-    uint32_t words_per_object()  const        {  return this->_obj_words;        }
+    uint32_t words_per_object()  const        {  return this->_obj_words;                    }
     /// Direct access by row to object entry in the table 
-    value_type operator[](uint32_t idx)       {  return _access_object(idx);     }
+    value_type operator[](uint32_t idx)       {  return _access_object(idx);                 }
     /// Direct access by row to object entry in the table  (CONST)
-    value_type operator[](uint32_t idx) const {  return _access_object(idx);     }
+    value_type operator[](uint32_t idx) const {  return _access_object(idx);                 }
     /// Direct access by row to object entry in the table 
-    value_type at(uint32_t idx)               {  return _access_object(idx);     }
+    value_type at(uint32_t idx)               {  return _access_object(idx);                 }
     /// Direct access by row to object entry in the table  (CONST)
-    const value_type at(uint32_t idx) const   {  return _access_object(idx);     }
+    const value_type at(uint32_t idx) const   {  return _access_object(idx);                 }
 
+    /// bank header overload: access banks row NR
+    int32_t row()                             {  return this->bank_header::row();            }
     /// Direct access by row to object entry in the table: USE for loops with QCDE ranges
-    value_type row(uint32_t idx)              {  return _access_object(idx-1);   }
+    value_type row(uint32_t idx)              {  return _access_object(idx-1);               }
     /// Direct access by row to object entry in the table  (CONST): USE for loops with QCDE ranges
-    const value_type row(uint32_t idx) const  {  return _access_object(idx-1);   }
+    const value_type row(uint32_t idx) const  {  return _access_object(idx-1);               }
 #if 0
     /** Iterative object access  */
     /// Bank iterator: start iteration

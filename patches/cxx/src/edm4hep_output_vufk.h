@@ -41,9 +41,15 @@ void alpha::edm4hep_output::event_t::process_vufk()  {
                        fired by this track
       6    FK  I    FKIN
                        Index of FKIN track
+
+  Note:
+      View: 1 --> Z wafer, 2 --> R/phi wafer                       
   */
+  std::stringstream log;
   std::size_t no_fkin = 0;
+  std::map<int, std::size_t>::iterator it;
   auto* tab = this->data.vufk.load<object_table<class vufk> >(true);
+
   if( this->data.vufk.debug )  {
     std::cout << bos77::to_string(tab) << std::endl;
   }
@@ -52,27 +58,34 @@ void alpha::edm4hep_output::event_t::process_vufk()  {
     int32_t nfkin = rel->fkIN();
     int32_t nhit  = rel->hitNumber();
     int32_t nbank = rel->bankNumber();
+    int32_t iview = rel->view();
     int32_t hitid = (nbank<<16) + nhit;
     edm4hep::MutableTrackerHit3D  vdet_hit;
     edm4hep::MutableSimTrackerHit hit;
-    auto it = this->alpha2edm4hep_vdxy.find(hitid);
 
-    if( it != this->alpha2edm4hep_vdxy.end() )  {
+    if( this->data.vufk.debug )  {
+      char text[256];
+      ::snprintf(text, sizeof(text),
+                 "+++\tVUFK: KINE:%3d id:%08X bank:%6d row:%3d view:%1d",
+                 nfkin, hitid, nbank, nhit, iview);
+      log << text << std::endl;
+    }
+    if( iview == 1 && (it=this->alpha2edm4hep_vdzt.find(hitid)) != this->alpha2edm4hep_vdzt.end() )  {
+      hit = this->simhits_vufk_z.create();
+      vdet_hit = hits_vdzt[it->second];
+      hit.setCellID( vdet_hit.getCellID()+VDET_WAFER_Z );
+    }
+    else if( iview == 2 && (it=this->alpha2edm4hep_vdxy.find(hitid)) != this->alpha2edm4hep_vdxy.end() )  {
       hit = this->simhits_vufk_xy.create();
       vdet_hit = hits_vdxy[it->second];
       hit.setCellID( vdet_hit.getCellID()+VDET_WAFER_RPHI );
-    }
-    else if( (it=this->alpha2edm4hep_vdzt.find(hitid)) != this->alpha2edm4hep_vdzt.end() )  {
-      auto        hit = this->simhits_vufk_z.create();
-      vdet_hit = hits_vdzt[it->second];
-      hit.setCellID( vdet_hit.getCellID()+VDET_WAFER_Z );
     }
     else  {
       throw std::runtime_error("Failed to access VDXY/VDZT id: "+std::to_string(hitid));
     }
 
     float percent_deposit = rel->percentCharge();
-    _set_link(rel_vdzt_vufk, vdet_hit, hit, percent_deposit);
+    _set_link(rel_simhits_vdzt_vufk, vdet_hit, hit, percent_deposit);
 
     hit.setTime( 0e0 );
     hit.setQuality( vdet_hit.getQuality() );
@@ -82,8 +95,11 @@ void alpha::edm4hep_output::event_t::process_vufk()  {
     if( !mcp.isAvailable() ) ++no_fkin;
     hit.setParticle(mcp);
   }
-  if( no_fkin > 0 || this->data.vufk.debug )  {
-    std::cout << "+++ VUFK: " << no_fkin << "/" << tab->size()
-              << " VDXX/VDZT hits have no FKIN information!" << std::endl;
+  if( no_fkin > 0 )  {
+    log << "+++ VUFK: " << no_fkin << "/" << tab->size()
+        << " VDXX/VDZT hits have no FKIN information!" << std::endl;
+  }
+  if( this->data.vufk.debug )  {
+    ::printf("%s\n", log.str().c_str());
   }
 }

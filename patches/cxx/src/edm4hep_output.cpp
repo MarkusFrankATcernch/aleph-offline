@@ -22,12 +22,10 @@ POT banks:
   FPOI   FXXX             Fxxx POInters bank relating KINE track number to FKIN number
   FVER   FXXX             Fxxx monte carlo VERtex bank.
 
-  PASL   ItcPOTBanks      JULIA track to FKIN track association list (accessed via PITM bank).
-  PITM   ItcPOTBanks      JULIA track to FKIN track association (using ITC + TPC coordinate information).
-
   VDFK   VdetGALBanks     Vdco to FKIN truth relation (monte Carlo)
   VDHT   VdetGALBanks     VDet HiT list NR=0 (GAL)
   VUFK   VdetGALBanks     Vdxy/vdzt to FKIN truth relation (monte Carlo) (hits unused by pattern reconstruction)
+  
   PEMH   CobjPOTBanks     Relation between ECAL and LCAL objects and FKIN tracks
 
 **  LUPA   LUMINOSITY       Luminosity parameter bank
@@ -44,14 +42,20 @@ POT banks:
 
 **  ITC:
   PIDI   ItcPOTBanks      Packed Itc DIgitisings (NR=0)
+  ITCO   ItcJuliaBanks    ITc COordinates (Banks 0 (corrected coords.) and 1 (raw coords.))
+  ICCO   ItcJuliaBanks    Itc Corrected COordinates for the final track fit
+  IWCR   ItcJuliaBanks    Itc Wire to Coordinate
+  IDIG   ItcEventRecord   Itc DIGitisings (raw)
+  IASL/PASL ItcPOTBanks   JULIA track to FKIN track association list (accessed via ITMA bank).
+  ITMA/PITM ItcPOTBanks   JULIA track to FKIN track association (using ITC + TPC coordinate information).
 
 **  TPC:
   TWZZ   TpcJULBanks      Tpc Wire Z coordinates
   TRIK   TpcJULBanks      TRack Extrapolation from Kalman filter
   PCOI   TpcPOTBanks      Supplemental TPC coordinate information (NR=0).
   PT2X   TpcPOTBanks      Production output Tpc track dE/dX for overlapping tracks (NR=0)
-  PTBC   TpcPOTBanks      Production output Tpc Bad Coordinates (NR=0)
-  PTEX   TpcPOTBanks      Production output Tpc track dE/dX (NR=0)
+  PTBC/TBCO   TpcPOTBanks      Production output Tpc Bad Coordinates (NR=0)
+  PTEX/TEXS   TpcPOTBanks      Production output Tpc track dE/dX (NR=0)
   PTPX   TpcPOTBanks      Production output Tpc track pad dE/dX (NR=0)
   PTNC   TpcPOTBanks      Production output Tpc pad Coordinates (NR=0). (UNCORRECTED)
   
@@ -183,7 +187,6 @@ namespace podio {
 #endif
 
 #include <TGeoSystemOfUnits.h>
-#include <TGeant4SystemOfUnits.h>
 
 namespace  {
   template<typename T> std::string to_string(const T& val, const char* fmt)  {
@@ -197,6 +200,7 @@ namespace G4 = TGeant4Unit;
 
 namespace alpha  {
 
+  class vdmr;
   class edm4hep_processor;
 
   /// Helper class to manager podio output of event data
@@ -261,11 +265,14 @@ namespace alpha  {
     bank_access_t vdfk;  // VDFK table bank: VDCO      to FKIN truth relation
     bank_access_t vdht;  // VDHT table bank: VDet HiT list NR=0 (GAL)
     bank_access_t vdgc;  // VDGC table bank: VDET global clusters    
+    bank_access_t vdmr;  // VDMR table bank: Hit multiplexing relation
     
     bank_access_t itco;  // ITCO table bank: ITc COordinates (Recon. Bank) 
     bank_access_t ficl;  // FICL table bank: Itc Geometry track Coordinate  
     bank_access_t pidi;  // PIDI table bank: Packed Itc DIgitisings (NR=0)
     bank_access_t icco;  // ICCO table bank: Itc Corrected COordinates
+    bank_access_t itma;  // JULIA track to FKIN track association (using ITC + TPC coordinate information).
+    bank_access_t iasl;  // JULIA track to FKIN track association list (accessed via ITMA bank).
 
     bank_access_t ptun;  // PTUN table bank: Units
     bank_access_t ptnc;  // PTNC table bank: Production output Tpc pad Coordinates (NR=0)
@@ -334,14 +341,22 @@ namespace alpha  {
       NONE
     };
 
-    
     using track_t             = edm4hep::MutableTrack;
     using mcparticle_t        = edm4hep::MutableMCParticle;
     using trackerhit_t        = edm4hep::MutableTrackerHit3D;
+    using sim_trackerhit_t    = edm4hep::MutableSimTrackerHit;
+
+    using podio_trhit2trhit_t = podio::LinkCollection<edm4hep::TrackerHit, edm4hep::TrackerHit>;
+    
+    
     using trackerhits_t       = edm4hep::TrackerHit3DCollection;
     using simtrackerhits_t    = edm4hep::SimTrackerHitCollection;
+    /// Relationship type definitions between tracks and MC particles
     using track2mctrack_t     = edm4hep::TrackMCParticleLinkCollection;
-    using track_hit2mchit_t   = edm4hep::TrackerHitSimTrackerHitLinkCollection;
+    /// Relationship type definitions between tracks and MC tracker hits
+    using trhit2mchit_t       = edm4hep::TrackerHitSimTrackerHitLinkCollection;
+    /// Relationship type definitions between tracks and reco tracker hits
+    using trhit2trhit_t       = podio_trhit2trhit_t;
 
     using calohit_t           = edm4hep::MutableCalorimeterHit;
     using calohits_t          = edm4hep::CalorimeterHitCollection;
@@ -349,7 +364,8 @@ namespace alpha  {
     using rawcalohit_t        = edm4hep::MutableRawCalorimeterHit;
     using rawcalohits_t       = edm4hep::RawCalorimeterHitCollection;
     using dedxdata_t          = edm4hep::RecDqdxCollection;
-    
+
+
   public:
     
     experiment_t&                        exp;
@@ -366,13 +382,15 @@ namespace alpha  {
 
     edm4hep::TrackCollection             calorimeter_objects     {  };
 
-    /// VDET XY Monte-Carlo hits
+    /// VDET XY raw hits from rphi wafers
     trackerhits_t                        hits_vdxy               {  };
-    /// VDET ZT Monte-Carlo hits
+    /// VDET ZT raw hits from z wafers
     trackerhits_t                        hits_vdzt               {  };
 
     /// Reconstructed VDET coordinates
     trackerhits_t                        hits_vdco               {  };
+    trhit2trhit_t                        rel_hits_vdco_vdxy      {  };
+    trhit2trhit_t                        rel_hits_vdco_vdzt      {  };
 
     /// Sim tracker hits as produced by Galeph
     simtrackerhits_t                     simhits_vdht            {  };
@@ -380,17 +398,18 @@ namespace alpha  {
     /// Sim tracker hits projected to xy wafers
     simtrackerhits_t                     simhits_vufk_xy         {  };
     /// Sim tracker hits on xy wafers to FKIN
-    track_hit2mchit_t                    rel_vdxy_vufk           {  };
+    trhit2mchit_t                        rel_simhits_vdxy_vufk   {  };
 
     /// Sim tracker hits projected to z wafers
     simtrackerhits_t                     simhits_vufk_z          {  };
     /// Sim tracker hits on z wafers to FKIN
-    track_hit2mchit_t                    rel_vdzt_vufk           {  };
+    trhit2mchit_t                        rel_simhits_vdzt_vufk   {  };
 
     simtrackerhits_t                     simhits_vdfk_rphi       {  };
+    trhit2mchit_t                        rel_vdco_simhits_vdfk_rphi {  };
+
     simtrackerhits_t                     simhits_vdfk_z          {  };
-    track_hit2mchit_t                    rel_vdco_vdfk_z         {  };
-    track_hit2mchit_t                    rel_vdco_vdfk_rphi      {  };
+    trhit2mchit_t                        rel_vdco_simhits_vdfk_z {  };
 
     trackerhits_t                        hits_icco               {  };
     /// ITC R-Phi hits
@@ -434,6 +453,11 @@ namespace alpha  {
     /// Relationship between reconstructed VDET hits from VDZT and tracker hits in hits_vdzt
     std::map<int, std::size_t>           alpha2edm4hep_vdzt      {  };
 
+    /// Relationship between VDZT row pointer and identifier in alpha2edm4hep_vdzt
+    std::map<int, const class vdco*>     alpha2vdco              {  };
+    std::map<int, const class vdzt*>     alpha2vdzt              {  };
+    std::map<int, object_table<class vdmr>* > banks_vdmr         {  };
+
     /// Invalid MC particle
     mcparticle_t                         invalid_mc_particle     {  };
 
@@ -442,9 +466,6 @@ namespace alpha  {
     /// Default destructor
     virtual ~event_t();
     
-    using calo_deposit_t   = edm4hep::MutableCalorimeterHit;
-    using vdet_hit_t       = edm4hep::MutableTrackerHit3D;
-    using sim_trackerhit_t = edm4hep::MutableSimTrackerHit;
 
 
     /// Main event conversion entry point
@@ -644,58 +665,65 @@ alpha::edm4hep_output::~edm4hep_output()   {
 }
 
 /// Set option value
-bool alpha::edm4hep_output::set_option(const char* name, const char* value)  {
+int alpha::edm4hep_output::set_option(const char* name, const char* value)  {
   const char* p = name;
   while( *p == '-' ) ++p;
 
   if( strcmp(p,"debug-all") == 0 )  {
     this->data = std::make_unique<data_access_t>("ALL");
-    return true;
+    return 1;
   }
   else if( strcmp(p,"debug-banks") == 0 )  {
-    std::string debug_banks = value;
-    for( std::size_t i=0; i < debug_banks.length(); ++i )
-      debug_banks[i] = ::toupper(debug_banks[i]);
-    this->data = std::make_unique<data_access_t>(debug_banks);
-    return true;
+    std::string banks = value;
+    for( std::size_t i=0; i < banks.length(); ++i )
+      banks[i] = ::toupper(banks[i]);
+    this->debug_banks = banks;
+    return 2;
   }
-  else if( strcmp(p,"output") == 0 )  {
+  else if( strncmp(p,"output",1) == 0 )  {
     this->output_file = value;
-    return true;
+    return 2;
   }
   else if( strncmp(p,"save-mc-part",12) == 0 )  {
-    return this->save_mc_particles = true;
+    this->save_mc_particles = true;
+    return 1;
   }
   else if( strncmp(p,"save-part",9) == 0 )  {
-    return this->save_particles = true;
+    this->save_particles = true;
+    return 1;
   }
   else if( strcmp(p,"save-vdet") == 0 )  {
     this->save_vdet_reco = true;
     this->save_vdet_sim  = true;
-    return true;
+    return 1;
   }
   else if( strcmp(p,"save-vdet-mc") == 0 )  {
-    return this->save_vdet_sim  = true;
+    this->save_vdet_sim  = true;
+    return 1;
   }
   else if( strcmp(p,"save-vdet-rec") == 0 )  {
-    return this->save_vdet_reco = true;
+    this->save_vdet_reco = true;
+    return 1;
   }
   else if( strcmp(p,"save-tracker") == 0 )  {
-    return this->save_tracker = true;
+    this->save_tracker = true;
+    return 1;
   }
   else if( strcmp(p,"save-calorimeter") == 0 )  {
-    return this->save_calorimeter = true;
+    this->save_calorimeter = true;
+    return 1;
   }
   else if( strcmp(p,"save-all") == 0 )  {
-    return this->save_all = true;
+    this->save_all = true;
+    return 1;
   }
-  return false;
+  return 0;
 }
 
 /// Initialize conversion. Open file
 bool alpha::edm4hep_output::initialize()  {
   this->io   = std::make_unique<io_t>(this->debug_io);
-  this->data = std::make_unique<data_access_t>("");
+  this->data = std::make_unique<data_access_t>(this->debug_banks);
 
   if( !this->output_file.empty() )  {
     if( !this->io->open(this->output_file) )  {
@@ -756,44 +784,45 @@ void alpha::edm4hep_output::end_event(event_t& event)  {
   if( this->save_mc_particles   ) this->io->put(event.particles_mc,     "MCParticles" );
   if( this->save_charged_tracks ) this->io->put(event.particles_reco,   "ChargedTracks" );
   if( this->save_mc_particles && this->save_charged_tracks )
-    this->io->put(event.rel_part_reco_mc,   "TrackMCRelations" );
+    this->io->put(event.rel_part_reco_mc,           "TrackMCRelations" );
 
   if( this->save_vdet_reco ) {
-    this->io->put(event.hits_vdco,          "VDCO_Hits" );
+    this->io->put(event.hits_vdco,                  "VDCO_Hits" );
   }
   if( this->save_vdet_sim )  {
-    this->io->put(event.hits_vdxy,          "VDXY_Hits" );
-    this->io->put(event.hits_vdzt,          "VDZT_Hits" );
-    this->io->put(event.simhits_vdht,       "VDHT_SimHits" );
-    this->io->put(event.simhits_vufk_xy,    "VUFK_XY_SimHits" );
-    this->io->put(event.rel_vdxy_vufk,      "VDXY_VUFK_Relations" );
+    this->io->put(event.hits_vdxy,                  "VDXY_Hits" );
+    this->io->put(event.hits_vdzt,                  "VDZT_Hits" );
+    this->io->put(event.simhits_vdht,               "VDHT_SimHits" );
 
-    this->io->put(event.simhits_vufk_z,     "VUFK_Z_SimHits" );
-    this->io->put(event.rel_vdzt_vufk,      "VDZT_VUFK_Relations" );
+    this->io->put(event.simhits_vufk_xy,            "VUFK_XY_SimHits" );
+    this->io->put(event.rel_simhits_vdxy_vufk,      "VDXY_VUFK_Relations" );
 
-    this->io->put(event.simhits_vdfk_rphi,  "VDFK_RPHI_SimHits" );
-    this->io->put(event.rel_vdco_vdfk_rphi, "VDCO_VDFK_RPHI_Relations" );
+    this->io->put(event.simhits_vufk_z,             "VUFK_Z_SimHits" );
+    this->io->put(event.rel_simhits_vdzt_vufk,      "VDZT_VUFK_Relations" );
 
-    this->io->put(event.simhits_vdfk_z,     "VDFK_Z_SimHits" );
-    this->io->put(event.rel_vdco_vdfk_z,    "VDCO_VDFK_Z_Relations" );
+    this->io->put(event.simhits_vdfk_rphi,          "VDFK_RPHI_SimHits" );
+    this->io->put(event.rel_vdco_simhits_vdfk_rphi, "VDCO_VDFK_RPHI_Relations" );
+
+    this->io->put(event.simhits_vdfk_z,             "VDFK_Z_SimHits" );
+    this->io->put(event.rel_vdco_simhits_vdfk_z,    "VDCO_VDFK_Z_Relations" );
   }
   if( this->save_itc_reco )  {
-    this->io->put(event.hits_itco1,         "ITCO1_Hits" );
-    this->io->put(event.hits_itco2,         "ITCO2_Hits" );
+    this->io->put(event.hits_itco1,                 "ITCO1_Hits" );
+    this->io->put(event.hits_itco2,                 "ITCO2_Hits" );
   }
   if( this->save_tpc_reco )  {
-    this->io->put(event.hits_tpco,          "TPCO_Hits" );
-    this->io->put(event.hits_ptnc,          "PTNC_PadHits" );
-    this->io->put(event.dedx_trunc_mean,    "DEDX_TruncatedMean" );
-    this->io->put(event.dedx_avg_drift,     "DEDX_AverageDrivt" );
-    this->io->put(event.dedx_tracklen,      "DEDX_TrackLength" );
-    this->io->put(event.dedx_num_samples,   "DEDX_NumberSamples" );
+    this->io->put(event.hits_tpco,                  "TPCO_Hits" );
+    this->io->put(event.hits_ptnc,                  "PTNC_PadHits" );
+    this->io->put(event.dedx_trunc_mean,            "DEDX_TruncatedMean" );
+    this->io->put(event.dedx_avg_drift,             "DEDX_AverageDrivt" );
+    this->io->put(event.dedx_tracklen,              "DEDX_TrackLength" );
+    this->io->put(event.dedx_num_samples,           "DEDX_NumberSamples" );
   }
   if( this->save_ecal_reco )  {
-    this->io->put(event.hits_ecal,          "ECAL_Clusters" );
+    this->io->put(event.hits_ecal,                  "ECAL_Clusters" );
   }
   if( this->save_hcal_reco )  {
-    this->io->put(event.hits_hcal,          "HCAL_Clusters" );
+    this->io->put(event.hits_hcal,                  "HCAL_Clusters" );
   }
 
   this->io->commit();
@@ -804,7 +833,61 @@ void alpha::edm4hep_output::convert_event(event_t& event)  {
   event.convert_event();
 }
 
+#include <alpha/itma.h>
+#include <alpha/iasl.h>
+#include <alpha/pasl.h>
+#include <alpha/vdgc.h>
+
+
+template <typename T> std::pair<int32_t,int32_t>
+loop_banks(alpha::bank_access_t& acc, int(*callback)(int32_t i, const T* row))  {
+  int num_rows = 0, count = 0;
+  for( acc.load(true); acc.data; acc.knext() )  {
+    auto* table = acc.table<T>();
+    for(uint32_t i=0; i<table->size(); ++i)  {
+      count += callback(i, table->at(i));
+    }
+    num_rows += table->size();
+    std::cout << bos77::to_string(table) << " total rows: " << num_rows << " hits:" << count << std::endl;
+  }  
+  return { num_rows, count };
+}
+
 void alpha::edm4hep_output::event_t::convert_event()  {
+  int num_rows;
+
+  std::cout << "---------------------------------------------------" << std::endl;
+
+  loop_banks<class pasl>(this->data.pasl, [](int32_t row, const class pasl* p)  {
+    std::cout << "\t row:" << std::setw(3) << row << " FKIN:" << std::setw(3) << p->fkin()
+              << " #hits:" << std::setw(2) << p->numberHits()
+              << std::endl;
+    return p->numberHits();
+  });
+  
+#if 0
+  loop_banks<iasl>(this->data.iasl, [](int32_t row, const iasl* p) {
+    std::cout << "\t  row:"  << std::setw(3) << row
+              << " FKIN:"    << std::setw(3) << p->fkin()
+              << " #hits:"   << std::setw(2) << p->numberHits()
+              << std::endl;
+    return iasl->numberHits();
+  });
+  loop_banks<itma>(this->data.itma, [](int32_t row, const itma* p) {
+    std::cout << "\t  row:"  << std::setw(3) << row
+              << " #assoc:"  << std::setw(2) << p->numberAssociated()
+              << " offset:"  << std::setw(3) << p->offset()
+              << " #coords:" << p->numberCoords()
+              << std::endl;
+    return p->numberCoords();
+  });
+  
+  loop_banks<vdxy>(this->data.vdxy, [](int32_t, const vdxy*) { return 0; });
+  loop_banks<vdzt>(this->data.vdzt, [](int32_t, const vdzt*) { return 0; });
+  loop_banks<vdco>(this->data.vdco, [](int32_t, const vdco*) { return 0; });
+  loop_banks<vdgc>(this->data.vdgc, [](int32_t, const vdgc*) { return 0; });
+  loop_banks<itma>(this->data.vdmr, [](int32_t, const itma*) { return 0; });
+#endif
   /// First create the Monte-Carlo particles and fill the properties
   this->process_mc_particles();
   /// Create the charged reconstructed particles and fill the properties
@@ -827,6 +910,7 @@ void alpha::edm4hep_output::event_t::convert_event()  {
   this->convert_hcal();
 
   //aublis("CERST");
+
 #if 0
   this->print_fkin();
   this->print_cht();
@@ -839,6 +923,8 @@ void alpha::edm4hep_output::event_t::convert_event()  {
   this->print_qvec("Tracks from V0 vertices", qcde.KFDCT, qcde.KLDCT);
 #endif
   // this->print_qvec("Long V0 tracks",          qcde.KFLVT, qcde.KLLVT);
+  if( num_rows )  {
+  }
 }
 
 /// Convert the VDET hits and clusters
@@ -912,8 +998,6 @@ alpha::edm4hep_output::data_access_t::data_access_t(const std::string& debug_ban
   this->config_data(this->qdet, "QDET", debug_banks);
   this->config_data(this->frft, "FRFT", debug_banks);
   this->config_data(this->frtl, "FRTL", debug_banks);
-  this->config_data(this->pasl, "PASL", debug_banks);
-  this->config_data(this->pitm, "PITM", debug_banks);
 
   this->config_data(this->peco, "PECO", debug_banks);
   this->config_data(this->pgac, "PGAC", debug_banks);
@@ -936,11 +1020,16 @@ alpha::edm4hep_output::data_access_t::data_access_t(const std::string& debug_ban
   this->config_data(this->vdfk, "VDFK", debug_banks);
   this->config_data(this->vdht, "VDHT", debug_banks);
   this->config_data(this->vdgc, "VDGC", debug_banks);
+  this->config_data(this->vdmr, "VDMR", debug_banks);
 
   this->config_data(this->itco, "ITCO", debug_banks);
   this->config_data(this->ficl, "FICL", debug_banks);
   this->config_data(this->pidi, "PIDI", debug_banks);
   this->config_data(this->icco, "ICCO", debug_banks);
+  this->config_data(this->pasl, "PASL", debug_banks);
+  this->config_data(this->pitm, "PITM", debug_banks);
+  this->config_data(this->iasl, "IASL", debug_banks);
+  this->config_data(this->itma, "ITMA", debug_banks);
 
   this->config_data(this->ptun, "PTUN", debug_banks);
   this->config_data(this->tpco, "TPCO", debug_banks);

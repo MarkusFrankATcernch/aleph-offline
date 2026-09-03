@@ -67,7 +67,7 @@ void alpha::edm4hep_output::event_t::process_vdco()  {
       desc.encode(vdet.field_z,      iz)     +
       desc.encode(vdet.field_phi,    iphi)   +
       desc.encode(vdet.field_view,   iview);
-
+    
     hit.setCellID( cell );
     hit.setTime( _TIM(0e0) );
     hit.setEDep( _ENE(0e0) );

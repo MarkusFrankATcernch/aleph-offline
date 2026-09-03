@@ -222,7 +222,7 @@ namespace bos77  {
           << " row:"  << std::setw(6) << std::left  << data->row()
           << " Len:"  << std::setw(5) << std::right << data->total_length()
           << "/"      << std::setw(5) << std::left  << data->data_length();
-      if( nw > 4 && pl+subheader_words == nw )  {
+      if( nw >= 2 && pl+subheader_words == nw )  {
         str << " Words/row:" << std::setw(4) << std::right << bnk->payload_columns()
             << " #row:"      << std::setw(4) << std::right << bnk->payload_rows();
       }

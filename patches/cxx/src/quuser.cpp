@@ -89,13 +89,13 @@ namespace  {
 int main(int argc, char** argv)   {
   int irun, ievt;
   bool debug = false;
-  for(int i=1; i<argc; ++i)  {
-    const char* p = argv[i];
+  for(int iarg=1; iarg<argc; ++iarg)  {
+    const char* p = argv[iarg];
     while( *p == '-' ) ++p;
     if( strncmp(p,"help",1) == 0 ) {
       usage(argc, argv, nullptr);
     }
-    else if( strncmp(p,"debug",1) == 0 ) {
+    else if( strcmp(p,"debug") == 0 ) {
       debug = true;
     }
     else if( strncmp(p,"test",1) == 0 ) {
@@ -105,7 +105,8 @@ int main(int argc, char** argv)   {
       edm4hep_proc = std::make_unique<edm4hep_output>();
     }
     else {
-      edm4hep_proc->set_option(argv[i], argv[i+1]);
+      int ret = edm4hep_proc->set_option(argv[iarg], argv[iarg+1]);
+      if( ret == 2 ) ++iarg;
     }
   }
 

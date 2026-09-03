@@ -15,8 +15,12 @@
 
 /// Include files
 #include <DD4hep/IDDescriptor.h>
+#include <TGeant4SystemOfUnits.h>
+
 /// C/C++ include files
 #include <memory>
+#include <cmath>
+
 
 /// ALPHA namespace declaration
 namespace alpha  {
@@ -48,6 +52,8 @@ namespace alpha  {
    */
   class detector_vdet_t : public detector_t  {
   public:
+    /// https://periodictableguide.com/ionization-energy-chart-of-all-elements    
+    static constexpr float const_ionization_energy = 8.15 * TGeant4Unit::electronvolt;
     const Field* field_layer = nullptr;
     const Field* field_z     = nullptr;
     const Field* field_phi   = nullptr;
@@ -56,6 +62,16 @@ namespace alpha  {
   public:
     /// Default constructor
     detector_vdet_t();
+    
+    /// Energy deposit from number of electrons of pulseheight
+    float energy_deposit(int num_electrons)  const  {
+      return num_electrons * const_ionization_energy;
+    }
+    /// Energy deposit error from number of electrons of pulseheight
+    float energy_deposit_error(int num_electrons)  const  {
+      // Assume statistical error on the number of electrons produces
+      return std::sqrt(num_electrons) * const_ionization_energy;
+    }
   };
 
   /// Helper class

@@ -44,27 +44,28 @@ namespace alpha  {
     std::unique_ptr<data_access_t>   data  { };
     std::unique_ptr<experiment_t>    exp   { };
 
-    std::string output_file  { };
+    std::string output_file          {       };
+    std::string debug_banks          {       };
 
-    bool        debug_io            { false };
+    bool        debug_io             { false };
     
-    bool        save_all            { false };
+    bool        save_all             { false };
     
-    bool        save_particles      { false };
-    bool        save_mc_particles   { false };
-    bool        save_charged_tracks { false };
+    bool        save_particles       { false };
+    bool        save_mc_particles    { false };
+    bool        save_charged_tracks  { false };
 
-    bool        save_tracker        { false };
-    bool        save_vdet_sim       { false };
-    bool        save_vdet_reco      { false };
-    bool        save_itc_sim        { false };
-    bool        save_itc_reco       { false };
-    bool        save_tpc_sim        { false };
-    bool        save_tpc_reco       { false };
+    bool        save_tracker         { false };
+    bool        save_vdet_sim        { false };
+    bool        save_vdet_reco       { false };
+    bool        save_itc_sim         { false };
+    bool        save_itc_reco        { false };
+    bool        save_tpc_sim         { false };
+    bool        save_tpc_reco        { false };
 
-    bool        save_calorimeter    { false };
-    bool        save_ecal_reco      { false };
-    bool        save_hcal_reco      { false };
+    bool        save_calorimeter     { false };
+    bool        save_ecal_reco       { false };
+    bool        save_hcal_reco       { false };
     
   public:
     /// Default constructor
@@ -73,7 +74,7 @@ namespace alpha  {
     virtual ~edm4hep_output();
 
     /// Set option value
-    bool set_option(const char* name, const char* value);
+    int set_option(const char* name, const char* value);
 
     /// Initialize conversion. Open file
     bool initialize();
