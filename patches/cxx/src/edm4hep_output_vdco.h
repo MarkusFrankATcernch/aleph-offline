@@ -17,9 +17,9 @@
 /// Create VDET 3D hit from VDCO row
 void alpha::edm4hep_output::event_t::process_vdco()  {
   /**
-     Subschema: VdetPOTBanks                 
-     +------+                                                                       
-     | VDCO |  VDET coordinated NR=0 (POT)                                          
+     Subschema: VdetPOTBanks
+     +------+
+     | VDCO |  VDET coordinated NR=0 (POT)
      +------+
    ..............................................................
      1          I    Number of words/coord (=8)
@@ -53,8 +53,8 @@ void alpha::edm4hep_output::event_t::process_vdco()  {
     std::size_t     key = this->hits_vdco.size();
     auto            hit = this->hits_vdco.create();
     auto*           ah  = this->data.vdco.row<class vdco>(itk);
-    double          sigrphi2 = ah->sigRphi2();   // 
-    double          sigz2    = ah->sigZ2();      // 
+    double          sigrphi2 = ah->sigRphi2();   //
+    double          sigz2    = ah->sigZ2();      //
     PositionRhoZPhi pos(_LEN(ah->r()), _LEN(ah->z()), ah->phi());
     PositionRhoZPhi err(std::sqrt(sigrphi2), std::sqrt(sigz2), std::sqrt(sigrphi2));
     int32_t         wafid  = ah->waferIdent();
@@ -62,12 +62,12 @@ void alpha::edm4hep_output::event_t::process_vdco()  {
     int32_t         iz     = (wafid/1000)%10;  // See vadewa.F    IWFF  / I  Local wafer-in-face index + VDXY bank doc
     int32_t         iphi   = (wafid/10)%100;   // See vadewa.F    IFAC  / I  Local face index of this wafer + VDXY bank doc
     int32_t         iview  = (wafid%10);       // See vadewa.F    IVIEW / I  View number (=1 for z, =2 for r-phi)
-    uint64_t        cell   = vdet.desc_system + 
+    uint64_t        cell   = vdet.desc_system +
       desc.encode(vdet.field_layer,  layer)  +
       desc.encode(vdet.field_z,      iz)     +
       desc.encode(vdet.field_phi,    iphi)   +
       desc.encode(vdet.field_view,   iview);
-    
+
     hit.setCellID( cell );
     hit.setTime( _TIM(0e0) );
     hit.setEDep( _ENE(0e0) );

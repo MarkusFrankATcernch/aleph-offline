@@ -41,7 +41,7 @@ namespace alpha  {
   /**
    *    \author  M.Frank
    *    \date    01/08/2026
-   */ 
+   */
  struct charged_track_items  {
     enum track_opt_data_content  {
       FRTL_DATA = 0xFEED00,

@@ -17,35 +17,35 @@
 /// Create ITC 3D hit from ITCO row
 void alpha::edm4hep_output::event_t::process_itco()  {
   /**
- +------+                             Subschema: ItcJuliaBanks                
- | ITCO |  ITc COordinates (Recon. Bank)                                       
- +------+  (Banks 0 (corrected coords.)                                        
-           and 1 (raw coords.). If only                                        
-           bank 0 exists, it gives the                                         
-           raw coords.) (Data is ordered                                       
-           by increasing wire number).                                         
-           (JUL)                                                               
- 
- ..............................................................                
-     1          I    Number of words/coordinate (=8)                           
-     2          I    Number of coordinates                                     
- ..............................................................                
-      1    WN  I    WireNumber       [1001,8960]                               
-                       1000*Layer + Wire No.                                   
-      2    RA  F    RAdius           [16.000,26.300]                           
-                       radius (cm.)                                            
-      3    P1  F    Phi1             [0.0,6.30000]                             
-                       Phi of hit (or ambiguity)(rads.)                        
-      4    P2  F    Phi2             [0.0,6.30000]                             
-                       Phi of ambiguity (or hit)(rads.)                        
-      5    ZH  F    ZHit             [-150.0,150.0]                            
-                       Z of hit (cm.)                                          
-      6    SR  F    SigmaRphi        [0.0,1.000000]                            
-                       Sigma(r-phi)**2 (cm**2)                                 
-      7    SZ  F    SigmaZ           [0.0,*]                                   
-                       Sigma(z)**2 (cm**2)                                     
-      8    DT  F    DriftTime        [0.0,512.0]                               
-                       Drift Time calc. from TDC (ns.)                         
+ +------+                             Subschema: ItcJuliaBanks
+ | ITCO |  ITc COordinates (Recon. Bank)
+ +------+  (Banks 0 (corrected coords.)
+           and 1 (raw coords.). If only
+           bank 0 exists, it gives the
+           raw coords.) (Data is ordered
+           by increasing wire number).
+           (JUL)
+
+ ..............................................................
+     1          I    Number of words/coordinate (=8)
+     2          I    Number of coordinates
+ ..............................................................
+      1    WN  I    WireNumber       [1001,8960]
+                       1000*Layer + Wire No.
+      2    RA  F    RAdius           [16.000,26.300]
+                       radius (cm.)
+      3    P1  F    Phi1             [0.0,6.30000]
+                       Phi of hit (or ambiguity)(rads.)
+      4    P2  F    Phi2             [0.0,6.30000]
+                       Phi of ambiguity (or hit)(rads.)
+      5    ZH  F    ZHit             [-150.0,150.0]
+                       Z of hit (cm.)
+      6    SR  F    SigmaRphi        [0.0,1.000000]
+                       Sigma(r-phi)**2 (cm**2)
+      7    SZ  F    SigmaZ           [0.0,*]
+                       Sigma(z)**2 (cm**2)
+      8    DT  F    DriftTime        [0.0,512.0]
+                       Drift Time calc. from TDC (ns.)
    */
   char text[512];
   std::stringstream log;
@@ -57,12 +57,12 @@ void alpha::edm4hep_output::event_t::process_itco()  {
   if( dbg )  {
     log << bos77::to_string(tab) << std::endl;
   }
-  
+
   for( uint32_t i=1; i <= tab->size(); ++i )  {
     class itco* ah   = tab->row(i);
     int32_t     layer = (ah->wireNumber()/1000);
     int32_t     wire  = (ah->wireNumber()%1000);
-    uint64_t    cell  = itc.desc_system + 
+    uint64_t    cell  = itc.desc_system +
       desc.encode(itc.field_layer,  layer) + desc.encode(itc.field_wire, wire);
     PositionRhoZPhi err(std::sqrt(ah->sigmaRphi()), std::sqrt(ah->sigmaZ()), std::sqrt(ah->sigmaRphi()));
 

@@ -44,7 +44,7 @@ namespace alpha  {
     /// Default destructor
     virtual ~detector_t();
   };
-  
+
   /// Helper class
   /**
    *    \author  M.Frank
@@ -52,7 +52,7 @@ namespace alpha  {
    */
   class detector_vdet_t : public detector_t  {
   public:
-    /// https://periodictableguide.com/ionization-energy-chart-of-all-elements    
+    /// https://periodictableguide.com/ionization-energy-chart-of-all-elements
     static constexpr float const_ionization_energy = 8.15 * TGeant4Unit::electronvolt;
     const Field* field_layer = nullptr;
     const Field* field_z     = nullptr;
@@ -62,7 +62,7 @@ namespace alpha  {
   public:
     /// Default constructor
     detector_vdet_t();
-    
+
     /// Energy deposit from number of electrons of pulseheight
     float energy_deposit(int num_electrons)  const  {
       return num_electrons * const_ionization_energy;

@@ -99,7 +99,7 @@ namespace alpha  {
     constexpr static const int32_t JQVENL  = 22;
 
     constexpr static const int32_t JQVEBM  = 23;
-    
+
     constexpr static const int32_t JQVELK  = 37;
 
     constexpr static const int32_t JQVEDB  = 38;
@@ -125,7 +125,7 @@ namespace alpha  {
 
     int32_t  pointer_origin_vtx    {   0 };              // JQVEOV=15
     int32_t  pointer_end_vtx       {   0 };              // JQVEEV=16
-    
+
     uint32_t number_daughters      {   0 };              // JQVEND=17
     int32_t  offset_first_daughter {   0 };              // JQVEDL=18
 
@@ -224,7 +224,7 @@ namespace alpha  {
     /// Error squared on mass from particle fit
     real_t  qsigm2()  const;
     /// Error on mass from particle fit
-    real_t  qsigm()   const    {  return std::sqrt(this->qsigm2());              }   
+    real_t  qsigm()   const    {  return std::sqrt(this->qsigm2());              }
 
     /// Polar angle of the track
     real_t  qphi()    const    {  return std::atan2(this->qy(), this->qx());     }
@@ -242,7 +242,7 @@ namespace alpha  {
     int32_t ktpcod()  const    {  return this->particle_code;                    }
     /// Track's particle name (see ALPHA user's manual for details)
     std::string cqtpn() const;
-    
+
     /// GALEPH/ JULIA/ ENFLW track number (see ALPHA user's manual for details)
     int32_t ktn()  const       {  return this->frft_row;                     }
 
@@ -294,7 +294,7 @@ namespace alpha  {
     bool              xfrtl()  const;
     /// Access to the track's corresponding bank FRTL: Number of coordinates used for the global fit
     const class frtl* frtl()  const;
-    
+
     /// Check if track FRID data are available for track
     bool              xfrid()  const;
     /// Access to the track's corresponding bank FRID: Charged−particle identification
@@ -401,7 +401,7 @@ namespace alpha  {
     bool              xpdlt()  const;
     /// Access results for track as a Lepton tagged by QSELEP
     const class pdlt* pdlt()  const;
-    
+
     /// Check for results from the QTRUTH part of QSELEP
     bool              xlepth() const;
     /// Primary quark Flavour of the event
@@ -437,7 +437,7 @@ namespace alpha  {
 
 /// ALPHA namespace declaration
 namespace alpha  {
-  
+
   /// Pointer to start vertex
   inline const class qvrt* qvec::origin_vtx()  const  {
     int32_t idx = this->koriv();
@@ -579,7 +579,7 @@ namespace alpha  {
   inline qvec::real_t      qvec::qleppe() const      {  return this->qdet()->pdlt()->ptExclusif();   }
   /// Flag giving the validity of the Pt calculation (See ALPHA manual)
   inline int32_t           qvec::klepvp() const      {  return this->qdet()->pdlt()->validityPt();   }
-  
+
   /// Check for results from the QTRUTH part of QSELEP
   inline bool              qvec::xlepth() const      {  return this->qdet()->xpmlt();    }
   /// Check for results from the QTRUTH part of QSELEP
@@ -591,7 +591,7 @@ namespace alpha  {
   /// Flavour of the quark from gluon splitting
   inline int32_t           qvec::kleppo() const      {  return this->qdet()->pmlt()->poppingflag();     }
   /// H.F. process originating the decay chain
-  inline int32_t           qvec::klepch() const      {  return this->qdet()->pmlt()->flagCHain();       } 
+  inline int32_t           qvec::klepch() const      {  return this->qdet()->pmlt()->flagCHain();       }
   /// End of the decay chain
   inline int32_t           qvec::klepsp() const      {  return this->qdet()->pmlt()->flagSPlit();       }
   /// Track identity
@@ -600,6 +600,6 @@ namespace alpha  {
   inline int32_t           qvec::klepme() const      {  return this->qdet()->pmlt()->flagMEss();        }
   /// FKIN track number of the lepton
   inline int32_t           qvec::klepkt() const      {  return this->qdet()->pmlt()->kineTrack();       }
-  
+
 }      // End namespace alpha
 #endif // ALPHA_BOS_QVEC_H

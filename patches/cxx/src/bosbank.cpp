@@ -88,7 +88,7 @@ namespace bos77  {
     if( ret[0] == ' ' )  return {};
     return std::string(ret, ret+4);
   }
-  
+
   /// Access bank from BOS common by index: Get bank instance 'num' of bank name identifier
   class bank* get_bank(int32_t nami, int32_t num)  {
     int32_t off = ::nlinc_(nami, num);
@@ -100,7 +100,7 @@ namespace bos77  {
     }
     return nullptr;
   }
-  
+
   /// Get bank instance 'num' of bank type 'bnam'
   class bank* get_bank(const char* bnam, int32_t num)  {
     int32_t off = bnam ? ::nlink_(bnam, num, 4) : 0;
@@ -149,7 +149,7 @@ namespace bos77  {
     }
     throw std::runtime_error( "verify_bank_type: Invalid bank!" );
   }
-  
+
   /// As a temporary measure chack if we really got the bank in question
   bool verify_bank_type(const class bank_header* hdr, const char* name)  {
     if( hdr )  {
@@ -161,7 +161,7 @@ namespace bos77  {
     }
     throw std::runtime_error( "verify_bank_type: Invalid bank!" );
   }
-  
+
   /// Print bank names of all known BOS bank lists
   void print_bank_lists( const char* blist )  {
     if( blist )  {
@@ -179,7 +179,7 @@ namespace bos77  {
     }
     throw std::runtime_error("print_bank_lists: Invalid bank list (nullptr)");
   }
-  
+
   /// Print bank names of all known BOS bank lists
   void print_bank_lists(const std::string& lists)  {
     print_bank_lists(lists.c_str());
@@ -244,7 +244,7 @@ namespace bos77  {
   std::string to_string(const class bank* data, const std::string& prefix)  {
     return to_string((const class bank_header*)data, prefix);
   }
-  
+
   /// String representation for printouts
   std::string to_string(const class format* data, const std::string& prefix)  {
     return to_string((const class bank_header*)data, prefix);

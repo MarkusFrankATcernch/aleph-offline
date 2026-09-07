@@ -24,39 +24,39 @@ namespace {
 /// Production output Tpc track pad dE/dX (NR=0)
 void alpha::edm4hep_output::event_t::process_t2xs()  {
   /**
-     +------+                               Subschema: TpcJULBanks                
-     | T2XS |  Tpc dE/dX Segment for                                               
-     +------+  Overlapping Tracks (NR=0).                                          
-               One track pair segment per                                          
-               sector crossed                                                      
- 
-     ..............................................................                
-     1          I    Number of words per pair (=7)                             
-                     segment                                                   
-     2          I    Number of pair segments                                   
-     ..............................................................                
-      1    SI  I    SegmentId        [1,*]                                     
-                       Sector slot number                                      
-      2    TM  F    TruncatedMean    [0.0,*]                                   
-                       Truncated mean of dE/dx measurements                    
-      3    TL  F    TrackLength      [0.0,500.0]                               
-                       Useful length of track for dE/dx                        
-      4    NS  I    NumberSamples    [1,500]                                   
-                       Number of samples used for dE/dx                        
-      5    AD  F    AverageDrift     [0.0,220.0]                               
-                       Average drift length of samples                         
-      6    T1  I    Tracknumber1     [1,*]                                     
-                       Pointer to first track entry in TGFT                    
-      7    T2  I    Tracknumber2     [1,*]                                     
-                       Pointer to second track entry in TGFT                   
-     ..............................................................                
+     +------+                               Subschema: TpcJULBanks
+     | T2XS |  Tpc dE/dX Segment for
+     +------+  Overlapping Tracks (NR=0).
+               One track pair segment per
+               sector crossed
+
+     ..............................................................
+     1          I    Number of words per pair (=7)
+                     segment
+     2          I    Number of pair segments
+     ..............................................................
+      1    SI  I    SegmentId        [1,*]
+                       Sector slot number
+      2    TM  F    TruncatedMean    [0.0,*]
+                       Truncated mean of dE/dx measurements
+      3    TL  F    TrackLength      [0.0,500.0]
+                       Useful length of track for dE/dx
+      4    NS  I    NumberSamples    [1,500]
+                       Number of samples used for dE/dx
+      5    AD  F    AverageDrift     [0.0,220.0]
+                       Average drift length of samples
+      6    T1  I    Tracknumber1     [1,*]
+                       Pointer to first track entry in TGFT
+      7    T2  I    Tracknumber2     [1,*]
+                       Pointer to second track entry in TGFT
+     ..............................................................
    */
   std::stringstream log;
   auto& tpc = *this->exp.tpc;
   auto& dsc = tpc.descriptor;
   bool  dbg = this->data.t2xs.debug;
   auto* tab = this->data.t2xs.load<object_table<class t2xs> >(true);
-  
+
   if( dbg )  {
     log << bos77::to_string(tab) << std::endl;
   }

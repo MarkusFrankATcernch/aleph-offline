@@ -17,9 +17,9 @@
 /// Create HCAL cluster from PHCO row
 void alpha::edm4hep_output::event_t::process_phco()  {
   /*
-                                        Subschema: HobjPOTBanks                 
-   +------+                                                                       
-   | PHCO |  Hadron Calorimeter Object                                            
+                                        Subschema: HobjPOTBanks
+   +------+
+   | PHCO |  Hadron Calorimeter Object
    +------+  (PHOB and PHTO are replaced
              by PHCO )
    ..............................................................

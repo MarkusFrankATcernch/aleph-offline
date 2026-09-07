@@ -17,9 +17,9 @@
 /// Create ECAL wire data from PEWI data
 void alpha::edm4hep_output::event_t::process_pewi()  {
   /**
-                                        Subschema: EcalPOTBanks                 
-   +------+                                                                       
-   | PEWI |  Ecal Wire plane Digits. NR=0                                         
+                                        Subschema: EcalPOTBanks
+   +------+
+   | PEWI |  Ecal Wire plane Digits. NR=0
    +------+  (POT)
    ..............................................................
        1          I    Number of words/module (=55)

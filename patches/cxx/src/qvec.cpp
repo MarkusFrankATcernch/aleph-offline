@@ -81,7 +81,7 @@ float alpha::qvec::qsigm2()   const   {
   */
   float m = this->mass;
   float sig =
-    m * (this->qe2()*this->qsmat(9) + this->qx2()*this->qsmat(0) + 
+    m * (this->qe2()*this->qsmat(9) + this->qx2()*this->qsmat(0) +
          this->qy2()*this->qsmat(2) + this->qz2()*this->qsmat(5) +
          2e0 * (this->px*(this->py*this->qsmat(1) + this->pz*this->qsmat(3)) +
                 this->py*this->pz*this->qsmat(4) -
@@ -91,7 +91,7 @@ float alpha::qvec::qsigm2()   const   {
 }
 
 /// Get string representation of this track
-std::string alpha::qvec::to_string(uint32_t /* flags */)  const {  
+std::string alpha::qvec::to_string(uint32_t /* flags */)  const {
   const auto* table = alpha::get_qvec();
   int32_t which = table->index(this)+1;
   const auto* track = this;
@@ -133,7 +133,7 @@ std::string alpha::qvec::to_string(uint32_t /* flags */)  const {
     len += ::snprintf(text+len, siz-len, "Dau: ");
     for( uint32_t id=0; id < track->kndau(); ++id )  {
       len += ::snprintf(text+len, siz-len, "%d ", track->kdau(id));
-    }      
+    }
   }
   const class qdet* pdet = track->qdet();
   if( pdet )  {
@@ -167,7 +167,7 @@ std::string alpha::qvec::to_string(uint32_t /* flags */)  const {
     else  {
       len += ::snprintf(text+len, siz-len, "[QVEC] ");
     }
-    
+
     if( track->xfrft() )  {
       const class frft* pfrft = pdet->frft();
       len += ::snprintf(text+len, siz-len, "FRFT:%08lX ",uint64_t(pfrft));

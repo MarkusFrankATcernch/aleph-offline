@@ -147,7 +147,7 @@ void alpha::init_event()  {
   if( params.current_event_number != qcde.KNEVT )  {
     int32_t* iw = bos77::bcs.iw;
     params.current_event_number = qcde.KNEVT;
-    
+
     params.kqzer  = iw[params.naqzer-1];
 
     int32_t kqvec  = iw[params.naqvec-1];

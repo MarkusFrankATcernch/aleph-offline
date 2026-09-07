@@ -30,7 +30,7 @@ namespace bos77  {
   class bank;
   class bank_header;
   class record;
-    
+
   constexpr static const int32_t bankheader_words      = 4;
   constexpr static const int32_t subheader_words       = 2;
   constexpr static const int32_t index_payload_columns = 1;
@@ -43,7 +43,7 @@ namespace bos77  {
 
   /// Access BOS common with abolute offset
   int32_t*    absolute_offset( std::size_t offset );
- 
+
   /// Resolve hashed name index of the bank
   int32_t     namind( const std::string& bname );
   /// Resolve hashed name index of the bank
@@ -54,7 +54,7 @@ namespace bos77  {
   int32_t     nlink( const std::string& bank, int32_t which );
   /// Link to bank data offset by index
   int32_t     nlink( const char* bank, int32_t which );
-    
+
   /// Access bank names in bank list
   std::string nlistb( uint32_t index, char list );
   /// Access bank names in bank list
@@ -91,8 +91,8 @@ namespace bos77  {
   std::size_t print_banks_of_type(int32_t nami);
   /// Print all banks identified by 'bnam'
   std::size_t print_banks_of_type( const std::string& bnam );
-    
-  
+
+
   /// Definition of the BOS event record
   /**
    *   This only seems to work to access BOS native data, not for EPIO files.
@@ -105,11 +105,11 @@ namespace bos77  {
   public:
     int32_t  _num_bytes;
     int32_t  _num_words;
-      
+
   public:
     /// Default constructor
     record() = default;
-      
+
     /// Total bank length in bytes
     std::size_t total_length()  const  {
       return sizeof(record) + this->_num_bytes;
@@ -156,7 +156,7 @@ namespace bos77  {
     /// Default destructor
     ~event() = delete;
   };
-    
+
 
   /// Definition of the BOS bank header
   /**
@@ -247,24 +247,24 @@ namespace bos77  {
       const uint8_t* ptr = (const uint8_t*)this;
       return (const T*)(ptr + this->total_length());
     }
-      
+
     /// Access to next bank of the same type: Works only if the offset work is correct (Aleph offline)
     template <typename T=class bank> const T* knext()  const  {
       return (T*)this->bank_header::next_bank_offset();
     }
-    
+
     const class bank* end()  const  {
       const uint8_t* ptr = (const uint8_t*)this;
       return (const bank*)(ptr + this->total_length() - sizeof(uint32_t));
     }
-      
+
     /// Access to the data array
     const uint8_t* data()  const  {
       const uint8_t* ptr = ((const uint8_t*)this) + sizeof(bank);
       return ptr;
     }
 
-    /// Access to typed data 
+    /// Access to typed data
     template <typename T> const T* data()  const  {
       const uint8_t* ptr = ((const uint8_t*)this) + sizeof(bank);
       return (const T*)ptr;
@@ -276,7 +276,7 @@ namespace bos77  {
       return ptr;
     }
 
-    /// Access to typed data 
+    /// Access to typed data
     template <typename T> const T* data(std::size_t offset)  const  {
       const uint8_t* ptr = ((const uint8_t*)this) + sizeof(bank) + offset;
       return (const T*)ptr;

@@ -43,7 +43,7 @@ void alpha::edm4hep_output::event_t::process_vufk()  {
                        Index of FKIN track
 
   Note:
-      View: 1 --> Z wafer, 2 --> R/phi wafer                       
+      View: 1 --> Z wafer, 2 --> R/phi wafer
   */
   std::stringstream log;
   std::size_t no_fkin = 0;

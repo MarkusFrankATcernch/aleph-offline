@@ -34,36 +34,36 @@ void alpha::edm4hep_output::event_t::process_ptnc()  {
   */
 
   /**
- +------+                               Subschema: TpcPOTBanks                
- | PTNC |  Production output Tpc pad                                           
- +------+  Coordinates (NR=0). The                                             
-           coordinates here are in the                                         
-           TPC sector reference frame                                          
-           and contain no drift or                                             
-           alignment corrections. This                                         
-           bank replaces the older                                             
-           version named PTCO, which                                           
-           contained corrected                                                 
-           coordinates.                                                        
- 
- ..............................................................                
-     1          I    Number of words/coord. (=6)                               
-     2          I    Number of coordinates                                     
- ..............................................................                
-      1    SL  I    SLot             [1,36]                                    
-                       Sector slot number                                      
-      2    SR  I    SectorRow        [1,12]                                    
-                       Padrow number in sector system                          
-      3    RP  I    RPhisector       [-32000,32000]                            
-                       R*Phi in sector system in units of 16                   
-                       microns                                                 
-      4    ZV  I    ZValue           [0,65000]                                 
-                       z in sector system in units of 40                       
-                       microns                                                 
-      5    SP  I    SigrPhi          [0,255]                                   
-                       sigma of R*Phi in units of 40 microns                   
-      6    SZ  I    SigZ             [0,255]                                   
-                       sigma of Z in units of 80 microns                       
+ +------+                               Subschema: TpcPOTBanks
+ | PTNC |  Production output Tpc pad
+ +------+  Coordinates (NR=0). The
+           coordinates here are in the
+           TPC sector reference frame
+           and contain no drift or
+           alignment corrections. This
+           bank replaces the older
+           version named PTCO, which
+           contained corrected
+           coordinates.
+
+ ..............................................................
+     1          I    Number of words/coord. (=6)
+     2          I    Number of coordinates
+ ..............................................................
+      1    SL  I    SLot             [1,36]
+                       Sector slot number
+      2    SR  I    SectorRow        [1,12]
+                       Padrow number in sector system
+      3    RP  I    RPhisector       [-32000,32000]
+                       R*Phi in sector system in units of 16
+                       microns
+      4    ZV  I    ZValue           [0,65000]
+                       z in sector system in units of 40
+                       microns
+      5    SP  I    SigrPhi          [0,255]
+                       sigma of R*Phi in units of 40 microns
+      6    SZ  I    SigZ             [0,255]
+                       sigma of Z in units of 80 microns
    */
   std::stringstream log;
   auto& tpc = *this->exp.tpc;
@@ -117,7 +117,7 @@ void alpha::edm4hep_output::event_t::process_ptnc()  {
         err.z()*err.x(), err.z()*err.y(), err.z()*err.z() } );
     hit.setQuality( 0 );
     hit.setType( TPC_RAW_PAD_COORDINATE );
-    
+
     if( dbg )  {
       char text[512];
       ::snprintf(text, sizeof(text),

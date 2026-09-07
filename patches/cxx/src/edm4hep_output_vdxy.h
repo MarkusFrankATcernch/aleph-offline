@@ -55,8 +55,8 @@ void alpha::edm4hep_output::event_t::process_vdxy()  {
       12   IH  I    IHit             [0,1000000]
                        Hit number in VFHL bank
 
-     +------+                                                                       
-     | VFHL |  VDET final hit list bank,                                            
+     +------+
+     | VFHL |  VDET final hit list bank,
      +------+  NR=VHLS number (POT) Hit
                address is computed as in
                VHLS packed/unpacked by
@@ -72,18 +72,18 @@ void alpha::edm4hep_output::event_t::process_vdxy()  {
                        Ilayer*2**17 + Iwafer*2**15 +
                        Iview*2**10 + Istrip
 
-     +------+                              Subschema: VdetPOTBanks                
-     | VFPH |  VDET final pulse height bank,                                       
-     +------+  NR=VHLS number (POT) This                                           
-               bank links up the VFHL bank                                         
-               Pulseheight is stored in 250                                        
-               e units                                                             
- 
-     ..............................................................                
-     1          I    number of words/strip (=1)                                
-     2          I    number of strips                                          
-     ..............................................................                
-      1    PH  I    PuHeight         [0,*]                                     
+     +------+                              Subschema: VdetPOTBanks
+     | VFPH |  VDET final pulse height bank,
+     +------+  NR=VHLS number (POT) This
+               bank links up the VFHL bank
+               Pulseheight is stored in 250
+               e units
+
+     ..............................................................
+     1          I    number of words/strip (=1)
+     2          I    number of strips
+     ..............................................................
+      1    PH  I    PuHeight         [0,*]
                        Pulseheight
   */
   std::stringstream log;
@@ -94,7 +94,7 @@ void alpha::edm4hep_output::event_t::process_vdxy()  {
   int32_t vfph_nami = this->data.vfph.nami;
   object_table<class vfhl>* vfhl_bank = nullptr;
   object_table<class vfph>* vfph_bank = nullptr;
- 
+
   for( this->data.vdxy.load(false); this->data.vdxy.data; this->data.vdxy.knext() )  {
     auto* table = this->data.vdxy.table<class vdxy>();
     uint32_t row   = table->bank_header::row();
@@ -144,7 +144,7 @@ void alpha::edm4hep_output::event_t::process_vdxy()  {
         energy     = vdet.energy_deposit(num_electrons);
         err_energy = vdet.energy_deposit_error(num_electrons);
       }
-      
+
       hit.setCellID( hit_cell );
       hit.setTime( _TIM(0e0) );
       hit.setEDep( energy );
@@ -158,7 +158,7 @@ void alpha::edm4hep_output::event_t::process_vdxy()  {
       hit.setType( VDET_HIT_RPHI );
 
       this->alpha2edm4hep_vdxy[(row<<16) + ihit] = key;
-      
+
       if( this->data.vdxy.debug )  {
         log << "\t [vfhl:" << indx_vfhl
             << "." << std::setw(3) << ah->ihit() << "-" << iview

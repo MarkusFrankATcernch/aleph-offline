@@ -17,9 +17,9 @@
 /// Create ECAL hit from PECO row
 void alpha::edm4hep_output::event_t::process_peco()  {
   /*
-                                        Subschema: EobjPOTBanks                 
-   +------+                                                                       
-   | PECO |  Electromagnetic Calorimeter                                          
+                                        Subschema: EobjPOTBanks
+   +------+
+   | PECO |  Electromagnetic Calorimeter
    +------+  Object (PEOB and PEOT are
              replaced by PECO and PEPT )
    ..............................................................

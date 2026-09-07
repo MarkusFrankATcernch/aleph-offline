@@ -171,6 +171,7 @@ add_subdirectory( galeph )
 add_subdirectory( uphy )
 add_subdirectory( kin )
 add_subdirectory( look )
+add_subdirectory( jscanbook )
 #
 if( ALEPH_EDM4HEP )
   add_subdirectory( cxx )

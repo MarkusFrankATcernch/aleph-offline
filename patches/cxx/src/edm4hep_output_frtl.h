@@ -21,77 +21,77 @@
 void alpha::edm4hep_output::event_t::process_frtl()  {
   /**      Subschema: JULPOTFitTrack
  +------+
- | FRTL |  Tpc+Itc+Vdet Geometry Track                                         
- +------+  point List. Rows correspond                                         
-           with rows in FRFT bank. NR=0.                                       
-           (JUL)                                                               
- ..............................................................                
-     1          I    Number of words per track (=8)                            
-     2          I    Number of Tpc+Itc+Vdet                                    
-                     geometry tracks                                           
- ..............................................................                
-      1    IV  I    IoffV            [0,10000]                                 
-                       offset in FVCL                                          
-      2    NV  I    NarcV            [0,4]                                     
-                       numb. coord. in Vdet                                    
-      3    II  I    IoffI            [0,10000]                                 
-                       offset in FICL                                          
-      4    NI  I    NarcI            [0,8]                                     
-                       numb. coord. in Itc                                     
-      5    NE  I    NrEsti           [0,1000]                                  
-                       numb. coord. in following spirals in ITC                
-      6    IT  I    IoffT            [0,10000]                                 
-                       offset in FTCL                                          
-      7    NT  I    NarcT            [0,21]                                    
-                       numb. coord. in first arc in Tpc                        
-      8    NR  I    NRestt           [0,1000]                                  
+ | FRTL |  Tpc+Itc+Vdet Geometry Track
+ +------+  point List. Rows correspond
+           with rows in FRFT bank. NR=0.
+           (JUL)
+ ..............................................................
+     1          I    Number of words per track (=8)
+     2          I    Number of Tpc+Itc+Vdet
+                     geometry tracks
+ ..............................................................
+      1    IV  I    IoffV            [0,10000]
+                       offset in FVCL
+      2    NV  I    NarcV            [0,4]
+                       numb. coord. in Vdet
+      3    II  I    IoffI            [0,10000]
+                       offset in FICL
+      4    NI  I    NarcI            [0,8]
+                       numb. coord. in Itc
+      5    NE  I    NrEsti           [0,1000]
+                       numb. coord. in following spirals in ITC
+      6    IT  I    IoffT            [0,10000]
+                       offset in FTCL
+      7    NT  I    NarcT            [0,21]
+                       numb. coord. in first arc in Tpc
+      8    NR  I    NRestt           [0,1000]
                        numb. coord. in following spirals, in Tpc
  ..............................................................
- 
- +------+                            Subschema: JULPOTFitTrack                
- | FVCL |  Vdet Geometry track                                                 
- +------+  Coordinate List. Use FRTL to                                        
-           index into this bank NR=0.                                          
-           (JUL)                                                               
- ..............................................................                
-     1          I    Number of words per (=1)                                  
-                     coordinate                                                
-     2          I    Number of coordinates                                     
-                     associated with tracks                                    
- ..............................................................                
-      1    IV  I    Ivdco            [1,10000]                                 
-                       coordinate number in VDCO                               
+
+ +------+                            Subschema: JULPOTFitTrack
+ | FVCL |  Vdet Geometry track
+ +------+  Coordinate List. Use FRTL to
+           index into this bank NR=0.
+           (JUL)
+ ..............................................................
+     1          I    Number of words per (=1)
+                     coordinate
+     2          I    Number of coordinates
+                     associated with tracks
+ ..............................................................
+      1    IV  I    Ivdco            [1,10000]
+                       coordinate number in VDCO
  ..............................................................
 
- +------+                            Subschema: JULPOTFitTrack                
- | FICL |  Itc Geometry track Coordinate                                       
- +------+  List. Use FRTL to index into                                        
-           this bank NR=0. (JUL)                                               
- ..............................................................                
-     1          I    Number of words per (=1)                                  
-                     coordinate                                                
-     2          I    Number of coordinates                                     
-                     (signed) associated with                                  
-                     tracks (-ve means 2nd Phi hit                             
-                     used)                                                     
- ..............................................................                
-      1    II  I    Iitco            [-10000,10000]                            
-                       coordinate number in ITCO                               
+ +------+                            Subschema: JULPOTFitTrack
+ | FICL |  Itc Geometry track Coordinate
+ +------+  List. Use FRTL to index into
+           this bank NR=0. (JUL)
  ..............................................................
- 
- +------+                            Subschema: JULPOTFitTrack                
- | FTCL |  Tpc Geometry track Coordinate                                       
- +------+  List. Use FRTL to index into                                        
-           this bank NR=0. (JUL)                                               
- ..............................................................                
-     1          I    Number of words per (=1)                                  
-                     coordinate                                                
-     2          I    Number of coordinates                                     
-                     associated with tracks                                    
- ..............................................................                
-      1    IT  I    Itpco            [1,10000]                                 
-                       coordinate number in TPCO                               
- ..............................................................                
+     1          I    Number of words per (=1)
+                     coordinate
+     2          I    Number of coordinates
+                     (signed) associated with
+                     tracks (-ve means 2nd Phi hit
+                     used)
+ ..............................................................
+      1    II  I    Iitco            [-10000,10000]
+                       coordinate number in ITCO
+ ..............................................................
+
+ +------+                            Subschema: JULPOTFitTrack
+ | FTCL |  Tpc Geometry track Coordinate
+ +------+  List. Use FRTL to index into
+           this bank NR=0. (JUL)
+ ..............................................................
+     1          I    Number of words per (=1)
+                     coordinate
+     2          I    Number of coordinates
+                     associated with tracks
+ ..............................................................
+      1    IT  I    Itpco            [1,10000]
+                       coordinate number in TPCO
+ ..............................................................
   */
   bool  dbg = this->data.frtl.debug;
   auto* tab_frtl = this->data.frtl.load<object_table<class frtl> >();
@@ -102,7 +102,7 @@ void alpha::edm4hep_output::event_t::process_frtl()  {
   if( dbg )  {
     log << bos77::to_string(tab_frtl) << std::endl;
   }
-  
+
   for( int itk = qcde.KFCHT; itk <= qcde.KLCHT; ++itk )  {
     std::size_t itr    = itk - qcde.KFCHT + 1;
     auto*       frtl   = tab_frtl->row(itr);
@@ -112,7 +112,7 @@ void alpha::edm4hep_output::event_t::process_frtl()  {
     const char* tag_vd = nvdet>0 ? " VDCO:" : "";
     const char* tag_it = nitc>0 ? " ITCO:" : "";
     const char* tag_tp = ntpc>0 ? " TPCO:" : "";
-    
+
     if( dbg && (nvdet+nitc+ntpc)>0 )  {
       log << "  FRTL/FRFT: " << std::setw(2) << itr << " ";
     }

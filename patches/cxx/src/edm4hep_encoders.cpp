@@ -75,7 +75,7 @@ alpha::detector_hcal_t::detector_hcal_t()
   this->field_layer  = this->descriptor.field("layer");
 }
 
- 
+
 /// Default constructor
 alpha::experiment_t::experiment_t()   {
   const char* muon_id = "system:8,endcap:1";

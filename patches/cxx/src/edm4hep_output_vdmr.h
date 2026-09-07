@@ -19,18 +19,18 @@
 /// Create VDET 3D hit from VDXY row
 void alpha::edm4hep_output::event_t::process_vdxy()  {
   /**
-     +------+                              Subschema: VdetPOTBanks                
-     | VDMR |  Hit multiplexing relation                                           
-     +------+  (bank is parallel to                                                
-               VDXY/VDZT) NR = same as                                             
-               VDXY/VDZT + view OK                                                 
- 
-     ..............................................................                
-     1          I    Number of words/hit (=1)                                  
-     2          I    Number of hits in VDXY/VDZT                               
-     ..............................................................                
-      1    VD  I    VD               [0,*]                                     
-                       Index of global cluster in VDGC                         
+     +------+                              Subschema: VdetPOTBanks
+     | VDMR |  Hit multiplexing relation
+     +------+  (bank is parallel to
+               VDXY/VDZT) NR = same as
+               VDXY/VDZT + view OK
+
+     ..............................................................
+     1          I    Number of words/hit (=1)
+     2          I    Number of hits in VDXY/VDZT
+     ..............................................................
+      1    VD  I    VD               [0,*]
+                       Index of global cluster in VDGC
   */
   int32_t view = 1;
   for( this->data.vdxy.load(false); this->data.vdxy.data; this->data.vdxy.knext() )  {
@@ -40,7 +40,7 @@ void alpha::edm4hep_output::event_t::process_vdxy()  {
     for( uint32_t ihit=1; ihit <= tab_vdxy->size(); ++ihit )  {
       std::size_t key = this->alpha2edm4hep_vdxy[(row<<16) + ihit];
       MutableTrackerHit3D hit = this->hits_vdxy.at(key);
-      
+
     }
   }
 }

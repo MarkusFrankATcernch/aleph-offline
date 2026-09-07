@@ -29,16 +29,16 @@ namespace alpha  {
   constexpr static const int32_t KSOVT=1;
   constexpr static const int32_t KSCHT=2;
   constexpr static const int32_t KSIST=3;
-  
+
   class qcde_t  {
-  public:    
+  public:
     float QELEP, QMFLD ,QMFLDC, QTIME, QTIMEI, QTIMEL,
       QTIMES, QTIMET, QDHEEC, QDHEEL, QDHEPF, QDHETH, QDHEPH, QDHEEF,
       QDHEET, QDHET1, QDHEP1, QDHET2, QDHEP2, QDHEE1, QDHEE2, QDHEE3,
       QKEVRN, QKEVWT, QVXNOM, QVYNOM, QVZNOM, QVXNSG, QVYNSG, QVZNSG,
       QINLUM, QRINLN, QRINLU, QDBOFS, QEECWI[36], QVXBOM, QVYBOM,
       QSILUM, QRSLLU, QRSLBK, QRSLEW , QVTXBP[3], QVTEBP[3], QVTSBP[3];
-    
+
    int32_t KFOVT, KLOVT, KNOVT, KFCHT, KLCHT, KNCHT, KFIST,
       KLIST, KNIST, KFAST, KLAST, KNAST, KFEHT, KLEHT, KNEHT, KFV0T,
       KLV0T, KNV0T, KFDCT, KLDCT, KNDCT, KFEFT, KLEFT, KNEFT, KFNET,
@@ -67,7 +67,7 @@ namespace alpha  {
       DIMENSION KLOCUS(3,14)
       EQUIVALENCE (KLOCUS(1,1),KFOVT), (KFOVT,KFRET), (KLIST,KLRET),
      & (KFIST,KFCOT), (KLAST,KLCOT)
-      
+
       COMMON /QCDE/ XCOPYJ, XFLIAC, XHISTO, XLREV(2), XLREV2(2), XMCEV,
      & XMINI, XSYNTX, XWREVT, XWRRUN, XFILMC, XFILCH, XFILV0, XFILCO,
      & XFILEF, XFILPC, XFILGA, XFILJE,
@@ -77,7 +77,7 @@ namespace alpha  {
      & XJTHRU
 #endif
   };
-  
+
 #ifndef DEFINE_QCDE_STORAGE
   extern qcde_t& qcde;
 #endif

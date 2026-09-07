@@ -94,7 +94,7 @@ namespace alpha  {
     constexpr static const int32_t JQDENT  =  2;
     constexpr static const int32_t JQDEAT  =  3;
     constexpr static const int32_t JQDELT  =  7;
-     
+
     constexpr static const int32_t JQDEAE  =  8;
     constexpr static const int32_t JQDEAH  =  9;
     constexpr static const int32_t JQDEAM  = 10;
@@ -108,7 +108,7 @@ namespace alpha  {
     constexpr static const int32_t JQDEFL  = 17;
     constexpr static const int32_t JQDENE  = 18;
     constexpr static const int32_t JQDEEL  = 19;
-     
+
     constexpr static const int32_t JQDENH  = 20;
     constexpr static const int32_t JQDEHL  = 21;
     constexpr static const int32_t JQDELH  = 22;
@@ -194,7 +194,7 @@ namespace alpha  {
     uint32_t          charged_track_rownum(uint32_t i)  const;
     /// Reference to the associated charged track object
     const class qvec* charged_track(uint32_t i)  const;
-    
+
     /// Check if ECAL data (PECO) are available for calorimeter object “track”
     bool              xpeco()  const       {  return this->offset_peco != params.kqzer;          }
     /// number of associated ECAL objects
@@ -295,7 +295,7 @@ namespace alpha  {
       }
       return nullptr;
     }
-    
+
     /// Check if PMLT data are available for “track”
     bool              xpmlt()  const       {
       return params.pmlt_table && this->offset_pmlt != params.kqzer;
@@ -355,7 +355,7 @@ namespace alpha  {
   inline bool              qdet::xmuid()  const  {
     return this->offset_muid != params.kqzer && bcs_offset<class frid>(this->offset_muid) != nullptr;
   }
-  
+
   /// Check if charged track associations exist
   inline bool qdet::xchgd()  const  {
     return this->num_associated_charged_tracks &&

@@ -24,29 +24,29 @@ namespace {
 /// Production output Tpc track pad dE/dX (NR=0)
 void alpha::edm4hep_output::event_t::process_texs()  {
   /**
-     +------+                               Subschema: TpcJULBanks                
-     | TEXS |  Tpc dE/dX Segment (NR=0) One                                        
-     +------+  track segment per sector                                            
-               crossed                                                             
-     ..............................................................                
-     1          I    Number of words per segment (=7)                          
-     2          I    Number of segments                                        
-     ..............................................................                
-      1    SI  I    SegmentId        [1,*]                                     
-                       Sector slot number                                      
-      2    TM  F    TruncatedMean    [0.0,*]                                   
-                       Truncated mean of dE/dx measurements                    
-      3    TL  F    TrackLength      [0.0,500.0]                               
-                       Useful length of track for dE/dx                        
-      4    NS  I    NumberSamples    [1,500]                                   
-                       Number of samples used for dE/dx                        
-      5    AD  F    AverageDrift     [0.0,220.0]                               
-                       Average drift length of samples                         
-      6    TN  I    TrackNumber      [1,*]                                     
-                       Pointer to track entry in TGFT                          
-      7    SF  I    SatFlag          [0,1]                                     
-                       1= >40% saturated hits.                                 
-                       0= <40% saturated hits                                  
+     +------+                               Subschema: TpcJULBanks
+     | TEXS |  Tpc dE/dX Segment (NR=0) One
+     +------+  track segment per sector
+               crossed
+     ..............................................................
+     1          I    Number of words per segment (=7)
+     2          I    Number of segments
+     ..............................................................
+      1    SI  I    SegmentId        [1,*]
+                       Sector slot number
+      2    TM  F    TruncatedMean    [0.0,*]
+                       Truncated mean of dE/dx measurements
+      3    TL  F    TrackLength      [0.0,500.0]
+                       Useful length of track for dE/dx
+      4    NS  I    NumberSamples    [1,500]
+                       Number of samples used for dE/dx
+      5    AD  F    AverageDrift     [0.0,220.0]
+                       Average drift length of samples
+      6    TN  I    TrackNumber      [1,*]
+                       Pointer to track entry in TGFT
+      7    SF  I    SatFlag          [0,1]
+                       1= >40% saturated hits.
+                       0= <40% saturated hits
    */
   std::stringstream log;
   auto& tpc = *this->exp.tpc;

@@ -21,7 +21,7 @@
 void alpha::edm4hep_output::event_t::process_vcpl()  {
   /**
      Subschema: VdetPOTBanks
-     +------+ 
+     +------+
      | VCPL |  association of a track,
      +------+  NR=NTRACK (POT)
      ..............................................................
@@ -41,11 +41,11 @@ void alpha::edm4hep_output::event_t::process_vcpl()  {
 
   from julia/vglob/vgstor.F we have the following relationship
   between VCPL, VDXY, VDZT, VDCO. VDXY and VDZT are parallel
-  
+
   VCPL.JVCP-(XB+NX) == VDXY (wafer).(NR+row) \       /  NR match VDCO.JVDC-WI
-  and                                         >>>>>> 
-  VCPL.JVCP-(ZB+NZ) == VDZT (wafer).(NR+row) /       \ 
-         
+  and                                         >>>>>>
+  VCPL.JVCP-(ZB+NZ) == VDZT (wafer).(NR+row) /       \
+
   */
   std::stringstream log;
   /// From the code in julia/vglob/vgstor.F the VCPL banks(+rows)
@@ -106,7 +106,7 @@ void alpha::edm4hep_output::event_t::process_vcpl()  {
       // - for VDXY and VDZT the layer must be the same
       // - typically iphi and iz are also the same,
       //   but is not always if the track is at low tan(lambda)
-      // 
+      //
       // Checking VDCO is not so simple: we only have global coordinates
       bool problem = (track_vcpl != trk_vdco) || (ilay_vdxy != ilay_vdzt);
       if( this->data.vcpl.debug || problem )  {

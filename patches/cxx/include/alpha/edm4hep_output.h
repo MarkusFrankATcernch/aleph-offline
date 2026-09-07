@@ -26,7 +26,7 @@ namespace alpha  {
 
   class detector_t;
   class constants_t;
-  
+
   /// Class to perform data translation from ALEPH BOS to EDM4HEP
   /**
    *    \author  M.Frank
@@ -48,9 +48,10 @@ namespace alpha  {
     std::string debug_banks          {       };
 
     bool        debug_io             { false };
-    
+
     bool        save_all             { false };
-    
+
+    bool        save_parameters      { false };
     bool        save_particles       { false };
     bool        save_mc_particles    { false };
     bool        save_charged_tracks  { false };
@@ -66,7 +67,7 @@ namespace alpha  {
     bool        save_calorimeter     { false };
     bool        save_ecal_reco       { false };
     bool        save_hcal_reco       { false };
-    
+
   public:
     /// Default constructor
     edm4hep_output();

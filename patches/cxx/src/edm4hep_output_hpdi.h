@@ -17,26 +17,26 @@
 /// HPDI table bank: Hcal Plane DIgits (RawData)
 void alpha::edm4hep_output::event_t::process_hpdi()  {
   /**
- +------+                              Subschema: HcalRAWBanks                
- | HPDI |  Hcal Plane DIgits (RawData)                                         
+ +------+                              Subschema: HcalRAWBanks
+ | HPDI |  Hcal Plane DIgits (RawData)
  +------+
- 
- ..............................................................                
-     1          I    Number of words / plane (=2)                              
-     2          I    Number of planes                                          
- ..............................................................                
-      1    PA  I    PlaneAddres      [10101,306022]                            
-                       Plane address                                           
-                       bits: 0- 7 : plane number                               
-                       endcaps[1,12] 89-90-91 data                             
-                       endcaps[1,22] 92 data                                   
-                       barrel[1,23] 89-90-91-92 data                           
-                       8-15 : module number                                    
-                       endcaps[1,6],barrel[1,24]                               
-                       16-23 : subdetector number [1,3]                        
-                       endcapA=1,Barrel=2,endcapB=3                            
-      2    ED  I    EnergyDepos      [0,100000]                                
-                       Energy in plane ( MeV)                                  
+
+ ..............................................................
+     1          I    Number of words / plane (=2)
+     2          I    Number of planes
+ ..............................................................
+      1    PA  I    PlaneAddres      [10101,306022]
+                       Plane address
+                       bits: 0- 7 : plane number
+                       endcaps[1,12] 89-90-91 data
+                       endcaps[1,22] 92 data
+                       barrel[1,23] 89-90-91-92 data
+                       8-15 : module number
+                       endcaps[1,6],barrel[1,24]
+                       16-23 : subdetector number [1,3]
+                       endcapA=1,Barrel=2,endcapB=3
+      2    ED  I    EnergyDepos      [0,100000]
+                       Energy in plane ( MeV)
   */
   std::stringstream log;
   bool dbg = this->data.hpdi.debug;
@@ -58,7 +58,7 @@ void alpha::edm4hep_output::event_t::process_hpdi()  {
         const char* det_name = "Endcap B";
         if(      detector == 1 ) det_name = "Endcap A";
         else if( detector == 2 ) det_name = "Barrel  ";
-        
+
         ::snprintf(text, sizeof(text),
                    "\tHWDI plane hit %s add:%08lX det:%2d mod:%2d plane:%3d E:%s GeV",
                    det_name, cell, detector, module, plane, fmt_ene(edep/1000e0).c_str());

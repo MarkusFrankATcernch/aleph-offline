@@ -17,9 +17,9 @@
 /// Create VDET simulation hit from VDHT row (produced by GALEPH)
 void alpha::edm4hep_output::event_t::process_vdht()  {
   /**
-     Subschema: VdetGALBanks                 
-     +------+                                                                       
-     | VDHT |  VDet HiT list NR=0 (GAL)                                             
+     Subschema: VdetGALBanks
+     +------+
+     | VDHT |  VDet HiT list NR=0 (GAL)
      +------+
      ..............................................................
      1          I    Number of words/hit (=10)

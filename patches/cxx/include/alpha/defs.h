@@ -34,7 +34,7 @@ namespace alpha  {
   public:
     int32_t  link;
   };
-  
+
   /// Track data for direct use in ALPHA
   /*
    *
@@ -53,7 +53,7 @@ namespace alpha  {
     data_t* operator->()             {  return wrap; }
     const data_t* operator->() const {  return wrap; }
   };
-  
+
   /// Aleph bos bank: standard bos header followed by object table
   /*
    *   Object table is defined by the
@@ -134,11 +134,11 @@ namespace alpha  {
     uint32_t size()  const                    {  return this->_num_objects;                  }
     /// Number of words per object
     uint32_t words_per_object()  const        {  return this->_obj_words;                    }
-    /// Direct access by row to object entry in the table 
+    /// Direct access by row to object entry in the table
     value_type operator[](uint32_t idx)       {  return _access_object(idx);                 }
     /// Direct access by row to object entry in the table  (CONST)
     value_type operator[](uint32_t idx) const {  return _access_object(idx);                 }
-    /// Direct access by row to object entry in the table 
+    /// Direct access by row to object entry in the table
     value_type at(uint32_t idx)               {  return _access_object(idx);                 }
     /// Direct access by row to object entry in the table  (CONST)
     const value_type at(uint32_t idx) const   {  return _access_object(idx);                 }
@@ -153,7 +153,7 @@ namespace alpha  {
     /** Iterative object access  */
     /// Bank iterator: start iteration
     pointer_type       begin()         {  return (pointer_type*)_table._access_pointer(_first);   }
-    /// Bank iterator: start iteration (CONST) 
+    /// Bank iterator: start iteration (CONST)
     const pointer_type begin()  const  {  return (pointer_type*)_table._access_pointer(_first);   }
     /// Bank iterator: iteration stop marker
     pointer_type       end()           {  return (pointer_type*)_table._access_pointer(_last+1);  }
@@ -179,7 +179,7 @@ namespace alpha  {
     };
     using iterator_type = iterator;
   };
-  
+
   /// Get object index in table (starting from NULL!). -1 if not in table
   template <typename POINTER, typename VALUE>
   int32_t object_table<POINTER,VALUE>::index(const_pointer_type obj)  const  {

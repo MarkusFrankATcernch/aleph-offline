@@ -17,18 +17,18 @@
 /// Create HCAL cluster relations from PHCO to FRFT tracks: bank PFHR
 void alpha::edm4hep_output::event_t::process_pfhr()  {
   /**
-     +------+                              Subschema: CobjPOTBanks                
-     | PFHR |  Fitted track-Hcalobject                                             
-     +------+  Relations                                                           
- 
-     ..............................................................                
-     1          I    Number of words/relation (=2)                             
-     2          I    Number of relations                                       
-     ..............................................................                
-      1    PF  I    PFRF                                                       
-                       Row index of Fitted Track                               
-      2    PH  I    PHCO                                                       
-                       Row index of HcalObject                                 
+     +------+                              Subschema: CobjPOTBanks
+     | PFHR |  Fitted track-Hcalobject
+     +------+  Relations
+
+     ..............................................................
+     1          I    Number of words/relation (=2)
+     2          I    Number of relations
+     ..............................................................
+      1    PF  I    PFRF
+                       Row index of Fitted Track
+      2    PH  I    PHCO
+                       Row index of HcalObject
   */
   // Do not know how to resolve this: Calorimeter hits cannot attached to edm4hep::MutableTrack
 }

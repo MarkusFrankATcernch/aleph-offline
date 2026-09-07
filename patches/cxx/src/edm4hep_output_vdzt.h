@@ -20,8 +20,8 @@
 void alpha::edm4hep_output::event_t::process_vdzt()  {
   /*
                                         Subschema: VdetPOTBanks
-     +------+                                                                       
-     | VDZT |  MVD hits in z wafer. (POT)                                           
+     +------+
+     | VDZT |  MVD hits in z wafer. (POT)
      +------+  NR=ILAYER*10000+IZED*1000+IPH-
                I*10+(IVIEW=1) Bank number is
                packed/unpaked by
@@ -53,8 +53,8 @@ void alpha::edm4hep_output::event_t::process_vdzt()  {
       10   IH  I    IHit             [0,1000000]
                        Hit number in VFHL bank
 
-     +------+                                                                       
-     | VFHL |  VDET final hit list bank,                                            
+     +------+
+     | VFHL |  VDET final hit list bank,
      +------+  NR=VHLS number (POT) Hit
                address is computed as in
                VHLS packed/unpacked by
@@ -70,19 +70,19 @@ void alpha::edm4hep_output::event_t::process_vdzt()  {
                        Ilayer*2**17 + Iwafer*2**15 +
                        Iview*2**10 + Istrip
 
-     +------+                              Subschema: VdetPOTBanks                
-     | VFPH |  VDET final pulse height bank,                                       
-     +------+  NR=VHLS number (POT) This                                           
-               bank links up the VFHL bank                                         
-               Pulseheight is stored in 250                                        
-               e units                                                             
- 
-     ..............................................................                
-     1          I    number of words/strip (=1)                                
-     2          I    number of strips                                          
-     ..............................................................                
-      1    PH  I    PuHeight         [0,*]                                     
-                       Pulseheight                                             
+     +------+                              Subschema: VdetPOTBanks
+     | VFPH |  VDET final pulse height bank,
+     +------+  NR=VHLS number (POT) This
+               bank links up the VFHL bank
+               Pulseheight is stored in 250
+               e units
+
+     ..............................................................
+     1          I    number of words/strip (=1)
+     2          I    number of strips
+     ..............................................................
+      1    PH  I    PuHeight         [0,*]
+                       Pulseheight
    */
   std::stringstream log;
   int32_t vfhl_nr = -1;
@@ -150,7 +150,7 @@ void alpha::edm4hep_output::event_t::process_vdzt()  {
           0e0,             0e0,             err.z()*err.z() } );
       hit.setQuality(ah->qualityFlag());
       hit.setType( VDET_HIT_Z );
-      
+
       this->alpha2vdzt[(row << 16) + ihit] = ah;
       this->alpha2edm4hep_vdzt[(row << 16) + ihit] = key;
 

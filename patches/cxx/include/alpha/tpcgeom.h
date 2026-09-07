@@ -49,7 +49,7 @@ namespace alpha {
     constexpr static std::size_t LTSECT = LTSLOT*LTSTYP;
     constexpr static std::size_t LTTPAD = 4;
   };
-  
+
   ///  Pad readout geometry for TPC
   /**
    *   NTPDRW(is)      = Number of padrows in each sector type
@@ -78,7 +78,7 @@ namespace alpha {
     float             TPDPHW[tpgpar::LTSROW][tpgpar::LTSTYP];
     float             TPDPHS[tpgpar::LTSROW][tpgpar::LTSTYP];
   };
-  
+
   struct tpcgeom_t  {
     /**----------------------------------------------------------------------
      *
