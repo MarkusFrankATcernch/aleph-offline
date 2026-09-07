@@ -10,132 +10,129 @@
 //
 //  Author     : Markus Frank
 //==========================================================================
-#if 0
 
+/**
 POT banks:
 
 **  MC Banks:
-  KEVH   EventKINGALBanks Event generator status(NR=0)
-  KMAR   EventKINGALBanks Random generator status(NR=0)
-  KGWT   EventKINGALBanks Kingal event partial WeiGhTs(NR=0)
-  FKIN   FXXX             Fxxx monte carlo track bank.
-  FPOI   FXXX             Fxxx POInters bank relating KINE track number to FKIN number
-  FVER   FXXX             Fxxx monte carlo VERtex bank.
+    KEVH   EventKINGALBanks Event generator status(NR=0)
+    KMAR   EventKINGALBanks Random generator status(NR=0)
+    KGWT   EventKINGALBanks Kingal event partial WeiGhTs(NR=0)
+    FKIN   FXXX             Fxxx monte carlo track bank.
+    FPOI   FXXX             Fxxx POInters bank relating KINE track number to FKIN number
+    FVER   FXXX             Fxxx monte carlo VERtex bank.
 
-  VDFK   VdetGALBanks     Vdco to FKIN truth relation (monte Carlo)
-  VDHT   VdetGALBanks     VDet HiT list NR=0 (GAL)
-  VUFK   VdetGALBanks     Vdxy/vdzt to FKIN truth relation (monte Carlo) (hits unused by pattern reconstruction)
-  
-  PEMH   CobjPOTBanks     Relation between ECAL and LCAL objects and FKIN tracks
+    VDFK   VdetGALBanks     Vdco to FKIN truth relation (monte Carlo)
+    VDHT   VdetGALBanks     VDet HiT list NR=0 (GAL)
+    VUFK   VdetGALBanks     Vdxy/vdzt to FKIN truth relation (monte Carlo) (hits unused by pattern reconstruction)
+
+    PEMH   CobjPOTBanks     Relation between ECAL and LCAL objects and FKIN tracks
 
 **  LUPA   LUMINOSITY       Luminosity parameter bank
-  
+
 **  VDET banks:
-  VDCO   VdetPOTBanks     VDET coordinated NR=0 (POT)
-  VDXY   VdetPOTBanks     MVD hits in r-phi wafer.  (POT)        NR=ILAYER*10000+IZED*1000+IPH-I*10+(IVIEW=1)
-  VDZT   VdetPOTBanks     MVD hits in z wafer. (POT)             NR=ILAYER*10000+IZED*1000+IPH-I*10+(IVIEW=1)
-  VDGC   VdetPOTBanks     VDET global clusters : not multiplexed NR=0
-  VCPL   VdetPOTBanks     association of a track,                NR=NTRACK (POT)
-  VFHL   VdetPOTBanks     VDET final hit list bank,              NR=VHLS number (POT)
-  VFLG   VdetPOTBanks     VDET strip flag bank,                  NR=VHLS number (POT)
-  VFPH   VdetPOTBanks     VDET final pulse height bank,          NR=VHLS number (POT)
+    VDCO   VdetPOTBanks     VDET coordinated NR=0 (POT)
+    VDXY   VdetPOTBanks     MVD hits in r-phi wafer.  (POT)        NR=ILAYER*10000+IZED*1000+IPH-I*10+(IVIEW=1)
+    VDZT   VdetPOTBanks     MVD hits in z wafer. (POT)             NR=ILAYER*10000+IZED*1000+IPH-I*10+(IVIEW=1)
+    VDGC   VdetPOTBanks     VDET global clusters : not multiplexed NR=0
+    VCPL   VdetPOTBanks     association of a track,                NR=NTRACK (POT)
+    VFHL   VdetPOTBanks     VDET final hit list bank,              NR=VHLS number (POT)
+    VFLG   VdetPOTBanks     VDET strip flag bank,                  NR=VHLS number (POT)
+    VFPH   VdetPOTBanks     VDET final pulse height bank,          NR=VHLS number (POT)
 
 **  ITC:
-  PIDI   ItcPOTBanks      Packed Itc DIgitisings (NR=0)
-  ITCO   ItcJuliaBanks    ITc COordinates (Banks 0 (corrected coords.) and 1 (raw coords.))
-  ICCO   ItcJuliaBanks    Itc Corrected COordinates for the final track fit
-  IWCR   ItcJuliaBanks    Itc Wire to Coordinate
-  IDIG   ItcEventRecord   Itc DIGitisings (raw)
-  IASL/PASL ItcPOTBanks   JULIA track to FKIN track association list (accessed via ITMA bank).
-  ITMA/PITM ItcPOTBanks   JULIA track to FKIN track association (using ITC + TPC coordinate information).
+    PIDI   ItcPOTBanks      Packed Itc DIgitisings (NR=0)
+    ITCO   ItcJuliaBanks    ITc COordinates (Banks 0 (corrected coords.) and 1 (raw coords.))
+    ICCO   ItcJuliaBanks    Itc Corrected COordinates for the final track fit
+    IWCR   ItcJuliaBanks    Itc Wire to Coordinate
+    IDIG   ItcEventRecord   Itc DIGitisings (raw)
+    IASL/PASL ItcPOTBanks   JULIA track to FKIN track association list (accessed via ITMA bank).
+    ITMA/PITM ItcPOTBanks   JULIA track to FKIN track association (using ITC + TPC coordinate information).
 
 **  TPC:
-  TWZZ   TpcJULBanks      Tpc Wire Z coordinates
-  TRIK   TpcJULBanks      TRack Extrapolation from Kalman filter
-  PCOI   TpcPOTBanks      Supplemental TPC coordinate information (NR=0).
-  PT2X   TpcPOTBanks      Production output Tpc track dE/dX for overlapping tracks (NR=0)
-  PTBC/TBCO   TpcPOTBanks      Production output Tpc Bad Coordinates (NR=0)
-  PTEX/TEXS   TpcPOTBanks      Production output Tpc track dE/dX (NR=0)
-  PTPX   TpcPOTBanks      Production output Tpc track pad dE/dX (NR=0)
-  PTNC   TpcPOTBanks      Production output Tpc pad Coordinates (NR=0). (UNCORRECTED)
-  
-**  ECAL:
-  ETKC   EcalRUNConsts    Ecal Tower Killed by Cleaning   
-  ETDI   EcalRAWBanks     Ecal Tower DIgits NR=0. (RAW)
-  EWHI   EcalRAWBanks     Ecal Wire HEader bank NR=0. (GAL)
+    TWZZ   TpcJULBanks      Tpc Wire Z coordinates
+    TRIK   TpcJULBanks      TRack Extrapolation from Kalman filter
+    PCOI   TpcPOTBanks      Supplemental TPC coordinate information (NR=0).
+    PT2X   TpcPOTBanks      Production output Tpc track dE/dX for overlapping tracks (NR=0)
+    PTBC/TBCO   TpcPOTBanks      Production output Tpc Bad Coordinates (NR=0)
+    PTEX/TEXS   TpcPOTBanks      Production output Tpc track dE/dX (NR=0)
+    PTPX   TpcPOTBanks      Production output Tpc track pad dE/dX (NR=0)
+    PTNC   TpcPOTBanks      Production output Tpc pad Coordinates (NR=0). (UNCORRECTED)
 
-  PEWI   EcalPOTBanks     Ecal Wire plane Digits Raw bank: EWDI
-  PEPT   EobjPOTBanks     Electromagnetic calorimeter object Phi and Theta values
-  PECO   EobjPOTBanks     Electromagnetic Calorimeter Object (Mini: DECO)
-  EGPR   EcalJULBanks     Electromagnetic Gamma(gampek)  Pest Row component
-  PEST   EobjPOTBanks     Pot Electromagnetic calorimeter SToreys
-  PEHY   EobjPOTBanks     Electromagnetic calobject HYpothesis
-  PRPW   EcalPOTBanks     Pot bank for Relation Pad/Wire
-  
-  PGID   EcalJULBanks     Pot electomagnetic Gamma IDentification (Mini: DGID)
-  PGAC   EcalJULBanks     Photons from GAMPEX (oct 94) (Mini: DGAC)
-  EIDT   ElidJULPOTBanks  Electron IDenTification. NR=0     
+**  ECAL:
+    ETKC   EcalRUNConsts    Ecal Tower Killed by Cleaning   
+    ETDI   EcalRAWBanks     Ecal Tower DIgits NR=0. (RAW)
+    EWHI   EcalRAWBanks     Ecal Wire HEader bank NR=0. (GAL)
+
+    PEWI   EcalPOTBanks     Ecal Wire plane Digits Raw bank: EWDI
+    PEPT   EobjPOTBanks     Electromagnetic calorimeter object Phi and Theta values
+    PECO   EobjPOTBanks     Electromagnetic Calorimeter Object (Mini: DECO)
+    EGPR   EcalJULBanks     Electromagnetic Gamma(gampek)  Pest Row component
+    PEST   EobjPOTBanks     Pot Electromagnetic calorimeter SToreys
+    PEHY   EobjPOTBanks     Electromagnetic calobject HYpothesis
+    PRPW   EcalPOTBanks     Pot bank for Relation Pad/Wire
+
+    PGID   EcalJULBanks     Pot electomagnetic Gamma IDentification (Mini: DGID)
+    PGAC   EcalJULBanks     Photons from GAMPEX (oct 94) (Mini: DGAC)
+    EIDT   ElidJULPOTBanks  Electron IDenTification. NR=0     
 
 **  HCAL:
-  HLTU   HcalJULBanks     True MC longit. coordinate of Hcal hit
-  HMAD   HcalJULBanks     Hcal Muon tracks Association
-  HPDI   HcalRAWBanks     Hcal Plane DIgits (RawData)
-  HTUB   HcalJULBanks     Hcal TUBes data (from Julia prepare data)
-  PHCO   HobjPOTBanks     Hadron Calorimeter Object (Mini: DHCO)
-  PHHY   HobjPOTBanks     Hadronic calobject HYpothesis
-  PPDS   HobjPOTBanks     Pot Pattern DiScriminant analysis
-  PPOB   HobjPOTBanks     hadronic digital Pattern OBject
+    HLTU   HcalJULBanks     True MC longit. coordinate of Hcal hit
+    HMAD   HcalJULBanks     Hcal Muon tracks Association
+    HPDI   HcalRAWBanks     Hcal Plane DIgits (RawData)
+    HTUB   HcalJULBanks     Hcal TUBes data (from Julia prepare data)
+    PHCO   HobjPOTBanks     Hadron Calorimeter Object (Mini: DHCO)
+    PHHY   HobjPOTBanks     Hadronic calobject HYpothesis
+    PPDS   HobjPOTBanks     Pot Pattern DiScriminant analysis
+    PPOB   HobjPOTBanks     hadronic digital Pattern OBject
 
 **  MUON:
-  MUEX   MuonRAWGALJULPOT MU chambers EXtrapol data for current track
-  MUID   MuonRAWGALJULPOT MUon IDdentification data for current track
+    MUEX   MuonRAWGALJULPOT MU chambers EXtrapol data for current track
+    MUID   MuonRAWGALJULPOT MUon IDdentification data for current track
 
-** CAL objects:
-  PCOB   CobjPOTBanks     Calorimeter OBject
-  PCHY   CobjPOTBanks     Calobject HYpothesis  
-  PCPA   CobjPOTBanks     Calobject neutral PArticle
-  PCRL   CobjPOTBanks     Calobject ReLations (to FRFT, EC, HC)
-  PPRL   CobjPOTBanks     hypothesis Particle ReLations
+**  CAL objects:
+    PCOB   CobjPOTBanks     Calorimeter OBject
+    PCHY   CobjPOTBanks     Calobject HYpothesis  
+    PCPA   CobjPOTBanks     Calobject neutral PArticle
+    PCRL   CobjPOTBanks     Calobject ReLations (to FRFT, EC, HC)
+    PPRL   CobjPOTBanks     hypothesis Particle ReLations
 
-  PYER   YvertexPOTBanks  Vertex position. NR=0. (POT)      
-  PYFR   YvertexPOTBanks  eset to hold n:m relation between vertices and FRFT as well as YNFT tracks.
+    PYER   YvertexPOTBanks  Vertex position. NR=0. (POT)      
+    PYFR   YvertexPOTBanks  eset to hold n:m relation between vertices and FRFT as well as YNFT tracks.
 
-  FRID   JULPOTFitTrack   Particle identification bank for charged tracks
-  PFRF   JULPOTFitTrack   Global Geometrical track FiT NR=0. (POT)
-  
-  PFXT   JULPOTFitTrack   POT Fit eXtra Track information NR=0.(POT)
-  SILH   ScalLUMI         Sical Luminosity parameter                                           
-  
-** Headers:  
-  DHEA   MiniDSTBanks     Header containing General Event Information from Reconstruction.
-  EJET   EflowJULPOTBanks Eflow JET bank
-  EFOL   EflowJULPOTBanks Energy FlOw eLements
-  REVH   StatusJULBanks   Reconstructio EVent Header
-  
-  
-  
-  +++ AUBLIS +++    C list contains the following banks: 
-  RUNR RUNH KRUN KRAN KJOB PART KCAR RLEP KLUN KPAR KLIN MSTU PARU MSTJ PARJ PMA1 PMA2 PMA3 PMA4 MDM1
-  GADM GRPL GMOB KORL TSIM LALI LCAL EZTH VOLU ACUT AFID AJOB ARUN APRO ASIM ILIV ECHE EHGF SMPD RHAH
-  ZPFR JCON PTUN
+    FRID   JULPOTFitTrack   Particle identification bank for charged tracks
+    PFRF   JULPOTFitTrack   Global Geometrical track FiT NR=0. (POT)
 
-  +++ AUBLIS +++    E list contains the following banks: 
-  EVEH ASEV DHEA EJET FZFR HROA KEVH KMAR KWGT LUPA MUEX MUID PCOB PEPT PFXT PGID PIDI PYER REVH RTLS
-  SILH TRIK VCPL VDMR VDXY VDZT X1IP X1RG X2DF XTCN YLV0 YNLI YNVH YSMO YV0V ECRQ EFOL EGPR EIDT ETDI
-  ETKC EWHE FKIN FPOI FRID FVER HLTU HMAD HPDI HTUB PASL PCHY PCOI PCPA PCRL PECO PEHY PEMH PEST PEWI
-  PFRF PFRT PGAC PHCO PHHY PHST PITM PPDS PPOB PPRL PRPW PT2X PTBC PTEX PTNC PTPX PTST PYFR TWZZ VCOM
-  VDCO VDFK VDGC VDHT VFHL VFLG VFPH VUFK
-  
-  +++ AUBLIS +++    R list contains the following banks: 
-  RUNR RUNH KRUN KRAN KJOB PART KCAR RLEP KLUN KPAR KLIN MSTU PARU MSTJ PARJ PMA1 PMA2 PMA3 PMA4 MDM1
-  GADM GRPL GMOB KORL TSIM LALI LCAL EZTH VOLU ACUT AFID AJOB ARUN APRO ASIM ILIV ECHE EHGF SMPD RHAH
-  ZPFR JCON PTUN
+    PFXT   JULPOTFitTrack   POT Fit eXtra Track information NR=0.(POT)
+    SILH   ScalLUMI         Sical Luminosity parameter                                           
 
-  +++ AUBLIS +++    S list contains the following banks: 
-  FRFT FRTL FTCL FICL FVCL ITMA IDIG ITCO IWCR ILIV ICCO TPCO TBCO TEXS T2XS HSDA HSTO PCQA EFOL EAUX
-  EJET
-  ;
-#endif
+**  Headers:
+    DHEA   MiniDSTBanks     Header containing General Event Information from Reconstruction.
+    EJET   EflowJULPOTBanks Eflow JET bank
+    EFOL   EflowJULPOTBanks Energy FlOw eLements
+    REVH   StatusJULBanks   Reconstructio EVent Header
+  
+  +++ AUBLIS +++    C list contains the following banks:
+    RUNR RUNH KRUN KRAN KJOB PART KCAR RLEP KLUN KPAR KLIN MSTU PARU MSTJ PARJ PMA1 PMA2 PMA3 PMA4 MDM1
+    GADM GRPL GMOB KORL TSIM LALI LCAL EZTH VOLU ACUT AFID AJOB ARUN APRO ASIM ILIV ECHE EHGF SMPD RHAH
+    ZPFR JCON PTUN
+
+  +++ AUBLIS +++    E list contains the following banks:
+    EVEH ASEV DHEA EJET FZFR HROA KEVH KMAR KWGT LUPA MUEX MUID PCOB PEPT PFXT PGID PIDI PYER REVH RTLS
+    SILH TRIK VCPL VDMR VDXY VDZT X1IP X1RG X2DF XTCN YLV0 YNLI YNVH YSMO YV0V ECRQ EFOL EGPR EIDT ETDI
+    ETKC EWHE FKIN FPOI FRID FVER HLTU HMAD HPDI HTUB PASL PCHY PCOI PCPA PCRL PECO PEHY PEMH PEST PEWI
+    PFRF PFRT PGAC PHCO PHHY PHST PITM PPDS PPOB PPRL PRPW PT2X PTBC PTEX PTNC PTPX PTST PYFR TWZZ VCOM
+    VDCO VDFK VDGC VDHT VFHL VFLG VFPH VUFK
+  
+  +++ AUBLIS +++    R list contains the following banks:
+    RUNR RUNH KRUN KRAN KJOB PART KCAR RLEP KLUN KPAR KLIN MSTU PARU MSTJ PARJ PMA1 PMA2 PMA3 PMA4 MDM1
+    GADM GRPL GMOB KORL TSIM LALI LCAL EZTH VOLU ACUT AFID AJOB ARUN APRO ASIM ILIV ECHE EHGF SMPD RHAH
+    ZPFR JCON PTUN
+
+  +++ AUBLIS +++    S list contains the following banks:
+    FRFT FRTL FTCL FICL FVCL ITMA IDIG ITCO IWCR ILIV ICCO TPCO TBCO TEXS T2XS HSDA HSTO PCQA EFOL EAUX
+    EJET
+*/
 
 /// Framework include files
 #include <alpha/edm4hep_output.h>
@@ -150,33 +147,33 @@ POT banks:
 #include <atomic>
 
 /// edm4hep include files
-#include <edm4hep/RecDqdxCollection.h>
+#include <edm4hep/Constants.h>
+#include <edm4hep/EventHeader.h>
+#include <edm4hep/EDM4hepVersion.h>
 #include <edm4hep/TrackCollection.h>
+#include <edm4hep/RecDqdxCollection.h>
 #include <edm4hep/ClusterCollection.h>
+#include <edm4hep/RawCalorimeterHit.h>
 #include <edm4hep/MCParticleCollection.h>
 #include <edm4hep/SimTrackerHitCollection.h>
-#include <edm4hep/RawCalorimeterHit.h>
 #include <edm4hep/CalorimeterHitCollection.h>
-#include <edm4hep/SimTrackerHitCollection.h>
 #include <edm4hep/RawCalorimeterHitCollection.h>
 #include <edm4hep/SimCalorimeterHitCollection.h>
 #include <edm4hep/CaloHitContributionCollection.h>
 #include <edm4hep/TrackMCParticleLinkCollection.h>
 #include <edm4hep/GeneratorEventParametersCollection.h>
 #include <edm4hep/TrackerHitSimTrackerHitLinkCollection.h>
-#include <edm4hep/EventHeader.h>
-#include <edm4hep/EDM4hepVersion.h>
-#include <edm4hep/Constants.h>
 
 /// podio include files
 #include <podio/Frame.h>
 #include <podio/CollectionBase.h>
 #include <podio/FrameCategories.h>
+
+///
 #include <podio/podioVersion.h>
 #if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
 #include <podio/Writer.h>
-#else
-#if PODIO_BUILD_VERSION >= PODIO_VERSION(0, 99, 0)
+#elif PODIO_BUILD_VERSION >= PODIO_VERSION(0, 99, 0)
 #include <podio/ROOTWriter.h>
 #else
 #include <podio/ROOTFrameWriter.h>
@@ -184,17 +181,8 @@ namespace podio {
   using ROOTWriter = podio::ROOTFrameWriter;
 }
 #endif
-#endif
 
 #include <TGeoSystemOfUnits.h>
-
-namespace  {
-  template<typename T> std::string to_string(const T& val, const char* fmt)  {
-    char text[256];
-    ::snprintf(text, sizeof(text), fmt, val);
-    return { text };
-  }
-}
 
 namespace G4 = TGeant4Unit;
 
@@ -244,10 +232,12 @@ namespace alpha  {
   class edm4hep_output::data_access_t  {
 
   public:
-    bank_access_t qvec;  // QVEC table bank
-    bank_access_t qvrt;  // QVRT table bank
-    bank_access_t qdet;  // QDET table bank
-    bank_access_t frft;  // FRFT table bank
+    bank_access_t qvec;  // QVEC table bank: See ALPHA manula appendix for details
+    bank_access_t qvrt;  // QVRT table bank: See ALPHA manula appendix for details
+    bank_access_t qdet;  // QDET table bank: See ALPHA manula appendix for details
+    bank_access_t qlin;  // QLIN table bank: See ALPHA manula appendix for details
+
+    bank_access_t frft;  // FRFT table bank: Charged tracks from trackfit
     bank_access_t frtl;  // FRFT table bank: Tpc+Itc+Vdet Geometry Track point List
     bank_access_t pitm;  // PITM table bank: JULIA track to FKIN track association (using ITC + TPC coordinate information)
     bank_access_t pasl;  // PASL table bank: JULIA track to FKIN track association list (accessed via PITM bank).
@@ -306,7 +296,6 @@ namespace alpha  {
     void config_data(bank_access_t& acc, const char* nam, const std::string& debug_banks);
   };
 
-  
   /// Helper class to convert event data from ALEPH to EDM4HEP
   /**
    *    \author  M.Frank
@@ -859,27 +848,28 @@ void alpha::edm4hep_output::event_t::convert_event()  {
   std::cout << "---------------------------------------------------" << std::endl;
 
   loop_banks<class pasl>(this->data.pasl, [](int32_t row, const class pasl* p)  {
-    std::cout << "\t row:" << std::setw(3) << row << " FKIN:" << std::setw(3) << p->fkin()
+    std::cout << "+++ PASL row:" << std::setw(3) << row << " FKIN:" << std::setw(3) << p->fkin()
               << " #hits:" << std::setw(2) << p->numberHits()
               << std::endl;
     return p->numberHits();
   });
-  
-#if 0
-  loop_banks<iasl>(this->data.iasl, [](int32_t row, const iasl* p) {
-    std::cout << "\t  row:"  << std::setw(3) << row
-              << " FKIN:"    << std::setw(3) << p->fkin()
-              << " #hits:"   << std::setw(2) << p->numberHits()
-              << std::endl;
-    return iasl->numberHits();
-  });
   loop_banks<itma>(this->data.itma, [](int32_t row, const itma* p) {
-    std::cout << "\t  row:"  << std::setw(3) << row
+    std::cout << "+++ ITMA row:"  << std::setw(3) << row
               << " #assoc:"  << std::setw(2) << p->numberAssociated()
               << " offset:"  << std::setw(3) << p->offset()
               << " #coords:" << p->numberCoords()
               << std::endl;
     return p->numberCoords();
+  });
+  std::cout << "+++ Number of charged tracks: " << qcde.KNCHT << std::endl;
+  
+#if 0
+  loop_banks<iasl>(this->data.iasl, [](int32_t row, const iasl* p) {
+    std::cout << "+++ IASL row:"  << std::setw(3) << row
+              << " FKIN:"    << std::setw(3) << p->fkin()
+              << " #hits:"   << std::setw(2) << p->numberHits()
+              << std::endl;
+    return iasl->numberHits();
   });
   
   loop_banks<vdxy>(this->data.vdxy, [](int32_t, const vdxy*) { return 0; });
@@ -992,10 +982,11 @@ void alpha::edm4hep_output::event_t::convert_hcal()  {
 
 /// Default constructor
 alpha::edm4hep_output::data_access_t::data_access_t(const std::string& debug_banks)  {
-
   this->config_data(this->qvec, "QVEC", debug_banks);
   this->config_data(this->qvrt, "QVRT", debug_banks);
   this->config_data(this->qdet, "QDET", debug_banks);
+  this->config_data(this->qlin, "QLIN", debug_banks);
+
   this->config_data(this->frft, "FRFT", debug_banks);
   this->config_data(this->frtl, "FRTL", debug_banks);
 
@@ -1031,12 +1022,13 @@ alpha::edm4hep_output::data_access_t::data_access_t(const std::string& debug_ban
   this->config_data(this->iasl, "IASL", debug_banks);
   this->config_data(this->itma, "ITMA", debug_banks);
 
-  this->config_data(this->ptun, "PTUN", debug_banks);
   this->config_data(this->tpco, "TPCO", debug_banks);
   this->config_data(this->ftcl, "FTCL", debug_banks);
   this->config_data(this->ptnc, "PTNC", debug_banks);
   this->config_data(this->texs, "TEXS", debug_banks);
   this->config_data(this->t2xs, "T2XS", debug_banks);
+  /// TPC POT units
+  this->config_data(this->ptun, "PTUN", debug_banks);
 
   this->debug_mc_particles = false;
   this->debug_charged_tracks = false;
@@ -1051,10 +1043,17 @@ void alpha::edm4hep_output::data_access_t::config_data(bank_access_t& acc, const
 }
 
 void alpha::edm4hep_output::data_access_t::event_config()  {
-  this->qvec.load();
-  this->qdet.load();
-  this->qvrt.load();
-  this->frft.load();
+  alpha::init_event();
+  this->qvec.data = (int32_t*)params.qvec_table;
+  this->qdet.data = (int32_t*)params.qdet_table;
+  this->qvrt.data = (int32_t*)params.qvrt_table;
+  this->qlin.data = (int32_t*)params.qlin_table;
+
+  this->peco.data = (int32_t*)params.peco_table;
+  this->phco.data = (int32_t*)params.phco_table;
+
+  this->frft.data = (int32_t*)params.frft_table;
+  /// TPC POT units
   this->ptun.load();
 }
 
@@ -1161,24 +1160,7 @@ alpha::edm4hep_output::event_t::particle_frft(std::size_t itk)  {
   std::string err = "Non existing object: MutableTrack id: "+std::to_string(itk);
   throw std::runtime_error(err);
 }
-/*
- ......................................................
-                                        Subschema: CobjPOTBanks                 
- +------+                                                                       
- | PEMH |  Relation between ECAL and                                            
- +------+  LCAL objects and FKIN tracks
- ..............................................................
-     1          I    Number of words/relation (=3)
-     2          I    Number of relations
- ..............................................................
-      1    CO  I    CalObjectnumber  [1,*]
-                       PECO or PEOB number
-      2    TN  I    TrackNumber      [1,*]
-                       FKIN number
-      3    SE  I    SharedEnergy     [1,*]
-                       Energy FKIN track contributes to
-                       this Cal Obj in MeV
- */
+
 /// Link tracker hit to FRFT charged track
 void alpha::edm4hep_output::event_t::link_hit_to_frft_track(std::size_t frft_track_number,
                                                             const edm4hep::TrackerHit& hit)
@@ -1321,10 +1303,26 @@ namespace {
 #include "edm4hep_output_pgac.h"
 
 /*
+ ......................................................
+ +------+                               Subschema: CobjPOTBanks                 
+ | PEMH |  Relation between ECAL and
+ +------+  LCAL objects and FKIN tracks
+ ..............................................................
+     1          I    Number of words/relation (=3)
+     2          I    Number of relations
+ ..............................................................
+      1    CO  I    CalObjectnumber  [1,*]
+                       PECO or PEOB number
+      2    TN  I    TrackNumber      [1,*]
+                       FKIN number
+      3    SE  I    SharedEnergy     [1,*]
+                       Energy FKIN track contributes to
+                       this Cal Obj in MeV
+*/
+/*
 ==============================================================
-                                        Subschema: VdetPOTBanks                 
- +------+                                                                       
- | VCOM |  VDET common mode monitor                                             
+ +------+                               Subschema: VdetPOTBanks                 
+ | VCOM |  VDET common mode monitor
  +------+  bank, NR=VHLS number (POT)
            This bank is parallel to the
            VFHL bank storing common mode
@@ -1337,11 +1335,11 @@ namespace {
  ..............................................................
       1    CM  I    ComMode          [0,*]
                        Common mode of cluster
-
+*/
+/*
 ==============================================================
-                                        Subschema: VdetPOTBanks                 
- +------+                                                                       
- | VDGC |  VDET global clusters : not                                           
+ +------+                               Subschema: VdetPOTBanks                 
+ | VDGC |  VDET global clusters : not
  +------+  multiplexed NR=0
  ..............................................................
      1          I    Number of words/cluster (=4)
@@ -1355,11 +1353,11 @@ namespace {
                        Total charge
       4    NA  I    NAss             [0,*]
                        Number of associated tracks
-
+*/
+/*
 ==============================================================
-                                       Subschema: VdetPOTBanks                 
- +------+                                                                       
- | VFPH |  VDET final pulse height bank,                                        
+ +------+                              Subschema: VdetPOTBanks
+ | VFPH |  VDET final pulse height bank,
  +------+  NR=VHLS number (POT) This
            bank links up the VFHL bank
            Pulseheight is stored in 250
@@ -1370,9 +1368,10 @@ namespace {
  ..............................................................
       1    PH  I    PuHeight         [0,*]
                        Pulseheight
+*/
+/*
 ==============================================================
-                                        Subschema: VdetPOTBanks                 
- +------+                                                                       
+ +------+                               Subschema: VdetPOTBanks
  | VDMR |  Hit multiplexing relation                                            
  +------+  (bank is parallel to
            VDXY/VDZT) NR = same as
@@ -1383,8 +1382,5 @@ namespace {
  ..............................................................
       1    VD  I    VD               [0,*]
                        Index of global cluster in VDGC
-
 ==============================================================
-
 */
-

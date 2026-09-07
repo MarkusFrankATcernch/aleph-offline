@@ -59,7 +59,7 @@ void alpha::edm4hep_output::event_t::process_phco()  {
   */
   std::stringstream log;
   bool  dbg = this->data.phco.debug;
-  auto* tab = this->data.phco.load<object_table<class phco> >();
+  auto* tab = this->data.phco.table<class phco>();
   if( dbg )  {
     log << bos77::to_string(tab) << std::endl;
   }

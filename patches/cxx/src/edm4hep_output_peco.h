@@ -70,8 +70,9 @@ void alpha::edm4hep_output::event_t::process_peco()  {
         10   PC  I    PCOB
                          CalObject number
   */
-  auto* tab = this->data.peco.load<object_table<class peco> >();
-  if( this->data.peco.debug )  {
+  bool  dbg = this->data.phco.debug;
+  auto* tab = this->data.peco.table<class peco>();
+  if( dbg )  {
     std::cout << bos77::to_string(tab) << std::endl;
   }
   for( uint32_t itk=1, siz=tab->size(); itk <= siz; ++itk )  {
@@ -92,7 +93,7 @@ void alpha::edm4hep_output::event_t::process_peco()  {
 		((0x3FF & int(ah->esta1()*1000e0)) << 10) +
 		((0x3FF & int(ah->esta2()*1000e0)) << 20));
 
-    if( this->data.peco.debug )  {
+    if( dbg )  {
       char text[512];
       ::snprintf(text, sizeof(text),
                  "PECO %3d %8lX Energy:%s Corr:%s [%s,%s] Theta: %4.2f Phi: %4.2f"

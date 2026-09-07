@@ -22,6 +22,7 @@
 /// ALPHA namespace declaration
 namespace alpha  {
 
+  /// Forward declarations of the most imnportant BOS banks
   class qcde;
   class qvec;
   class qvrt;
@@ -33,13 +34,14 @@ namespace alpha  {
   class pdlt;
   class pmlt;
   class efol;
+  class frft;
 
   /// Helper class to access BOS data structures from ALEPH
   /**
    *    \author  M.Frank
    *    \date    01/08/2026
    */
-  struct bank_access_t  {
+  class bank_access_t  {
   protected:
     /// Access BOS bank from BOS common by hashed index (NR=0)
     int32_t* get_bank_first();
@@ -70,7 +72,7 @@ namespace alpha  {
     }
 
     /// Access BOS bank as partitioned object table
-    template<typename T=int32_t> object_table<T>* table()  const  {
+    template<typename T=int32_t> class object_table<T>* table()  const  {
       return (object_table<T>*)(this->data);
     }
     
@@ -105,10 +107,11 @@ namespace alpha  {
   std::string fmt_len(float v);
   
   struct constants_t   {
-    bank_access_t zero;
-    bank_access_t bqvec;
-    bank_access_t bqvrt;
-    bank_access_t bqdet;
+    int32_t current_event_number { -1 };
+    class bank_access_t zero;
+    class bank_access_t bqvec;
+    class bank_access_t bqvrt;
+    class bank_access_t bqdet;
 
     int32_t naqzer   { 0 };
     int32_t kqzer    { 0 };
@@ -117,6 +120,8 @@ namespace alpha  {
     int32_t naqvrt   { 0 };
     int32_t naqdet   { 0 };
     int32_t naqlin   { 0 };
+
+    int32_t nafrft   { 0 };
     int32_t napeco   { 0 };
     int32_t naphco   { 0 };
     int32_t napgac   { 0 };
@@ -137,26 +142,32 @@ namespace alpha  {
       return nullptr;
     }
 
-    const object_table<class qvec>* qvec_table   { nullptr };
-    const object_table<class qvrt>* qvrt_table   { nullptr };
-    const object_table<class qdet>* qdet_table   { nullptr };
-    const object_table<class qlin>* qlin_table   { nullptr };
+    const class object_table<class qvec>* qvec_table   { nullptr };
+    const class object_table<class qvrt>* qvrt_table   { nullptr };
+    const class object_table<class qdet>* qdet_table   { nullptr };
+    const class object_table<class qlin>* qlin_table   { nullptr };
 
-    const object_table<class efol>* efol_table   { nullptr };
+    const class object_table<class frft>* frft_table   { nullptr };
+    const class object_table<class efol>* efol_table   { nullptr };
 
-    const object_table<class peco>* peco_table   { nullptr };
-    const object_table<class phco>* phco_table   { nullptr };
+    const class object_table<class peco>* peco_table   { nullptr };
+    const class object_table<class phco>* phco_table   { nullptr };
 
-    const object_table<class pgac>* pgac_table   { nullptr };
-    const object_table<class pcqa>* pcqa_table   { nullptr };
+    const class object_table<class pgac>* pgac_table   { nullptr };
+    const class object_table<class pcqa>* pcqa_table   { nullptr };
 
-    const object_table<class pdlt>* pdlt_table   { nullptr };
-    const object_table<class pmlt>* pmdt_table   { nullptr };
-    const object_table<class pmlt>* pmlt_table   { nullptr };
+    const class object_table<class pdlt>* pdlt_table   { nullptr };
+    const class object_table<class pmlt>* pmdt_table   { nullptr };
+    const class object_table<class pmlt>* pmlt_table   { nullptr };
 
   };
   extern constants_t&  params;  
 
+  template<typename T> std::string to_string(const T& val, const char* fmt)  {
+    char text[256];
+    ::snprintf(text, sizeof(text), fmt, val);
+    return { text };
+  }
   // trim from both ends of string (right then left)
   std::string& _trim(std::string& s);
   
@@ -167,7 +178,9 @@ namespace alpha  {
   /// Stringify hexadecimal address
   std::string hex_addr(const void* addr, const char* fmt=nullptr);
   /// Convenience helper
-  inline char true_false(bool value)  {  return value ? 'T' : 'F';  }
+  inline char true_false(bool value)     {  return value ? 'T' : 'F';      }
+  /// Convenience helper
+  inline const char* yes_no(bool value)  {  return value ? "YES" : "NO ";  }
 
 
   /// Initialize parameters (NAMIND etc)

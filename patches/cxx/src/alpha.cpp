@@ -14,6 +14,7 @@
 
 /// Framework include files
 #include <alpha/alpha.h>
+#include <alpha/qcde.h>
 #include <bos/bosbank.h>
 
 /// C/C++ include files
@@ -143,40 +144,46 @@ const alpha::object_table<class alpha::qdet>*  alpha::get_qdet()  {
 /// Initialize event parameters (bank locations) set table pointers
 void alpha::init_event()  {
   using namespace alpha;
-  int32_t* iw = bos77::bcs.iw;
-  params.kqzer  = iw[params.naqzer-1];
+  if( params.current_event_number != qcde.KNEVT )  {
+    int32_t* iw = bos77::bcs.iw;
+    params.current_event_number = qcde.KNEVT;
+    
+    params.kqzer  = iw[params.naqzer-1];
 
-  int32_t kqvec  = iw[params.naqvec-1];
-  int32_t kqvrt  = iw[params.naqvrt-1];
-  int32_t kqdet  = iw[params.naqdet-1];
-  int32_t kqlin  = iw[params.naqlin-1];
+    int32_t kqvec  = iw[params.naqvec-1];
+    int32_t kqvrt  = iw[params.naqvrt-1];
+    int32_t kqdet  = iw[params.naqdet-1];
+    int32_t kqlin  = iw[params.naqlin-1];
 
-  int32_t kefol  = iw[params.naefol-1];
+    int32_t kfrft  = iw[params.nafrft-1];
+    int32_t kefol  = iw[params.naefol-1];
 
-  int32_t kpeco  = iw[params.napeco-1];
-  int32_t kphco  = iw[params.naphco-1];
-  int32_t kpgac  = iw[params.napgac-1];
-  int32_t kpcqa  = iw[params.napcqa-1];
+    int32_t kpeco  = iw[params.napeco-1];
+    int32_t kphco  = iw[params.naphco-1];
+    int32_t kpgac  = iw[params.napgac-1];
+    int32_t kpcqa  = iw[params.napcqa-1];
 
-  int32_t kpdlt  = iw[params.napdlt-1];
-  int32_t kpmdt  = iw[params.napmdt-1];
-  int32_t kpmlt  = iw[params.napmlt-1];
+    int32_t kpdlt  = iw[params.napdlt-1];
+    int32_t kpmdt  = iw[params.napmdt-1];
+    int32_t kpmlt  = iw[params.napmlt-1];
 
-  params.qvec_table = params.table<object_table<class qvec> >(kqvec);
-  params.qvrt_table = params.table<object_table<class qvrt> >(kqvrt);
-  params.qdet_table = params.table<object_table<class qdet> >(kqdet);
-  params.qlin_table = params.table<object_table<class qlin> >(kqlin);
+    params.qvec_table = params.table<object_table<class qvec> >(kqvec);
+    params.qvrt_table = params.table<object_table<class qvrt> >(kqvrt);
+    params.qdet_table = params.table<object_table<class qdet> >(kqdet);
+    params.qlin_table = params.table<object_table<class qlin> >(kqlin);
 
-  params.efol_table = params.table<object_table<class efol> >(kefol);
+    params.frft_table = params.table<object_table<class frft> >(kfrft);
+    params.efol_table = params.table<object_table<class efol> >(kefol);
 
-  params.peco_table = params.table<object_table<class peco> >(kpeco);
-  params.phco_table = params.table<object_table<class phco> >(kphco);
-  params.pgac_table = params.table<object_table<class pgac> >(kpgac);
-  params.pcqa_table = params.table<object_table<class pcqa> >(kpcqa);
+    params.peco_table = params.table<object_table<class peco> >(kpeco);
+    params.phco_table = params.table<object_table<class phco> >(kphco);
+    params.pgac_table = params.table<object_table<class pgac> >(kpgac);
+    params.pcqa_table = params.table<object_table<class pcqa> >(kpcqa);
 
-  params.pdlt_table = params.table<object_table<class pdlt> >(kpdlt);
-  params.pmlt_table = params.table<object_table<class pmlt> >(kpmlt);
-  params.pmdt_table = params.table<object_table<class pmlt> >(kpmdt);
+    params.pdlt_table = params.table<object_table<class pdlt> >(kpdlt);
+    params.pmlt_table = params.table<object_table<class pmlt> >(kpmlt);
+    params.pmdt_table = params.table<object_table<class pmlt> >(kpmdt);
+  }
 }
 
 /// Initialize parameters (NAMIND etc)
@@ -224,6 +231,7 @@ void alpha::init_params()  {
   params.naqdet = bos77::namind("QDET");
   params.naqvrt = bos77::namind("QVRT");
 
+  params.nafrft = bos77::namind("FRFT");
   params.naefol = bos77::namind("EFOL");
   params.napeco = bos77::namind("PECO");
   params.naphco = bos77::namind("PHCO");

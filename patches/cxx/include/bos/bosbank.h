@@ -63,17 +63,17 @@ namespace bos77  {
   std::string nlist( uint32_t index, const char* list );
 
   /// Access bank from BOS common by index: Get bank instance 'num' of bank type 'bnam'
-  bank*       get_bank( const std::string& bank, int32_t which );
+  class bank* get_bank( const std::string& bank, int32_t which );
   /// Access bank from BOS common by index: Get bank instance 'num' of bank type 'bnam'
-  bank*       get_bank( const char* bank, int32_t which );
+  class bank* get_bank( const char* bank, int32_t which );
   /// Access bank from BOS common by index: Get bank instance 'num' of bank name identifier
-  bank*       get_bank( int32_t namind_bank, int32_t which );
+  class bank* get_bank( int32_t namind_bank, int32_t which );
 
   /// Access BOS bank com BOS common by name (NR=0)
-  bank*       get_bank_pointer_from_name( const char* name );
+  class bank* get_bank_pointer_from_name( const char* name );
 
   /// Access BOS bank com BOS common by hashed index (NR=0)
-  bank*       get_bank_pointer_from_namind( int32_t nami );
+  class bank* get_bank_pointer_from_namind( int32_t nami );
 
   /// As a temporary measure chack if we really got the bank in question
   bool        verify_bank_type(const bank_header* hdr, int32_t name_index);
@@ -95,6 +95,9 @@ namespace bos77  {
   
   /// Definition of the BOS event record
   /**
+   *   This only seems to work to access BOS native data, not for EPIO files.
+   *   Probably dead end development.
+   *
    *   \author M.Frank
    *   \version 1.0
    */
@@ -123,24 +126,23 @@ namespace bos77  {
     }
 
     /// Move to the next record
-    const record* next()  const  {
+    const class record* next()  const  {
       const uint8_t* ptr = (const uint8_t*)this;
-      return (record*)(ptr + this->total_length());
+      return (class record*)(ptr + this->total_length());
     }
 
     /// Bank iteration on the record: start
-    const bank* begin()  const  {
+    const class bank* begin()  const  {
       const uint8_t* ptr = (const uint8_t*)this;
-      return (const bank*)(ptr + sizeof(record));
+      return (const class bank*)(ptr + sizeof(record));
     }
 
     /// Bank iteration on the record: end marker
-    const bank* end()  const  {
+    const class bank* end()  const  {
       const uint8_t* ptr = (const uint8_t*)this;
-      return (const bank*)(ptr + this->total_length() - sizeof(record));
+      return (const class bank*)(ptr + this->total_length() - sizeof(record));
     }
   };
-
 
   /// Definition of the event in the bos structure
   /**
@@ -235,9 +237,9 @@ namespace bos77  {
   public:
 
     /// Pointer to next bank: Works only if banks are contiguous (Aleph online)
-    const bank* next()  const  {
+    const class bank* next()  const  {
       const uint8_t* ptr = (const uint8_t*)this;
-      return (const bank*)(ptr + this->total_length());
+      return (const class bank*)(ptr + this->total_length());
     }
 
     /// Pointer to next bank: Works only if banks are contiguous (Aleph online)
@@ -247,11 +249,11 @@ namespace bos77  {
     }
       
     /// Access to next bank of the same type: Works only if the offset work is correct (Aleph offline)
-    template <typename T=bank> const T* knext()  const  {
+    template <typename T=class bank> const T* knext()  const  {
       return (T*)this->bank_header::next_bank_offset();
     }
     
-    const bank* end()  const  {
+    const class bank* end()  const  {
       const uint8_t* ptr = (const uint8_t*)this;
       return (const bank*)(ptr + this->total_length() - sizeof(uint32_t));
     }
@@ -309,16 +311,16 @@ namespace bos77  {
   };
 
   /// String representation for printouts
-  std::string to_string(const bank_header* data, const std::string& prefix="BOS");
+  std::string to_string(const class bank_header* data, const std::string& prefix="BOS");
 
   /// String representation for printouts
-  std::string to_string(const bank* data, const std::string& prefix="BOS");
+  std::string to_string(const class bank* data, const std::string& prefix="BOS");
 
   /// String representation for printouts
-  std::string to_string(const format* data, const std::string& prefix="BOS");
+  std::string to_string(const class format* data, const std::string& prefix="BOS");
 
   /// String representation for printouts
-  std::string to_string(const record* data, const std::string& prefix="BOS");
+  std::string to_string(const class record* data, const std::string& prefix="BOS");
 
 
   /// Definition of the BOS system data structure from inc/sysbos.h
@@ -363,20 +365,16 @@ namespace bos77  {
     int32_t  IEVTRE[3];
   };
 
-
+  /// Union describing the BOS common block
   union bcs_t  {
     int32_t   iw[1000];
     float     rw[1000];
   };
-  
 
 #ifndef HAVE_BOS_EXTERNS
-  extern bcs_t&       bcs;
-  extern sysbos_t&    sysbos;
+  extern union bcs_t&       bcs;
+  extern class sysbos_t&    sysbos;
   extern const std::string& bos_bank_lists;
 #endif
-
-} // End namespace bos
-
-
+}      // End namespace bos
 #endif // ALEPH_BOS_BANK_H

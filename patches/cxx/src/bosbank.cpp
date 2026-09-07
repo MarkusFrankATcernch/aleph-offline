@@ -14,28 +14,29 @@
 /// Framework include files
 #include <bos/bosbank.h>
 
+/// C/C++ include files
 #include <sstream>
 #include <iomanip>
 #include <iostream>
 
 extern "C"  {
-  extern bos77::bcs_t    bcs_;
-  extern bos77::sysbos_t sysbos_;
-  //char* nlistb_(int32_t*, uint32_t*, const char*, int);
+  extern union bos77::bcs_t    bcs_;
+  extern class bos77::sysbos_t sysbos_;
   void nlistb_(char*, int32_t, int32_t*, uint32_t*, const char*, int);
 }
 
+/// bos77 namespace declaration
 namespace bos77  {
-  bcs_t&    bcs    = bcs_;
-  sysbos_t& sysbos = sysbos_;
+  union bcs_t&       bcs    = bcs_;
+  class sysbos_t&    sysbos = sysbos_;
   const std::string& bos_bank_lists = "CERST";
 }
 
-
+/// bos77 namespace declaration
 namespace bos77  {
 
   /// Access to next bank of the same type: Works only if the offset work is correct (Aleph offline)
-  const bank_header* bank_header::next_bank_offset()  const  {
+  const class bank_header* bank_header::next_bank_offset()  const  {
     const void* cptr = (const void*)this;
     if( cptr != nullptr && this->_offset_next != 0 )  {
       auto* ptr = &bcs.iw[_offset_next - bankheader_words];
@@ -43,7 +44,8 @@ namespace bos77  {
     }
     return nullptr;
   }
-  
+
+  /// Access BOS common block with offset
   int32_t* absolute_offset( std::size_t offset )  {
     return bcs.iw + offset;
   }
@@ -88,7 +90,7 @@ namespace bos77  {
   }
   
   /// Access bank from BOS common by index: Get bank instance 'num' of bank name identifier
-  bank* get_bank(int32_t nami, int32_t num)  {
+  class bank* get_bank(int32_t nami, int32_t num)  {
     int32_t off = ::nlinc_(nami, num);
     if( off )  {
       off -= bos77::bankheader_words;
@@ -100,7 +102,7 @@ namespace bos77  {
   }
   
   /// Get bank instance 'num' of bank type 'bnam'
-  bank* get_bank(const char* bnam, int32_t num)  {
+  class bank* get_bank(const char* bnam, int32_t num)  {
     int32_t off = bnam ? ::nlink_(bnam, num, 4) : 0;
     if( off )  {
       off -= bos77::bankheader_words;
@@ -112,18 +114,18 @@ namespace bos77  {
   }
 
   /// Get bank instance 'num' of bank type 'bnam'
-  bank* get_bank(const std::string& bnam, int32_t num)  {
+  class bank* get_bank(const std::string& bnam, int32_t num)  {
     return ::bos77::get_bank(bnam.c_str(), num);
   }
 
   /// Access BOS bank com BOS common by hashed index
-  bank* get_bank_pointer_from_namind( int32_t name_index )  {
+  class bank* get_bank_pointer_from_namind( int32_t name_index )  {
     if( name_index > 0 )  {
       int32_t knami = bcs.iw[name_index-1];
       if( knami != 0 )  {
         int32_t* ptr = bcs.iw + knami - bos77::bankheader_words;
-	class bank* bank = (class bank*)ptr;
-	verify_bank_type(bank, name_index);
+        class bank* bank = (class bank*)ptr;
+        verify_bank_type(bank, name_index);
         return bank;
       }
     }
@@ -137,11 +139,11 @@ namespace bos77  {
   }
 
   /// As a temporary measure chack if we really got the bank in question
-  bool verify_bank_type(const bank_header* hdr, int32_t name_index)  {
+  bool verify_bank_type(const class bank_header* hdr, int32_t name_index)  {
     if( hdr )  {
       int32_t nami = bos77::namind((const char*)&hdr->_name);
       if( nami != name_index )  {
-	throw std::runtime_error( "verify_bank_type: Failed to access proper bank by index" );
+        throw std::runtime_error( "verify_bank_type: Failed to access proper bank by index" );
       }
       return true;
     }
@@ -149,11 +151,11 @@ namespace bos77  {
   }
   
   /// As a temporary measure chack if we really got the bank in question
-  bool verify_bank_type(const bank_header* hdr, const char* name)  {
+  bool verify_bank_type(const class bank_header* hdr, const char* name)  {
     if( hdr )  {
       const char* b = (const char*)&hdr->_name;
       if( b[0] != name[0] || b[1] != name[1] || b[2] != name[2] || b[3] != name[3] )  {
-	throw std::runtime_error( "verify_bank_type: Failed to access proper bank by index" );
+        throw std::runtime_error( "verify_bank_type: Failed to access proper bank by index" );
       }
       return true;
     }
@@ -205,9 +207,9 @@ namespace bos77  {
   }
 
   /// String representation for printouts
-  std::string to_string(const bank_header* data, const std::string& prefix)  {
+  std::string to_string(const class bank_header* data, const std::string& prefix)  {
     std::stringstream str;
-    const auto* bnk = (const bank*)data;
+    const auto* bnk = (const class bank*)data;
 
     str << prefix;
     if( !prefix.empty() ) str << " ";
@@ -239,18 +241,12 @@ namespace bos77  {
   }
 
   /// String representation for printouts
-  std::string to_string(const bank* data, const std::string& prefix)  {
-    return to_string((const bank_header*)data, prefix);
+  std::string to_string(const class bank* data, const std::string& prefix)  {
+    return to_string((const class bank_header*)data, prefix);
   }
   
   /// String representation for printouts
-  std::string to_string(const format* data, const std::string& prefix)  {
-    return to_string((const bank_header*)data, prefix);
+  std::string to_string(const class format* data, const std::string& prefix)  {
+    return to_string((const class bank_header*)data, prefix);
   }
-#if 0
-  /// String representation for printouts
-  std::string to_string(const record* data, const std::string& prefix)  {
-    return to_string((const bank_header*)this, prefix);
-  }
-#endif
 }
