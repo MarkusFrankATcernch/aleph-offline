@@ -42,8 +42,24 @@ target_link_libraries( galeph
              ${ALEPH_CERN_SIMLIBRARIES} ${ALEPH_CERN_X11LIBRARIES}
 )
 #
+file( GLOB galeph_geom_files ${galeph_dir}/geom_extract/*.F )
+add_executable( galeph_geom ${galeph_files} ${galeph_geom_files} )
+target_compile_definitions( galeph_geom PUBLIC -DGSPOSP=GSPOSP2
+                                               -DGSPOS=GSPOS2
+					       -DGPVOLU=GPVOLU2
+					       -DGPTMED=GPTMED2
+					       -DGPMATE=GPMATE2
+					       -DGPROTM=GPROTM2 )
+target_include_directories( galeph_geom PUBLIC ${galeph_dir}/inc ${tpc_dir}/inc )
+target_link_libraries( galeph_geom
+     PRIVATE Aleph::alephlib
+             Aleph::alephio
+             Aleph::alephlib
+             ${ALEPH_CERN_SIMLIBRARIES} ${ALEPH_CERN_X11LIBRARIES} ${ALEPH_CERN_LIBRARIES}
+)
+#
 install(DIRECTORY  inc  DESTINATION include)
-install(TARGETS  galeph EXPORT Aleph
+install(TARGETS  galeph galeph_geom EXPORT Aleph
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

@@ -237,6 +237,7 @@ namespace alpha  {
     bank_access_t qvrt;  // QVRT table bank: See ALPHA manula appendix for details
     bank_access_t qdet;  // QDET table bank: See ALPHA manula appendix for details
     bank_access_t qlin;  // QLIN table bank: See ALPHA manula appendix for details
+    bank_access_t fkin;  // FKIN table bank: Generator particles
 
     bank_access_t frft;  // FRFT table bank: Charged tracks from trackfit
     bank_access_t frtl;  // FRFT table bank: Tpc+Itc+Vdet Geometry Track point List
@@ -339,7 +340,7 @@ namespace alpha  {
     using sim_trackerhit_t    = edm4hep::MutableSimTrackerHit;
 
     using podio_trhit2trhit_t = podio::LinkCollection<edm4hep::TrackerHit, edm4hep::TrackerHit>;
-
+    using podio_trhit2mcp_t   = podio::LinkCollection<edm4hep::TrackerHit, edm4hep::MCParticle>;
 
     using trackerhits_t       = edm4hep::TrackerHit3DCollection;
     using simtrackerhits_t    = edm4hep::SimTrackerHitCollection;
@@ -349,6 +350,7 @@ namespace alpha  {
     using trhit2mchit_t       = edm4hep::TrackerHitSimTrackerHitLinkCollection;
     /// Relationship type definitions between tracks and reco tracker hits
     using trhit2trhit_t       = podio_trhit2trhit_t;
+    using trhit2mcp_t         = podio_trhit2mcp_t;
 
     using calohit_t           = edm4hep::MutableCalorimeterHit;
     using calohits_t          = edm4hep::CalorimeterHitCollection;
@@ -377,34 +379,34 @@ namespace alpha  {
 
     edm4hep::TrackCollection             calorimeter_objects     {  };
 
+    /// Sim tracker hits as produced by Galeph
+    simtrackerhits_t                     simhits_vdht            {  };
+    
     /// VDET XY raw hits from rphi wafers
     trackerhits_t                        hits_vdxy               {  };
     /// VDET ZT raw hits from z wafers
     trackerhits_t                        hits_vdzt               {  };
 
+    /** VDET coordinates used:  */
     /// Reconstructed VDET coordinates
     trackerhits_t                        hits_vdco               {  };
     trhit2trhit_t                        rel_hits_vdco_vdxy      {  };
     trhit2trhit_t                        rel_hits_vdco_vdzt      {  };
+    /// VDCO fractional charge and strips count in rphi from VDFK
+    trhit2mcp_t                          percent_charge_vdco_fkin_rphi        {  };
+    trhit2mcp_t                          strips_count_vdco_fkin_rphi          {  };
+    /// VDCO fractional charge and strips count in Z from VDFK
+    trhit2mcp_t                          percent_charge_vdco_fkin_z           {  };
+    trhit2mcp_t                          strips_count_vdco_fkin_z             {  };
 
-    /// Sim tracker hits as produced by Galeph
-    simtrackerhits_t                     simhits_vdht            {  };
-
-    /// Sim tracker hits projected to xy wafers
-    simtrackerhits_t                     simhits_vufk_xy         {  };
-    /// Sim tracker hits on xy wafers to FKIN
-    trhit2mchit_t                        rel_simhits_vdxy_vufk   {  };
-
-    /// Sim tracker hits projected to z wafers
-    simtrackerhits_t                     simhits_vufk_z          {  };
-    /// Sim tracker hits on z wafers to FKIN
-    trhit2mchit_t                        rel_simhits_vdzt_vufk   {  };
-
-    simtrackerhits_t                     simhits_vdfk_rphi       {  };
-    trhit2mchit_t                        rel_vdco_simhits_vdfk_rphi {  };
-
-    simtrackerhits_t                     simhits_vdfk_z          {  };
-    trhit2mchit_t                        rel_vdco_simhits_vdfk_z {  };
+    /** VDET hits unused by pattern reconstruction:   */
+    /// VDXY fractional charge and strips count in XY from VUFK (not used)
+    trhit2mcp_t                          percent_charge_unused_vdxy_fkin {  };
+    trhit2mcp_t                          strips_count_unused_vdxy_fkin   {  };
+    /// VDZT fractional charge and strips count in Z from VUFK (not used)
+    trhit2mcp_t                          percent_charge_unused_vdzt_fkin {  };
+    trhit2mcp_t                          strips_count_unused_vdzt_fkin   {  };
+    
 
     trackerhits_t                        hits_icco               {  };
     /// ITC R-Phi hits
@@ -481,7 +483,7 @@ namespace alpha  {
     void convert_hcal();
 
     /// Access Monte-Carlo particle by the FKIN bank number
-    mcparticle_t particle_mc_fkin(std::size_t itk);
+    mcparticle_t particle_mc_fkin(std::size_t itk, bool do_throw=true);
     /// Access Monte-Carlo particle by the alpha  MC track number
     mcparticle_t particle_mc_alpha(std::size_t itk);
     /// Access charged track by the FRFT track number
@@ -538,8 +540,6 @@ namespace alpha  {
     void         process_peco();
     /// Analyze ECAL wire data from PEWI bank
     void         process_pewi();
-    /// Create HCAL cluster relations from PECO to FRFT tracks: bank PFHR
-    void         process_pfer();
     /// ETDI table bank: Ecal Tower DIgits NR=0. (RAW)
     void         process_etdi();
 
@@ -547,9 +547,9 @@ namespace alpha  {
     void         process_phco();
     /// HPDI table bank: Hcal Plane DIgits (RawData)
     void         process_hpdi();
-    /// Create HCAL cluster relations from PHCO to FRFT tracks: bank PFHR
-    void         process_pfhr();
 
+    /// Create HCAL cluster relations from PECO/PHCO/calo objects to FRFT tracks
+    void         process_pcrl();    
     /// Convert gammas from PGAC.
     void         process_gammas_pgac();
 
@@ -807,47 +807,44 @@ void alpha::edm4hep_output::end_event(event_t& event)  {
   if( this->save_mc_particles   ) pio.put(event.particles_mc,     "MCParticles" );
   if( this->save_charged_tracks ) pio.put(event.particles_reco,   "ChargedTracks" );
   if( this->save_mc_particles && this->save_charged_tracks )
-    pio.put(event.rel_part_reco_mc,           "TrackMCRelations" );
+    pio.put(event.rel_part_reco_mc,                "TrackMCRelations" );
 
   if( this->save_vdet_reco ) {
-    pio.put(event.hits_vdco,                  "VDCO_Hits" );
+    pio.put(event.hits_vdco,                       "VDCO_Hits" );
   }
   if( this->save_vdet_sim )  {
-    pio.put(event.hits_vdxy,                  "VDXY_Hits" );
-    pio.put(event.hits_vdzt,                  "VDZT_Hits" );
-    pio.put(event.simhits_vdht,               "VDHT_SimHits" );
+    pio.put(event.hits_vdxy,                       "VDXY_Hits" );
+    pio.put(event.hits_vdzt,                       "VDZT_Hits" );
+    pio.put(event.simhits_vdht,                    "VDHT_SimHits" );
 
-    pio.put(event.simhits_vufk_xy,            "VUFK_XY_SimHits" );
-    pio.put(event.rel_simhits_vdxy_vufk,      "VDXY_VUFK_Relations" );
+    pio.put(event.percent_charge_vdco_fkin_rphi,   "VDCO_percent_charge_RPHI" );
+    pio.put(event.percent_charge_vdco_fkin_z,      "VDCO_percent_charge_Z" );
+    pio.put(event.strips_count_vdco_fkin_rphi,     "VDCO_strips_count_RPHI" );
+    pio.put(event.strips_count_vdco_fkin_z,        "VDCO_strips_count_Z" );
 
-    pio.put(event.simhits_vufk_z,             "VUFK_Z_SimHits" );
-    pio.put(event.rel_simhits_vdzt_vufk,      "VDZT_VUFK_Relations" );
-
-    pio.put(event.simhits_vdfk_rphi,          "VDFK_RPHI_SimHits" );
-    pio.put(event.rel_vdco_simhits_vdfk_rphi, "VDCO_VDFK_RPHI_Relations" );
-
-    pio.put(event.simhits_vdfk_z,             "VDFK_Z_SimHits" );
-    pio.put(event.rel_vdco_simhits_vdfk_z,    "VDCO_VDFK_Z_Relations" );
+    pio.put(event.percent_charge_unused_vdxy_fkin, "VDXY_unused_percent_charge" );
+    pio.put(event.percent_charge_unused_vdzt_fkin, "VDZT_unused_percent_charge" );
+    pio.put(event.strips_count_unused_vdxy_fkin,   "VDXY_strips_count" );
+    pio.put(event.strips_count_unused_vdzt_fkin,   "VDZT_strips_count" );
   }
   if( this->save_itc_reco )  {
-    pio.put(event.hits_itco1,                 "ITCO1_Hits" );
-    pio.put(event.hits_itco2,                 "ITCO2_Hits" );
+    pio.put(event.hits_itco1,                      "ITCO1_Hits" );
+    pio.put(event.hits_itco2,                      "ITCO2_Hits" );
   }
   if( this->save_tpc_reco )  {
-    pio.put(event.hits_tpco,                  "TPCO_Hits" );
-    pio.put(event.hits_ptnc,                  "PTNC_PadHits" );
-    pio.put(event.dedx_trunc_mean,            "DEDX_TruncatedMean" );
-    pio.put(event.dedx_avg_drift,             "DEDX_AverageDrivt" );
-    pio.put(event.dedx_tracklen,              "DEDX_TrackLength" );
-    pio.put(event.dedx_num_samples,           "DEDX_NumberSamples" );
+    pio.put(event.hits_tpco,                       "TPCO_Hits" );
+    pio.put(event.hits_ptnc,                       "PTNC_PadHits" );
+    pio.put(event.dedx_trunc_mean,                 "DEDX_TruncatedMean" );
+    pio.put(event.dedx_avg_drift,                  "DEDX_AverageDrivt" );
+    pio.put(event.dedx_tracklen,                   "DEDX_TrackLength" );
+    pio.put(event.dedx_num_samples,                "DEDX_NumberSamples" );
   }
   if( this->save_ecal_reco )  {
-    pio.put(event.hits_ecal,                  "ECAL_Clusters" );
+    pio.put(event.hits_ecal,                       "ECAL_Clusters" );
   }
   if( this->save_hcal_reco )  {
-    pio.put(event.hits_hcal,                  "HCAL_Clusters" );
+    pio.put(event.hits_hcal,                       "HCAL_Clusters" );
   }
-
   pio.commit();
 }
 
@@ -862,13 +859,13 @@ void alpha::edm4hep_output::convert_event(event_t& event)  {
 #include <alpha/vdgc.h>
 
 
-template <typename T> std::pair<int32_t,int32_t>
-loop_banks(alpha::bank_access_t& acc, int(*callback)(int32_t i, const T* row))  {
+template <typename T, typename FUNC> std::pair<int32_t,int32_t>
+loop_banks(alpha::bank_access_t& acc, FUNC func)  {
   int num_rows = 0, count = 0;
   for( acc.load(true); acc.data; acc.knext() )  {
     auto* table = acc.table<T>();
     for(uint32_t i=0; i<table->size(); ++i)  {
-      count += callback(i, table->at(i));
+      count += func(i, table->at(i));
     }
     num_rows += table->size();
     std::cout << bos77::to_string(table) << " total rows: " << num_rows << " hits:" << count << std::endl;
@@ -876,15 +873,27 @@ loop_banks(alpha::bank_access_t& acc, int(*callback)(int32_t i, const T* row))  
   return { num_rows, count };
 }
 
-
+#include <alpha/fkin.h>
 void alpha::edm4hep_output::event_t::convert_event()  {
   int num_rows;
 
 
   std::cout << "---------------------------------------------------" << std::endl;
-
+  auto* qvec = this->data.qvec.table<class qvec>();
+  loop_banks<class fkin>(this->data.fkin, [qvec](int32_t row, const class fkin* p)  {
+    const auto* qv = qvec->at(row+qcde.KFMCT);
+    std::cout << "+++ FKIN row:" << std::setw(3) << row
+              << " "    << std::setw(12) << std::left << qv->cqtpn()
+              << " px:" << fmt_ene(p->px())
+              << " py:" << fmt_ene(p->py())
+              << " pz:" << fmt_ene(p->pz())
+              << " mass:" << fmt_ene(p->mass())
+              << std::endl;
+    return 1;
+  });
   loop_banks<class iasl>(this->data.iasl, [](int32_t row, const class iasl* p)  {
-    std::cout << "+++ IASL row:" << std::setw(3) << row << " FKIN:" << std::setw(3) << p->fkin()
+    std::cout << "+++ IASL row:" << std::setw(3) << row
+              << " FKIN:" << std::setw(3) << p->fkin()
               << " #hits:" << std::setw(2) << p->numberHits()
               << std::endl;
     return p->numberHits();
@@ -898,16 +907,9 @@ void alpha::edm4hep_output::event_t::convert_event()  {
     return p->numberCoords();
   });
   std::cout << "+++ Number of charged tracks: " << qcde.KNCHT << std::endl;
-
+  std::cout << "+++ Monte-Carlo Tracks " << qcde.KFMCT << "  ....  " << qcde.KLMCT
+            << " [ " << qcde.KNMCT << " ] " << std::endl;
 #if 0
-  loop_banks<iasl>(this->data.iasl, [](int32_t row, const iasl* p) {
-    std::cout << "+++ IASL row:"  << std::setw(3) << row
-              << " FKIN:"    << std::setw(3) << p->fkin()
-              << " #hits:"   << std::setw(2) << p->numberHits()
-              << std::endl;
-    return iasl->numberHits();
-  });
-
   loop_banks<vdxy>(this->data.vdxy, [](int32_t, const vdxy*) { return 0; });
   loop_banks<vdzt>(this->data.vdzt, [](int32_t, const vdzt*) { return 0; });
   loop_banks<vdco>(this->data.vdco, [](int32_t, const vdco*) { return 0; });
@@ -1001,8 +1003,8 @@ void alpha::edm4hep_output::event_t::convert_tpc()  {
 void alpha::edm4hep_output::event_t::convert_ecal()  {
   /// Create all ECAL clusters from PECO
   this->process_peco();
-  /// Create HCAL cluster relations from PECO to FRFT tracks: bank PFHR
-  this->process_pfer();
+  /// Create HCAL cluster relations from PECO/PHCO/calo objects to FRFT tracks
+  this->process_pcrl();
   /// Analyze ECAL wire data from PEWI bank
   this->process_pewi();
   /// ETDI table bank: Ecal Tower DIgits NR=0. (RAW)
@@ -1015,8 +1017,6 @@ void alpha::edm4hep_output::event_t::convert_hcal()  {
   this->process_phco();
   /// HPDI table bank: Hcal Plane DIgits (RawData)
   this->process_hpdi();
-  /// Create HCAL cluster relations from PHCO to FRFT tracks: bank PFHR
-  this->process_pfhr();
 }
 
 /// Default constructor
@@ -1025,6 +1025,8 @@ alpha::edm4hep_output::data_access_t::data_access_t(const std::string& debug_ban
   this->config_data(this->qvrt, "QVRT", debug_banks);
   this->config_data(this->qdet, "QDET", debug_banks);
   this->config_data(this->qlin, "QLIN", debug_banks);
+
+  this->config_data(this->fkin, "FKIN", debug_banks);
 
   this->config_data(this->frft, "FRFT", debug_banks);
   this->config_data(this->frtl, "FRTL", debug_banks);
@@ -1097,6 +1099,7 @@ void alpha::edm4hep_output::data_access_t::event_config()  {
   this->frft.data = (int32_t*)params.frft_table;
   /// TPC POT units
   this->ptun.load();
+  this->fkin.load();
 }
 
 /// Default constructor
@@ -1175,7 +1178,7 @@ alpha::edm4hep_output::event_t::particle_mc_alpha(std::size_t itk)  {
 
 /// Access Monte-Carlo particle by the FKIN bank number
 edm4hep::MutableMCParticle
-alpha::edm4hep_output::event_t::particle_mc_fkin(std::size_t itk)  {
+alpha::edm4hep_output::event_t::particle_mc_fkin(std::size_t itk, bool do_throw)  {
   auto& cont = this->fkin2edm4hep_particles;
   auto itr = cont.find(itk);
   if( itr != cont.end() )  {
@@ -1184,6 +1187,9 @@ alpha::edm4hep_output::event_t::particle_mc_fkin(std::size_t itk)  {
   }
   if( itk == 0 )  { // Particle got removed from MC record (ie Bremsstrahlung)
                     // Or is this an inconsistency in VDFK and VUFK ?
+    return this->invalid_mc_particle;
+  }
+  if( !do_throw )  {
     return this->invalid_mc_particle;
   }
   std::string err = "Non existing object: MutableMCParticle FKIN id: "+std::to_string(itk);
@@ -1334,13 +1340,11 @@ namespace {
 #include "edm4hep_output_pewi.h"
 /// ETDI table bank: Ecal Tower DIgits NR=0. (RAW)
 #include "edm4hep_output_etdi.h"
-/// Create HCAL cluster relations from PECO to FRFT tracks: bank PFHR
-#include "edm4hep_output_pfer.h"
+/// Create HCAL cluster relations from PECO/PHCO/calo objects to FRFT tracks
+#include "edm4hep_output_pcrl.h"
 
 /// PHCO table bank: Hadron Calorimeter Object (Mini: DHCO)
 #include "edm4hep_output_phco.h"
-/// PFHR tabel bank: Create HCAL cluster relations from PHCO to FRFT tracks
-#include "edm4hep_output_pfhr.h"
 /// HPDI table bank: Hcal Plane DIgits (RawData)
 #include "edm4hep_output_hpdi.h"
 
@@ -1348,7 +1352,6 @@ namespace {
 #include "edm4hep_output_pgac.h"
 
 /*
- ......................................................
  +------+                               Subschema: CobjPOTBanks
  | PEMH |  Relation between ECAL and
  +------+  LCAL objects and FKIN tracks
@@ -1364,6 +1367,19 @@ namespace {
                        Energy FKIN track contributes to
                        this Cal Obj in MeV
 */
+/*
+ +------+                              Subschema: CobjPOTBanks
+ | PHMH |  Relation between HCAL objects
+ +------+  and FKIN tracks
+ ..............................................................
+     1          I    Number of words/relation (=2)
+     2          I    Number of relations
+ ..............................................................
+      1    CO  I    CalObjectnumber  [1,*]
+                       PHCO or PHOB number
+      2    TN  I    TrackNumber      [1,*]
+                       FKIN number
+ */
 /*
 ==============================================================
  +------+                               Subschema: VdetPOTBanks

@@ -6,7 +6,12 @@ DATE ${dategeom}          ! Put 90 if 1990 geometry
 * FDBA ' adbs314.daf | DAF '         
 NEVT  1000
 DEBU  1 10 1
-PRINT 'INPU'  'OUTP'  'KINE'     
+*       DATA TPRIN /'VDET','ITC ','TPC ','ECAL','LCAL','SATR','HCAL'
+*     &           ,'MUON','SICA','UNDF'
+*     &           ,'TRIG','RDST','UNDF','OUTP','INPU','KINE','TREL'
+*     &           ,'DRAW','GEOM','PART'/
+*
+PRINT 'INPU' 'OUTP' 'KINE' 'GEOM'
 DISPLAY 0 /          
 TPCSIM   
 PROC   'DIGI' 'HITS'  'TRAC'  'TRIG'      

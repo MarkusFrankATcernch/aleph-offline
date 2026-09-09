@@ -49,19 +49,25 @@ void alpha::edm4hep_output::event_t::process_vdht()  {
   auto* tab = this->data.vdht.load<object_table<class vdht> >();
   auto siz = tab->size();
   for( uint32_t itk=1; itk <= siz; ++itk )  {
-    auto        hit = this->simhits_vdht.create();
-    auto*       ah  = this->data.vdht.row<class vdht>(itk);
-    int32_t    galt = ah->trackNumber();
-    uint64_t   cell = ah->layerNumber() + 1000*ah->phiNumber(); // probably wrong....
-    Position  pos(_LEN(ah->xentry()), _LEN(ah->yentry()), _LEN(ah->zentry()));
-    Position  end(_LEN(ah->xlast()),  _LEN(ah->ylast()),  _LEN(ah->zlast()));
-    Direction dir   = (end-pos);
+    auto        hit  = this->simhits_vdht.create();
+    auto*       ah   = this->data.vdht.row<class vdht>(itk);
+    int32_t     galt = ah->trackNumber();
+    uint64_t    cell = ah->layerNumber() + 1000*ah->phiNumber(); // probably wrong....
+    Position    pos(_LEN(ah->xentry()), _LEN(ah->yentry()), _LEN(ah->zentry()));
+    Position    end(_LEN(ah->xlast()),  _LEN(ah->ylast()),  _LEN(ah->zlast()));
+    Direction   dir  = (end-pos);
     edm4hep::MutableMCParticle mcp;
 
     if( galt )  {
-      // edm4hep::MutableMCParticle mcp = particle_mc_fkin(galt);
+      mcp = particle_mc_fkin(galt, false);
     }
-    // hit.setParticle(mcp);
+    if( !mcp.isAvailable() )  {
+      std::cout << "+++ VDHT: Galeph track number: " << galt << " No FKIN track!" << std::endl;
+    }
+    else  {
+      // std::cout << "+++ VDHT: Galeph track number: " << std::setw(6) << std::left << galt << "    [ " << qcde.KNMCT << " ] " << std::endl;
+    }
+    hit.setParticle(mcp);
     hit.setEDep(_ENE(ah->energyReleased()));
     hit.setTime(_TIM(0e0));
     hit.setPosition( { pos.x(), pos.y(), pos.z() } );

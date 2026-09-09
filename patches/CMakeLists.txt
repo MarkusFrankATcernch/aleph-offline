@@ -123,8 +123,11 @@ set( ALEPH_LIBRARY_TYPE STATIC )
 find_package( CERNLIB REQUIRED )
 #
 get_filename_component(CERNLIB_LIBDIR "${CERNLIB_MATHLIB}" DIRECTORY CACHE)
+get_filename_component(CERNLIB_INCDIR "${CERNLIB_LIBDIR}/../include/kernlib.h" DIRECTORY)
+get_filename_component(CERNLIB_INCDIR "${CERNLIB_INCDIR}" REALPATH)
 #
 set( ALEPH_PROGRAM_SOURCES ../cxx/opt/chkloc.c )
+include_directories(SYSTEM ${CERNLIB_INCDIR})
 #
 # ==================================================================================================
 if( CERNLIB_SHARED )

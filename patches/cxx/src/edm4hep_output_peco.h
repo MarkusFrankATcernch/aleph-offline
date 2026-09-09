@@ -88,10 +88,10 @@ void alpha::edm4hep_output::event_t::process_peco()  {
     hit.setEnergyError( std::abs(ah->ecorr() - ah->eraw()) );
     hit.setPosition( { pos.x(), pos.y(), pos.z() } );
     hit.setType(((  0x7 & ah->rbits())) +
-		((  0x7 & ah->ccode()) <<  3) +
-		((  0x7 & ah->kdrg())  <<  6) +  // Bit 9 unused.
-		((0x3FF & int(ah->esta1()*1000e0)) << 10) +
-		((0x3FF & int(ah->esta2()*1000e0)) << 20));
+                ((  0x7 & ah->ccode()) <<  3) +
+                ((  0x7 & ah->kdrg())  <<  6) +  // Bit 9 unused.
+                ((0x3FF & int(ah->esta1()*1000e0)) << 10) +
+                ((0x3FF & int(ah->esta2()*1000e0)) << 20));
 
     if( dbg )  {
       char text[512];

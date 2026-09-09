@@ -43,45 +43,24 @@ void alpha::edm4hep_output::event_t::process_vdfk()  {
     log << bos77::to_string(tab) << std::endl;
   }
   for( uint32_t i=1; i <= tab->size(); ++i )  {
-    float   percent_charge;
     auto*   rel   = tab->row(i);
     int32_t nfkin = rel->fkIN();
     int32_t nvdco = rel->vdCO();
     auto    it    = this->alpha2edm4hep_vdco.find(nvdco);
-
     if( it == this->alpha2edm4hep_vdco.end() )  {
       throw std::runtime_error("Failed to access VDCO cluster id: "+std::to_string(nvdco));
     }
-    trackerhit_t vdco = this->hits_vdco[it->second];
-    uint64_t cell = vdco.getCellID() & (~VDET_COORDINATE);
-    auto mcp = this->particle_mc_fkin(nfkin);
+    auto vdco = this->hits_vdco[it->second];
+    auto mcp  = this->particle_mc_fkin(nfkin);
     if( !mcp.isAvailable() ) ++no_fkin;
-    {
-      auto hit = this->simhits_vdfk_rphi.create();
-      percent_charge = rel->percentCharge()[0];
-      hit.setCellID( cell+VDET_WAFER_RPHI );
-      hit.setTime( 0e0 );
-      hit.setQuality( vdco.getQuality() );
-      hit.setPosition( vdco.getPosition() );
-      hit.setEDep( vdco.getEDep()*percent_charge );
-      hit.setParticle(mcp);
-      _set_link(rel_vdco_simhits_vdfk_rphi, vdco, hit, percent_charge);
-    }
-    {
-      auto hit = this->simhits_vdfk_z.create();
-      percent_charge = rel->percentCharge()[1];
-      hit.setCellID( cell+VDET_WAFER_Z );
-      hit.setTime( 0e0 );
-      hit.setQuality( vdco.getQuality() );
-      hit.setPosition( vdco.getPosition() );
-      hit.setEDep( vdco.getEDep()*percent_charge );
-      hit.setParticle(mcp);
-      _set_link(rel_vdco_simhits_vdfk_z, vdco, hit, percent_charge);
-    }
+    _set_link(this->percent_charge_vdco_fkin_rphi, vdco, mcp, rel->percentCharge()[0]);
+    _set_link(this->percent_charge_vdco_fkin_z,    vdco, mcp, rel->percentCharge()[1]);
+    _set_link(this->strips_count_vdco_fkin_rphi,   vdco, mcp, rel->stripsCount()[0]);
+    _set_link(this->strips_count_vdco_fkin_z,      vdco, mcp, rel->stripsCount()[1]);
   }
   if( no_fkin > 0 )  {
     log << "+++ VDFK: " << no_fkin << "/" << tab->size()
-	<< " VDCO clusters have no FKIN information!" << std::endl;
+        << " VDCO clusters have no FKIN relationship!" << std::endl;
   }
   if( this->data.vdfk.debug )  {
     ::printf("%s\n", log.str().c_str());
