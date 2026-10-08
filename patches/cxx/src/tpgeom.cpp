@@ -14,12 +14,10 @@
 /// Framework include files
 #include <alpha/tpcgeom.h>
 
-extern "C"  {
-  extern alpha::tpcgeom_t tpgeom_;
-  extern alpha::tpcgeop_t tpgeop_;
-}
+extern "C" alpha::tpcgeom_t tpgeom_;
+extern "C" alpha::tpcgeop_t tpgeop_;
 
 namespace alpha  {
   tpcgeom_t& tpcgeom = tpgeom_;
-  tpcgeop_t& tpcgeop = tpgeop_;
+  tpcgeop_t& tpcgeop = tpgeop_;  
 }

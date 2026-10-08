@@ -10,7 +10,7 @@
 #
 find_package( CERNLIB REQUIRED )
 #
-SET( aleph_dir ${CMAKE_CURRENT_SOURCE_DIR} )
+SET( aleph_dir ${ALEPHLIB_SOURCE_DIR} )
 message(STATUS "+++ ALEPHLIB:   Build library from sources: ${aleph_dir}" )
 #
 #
@@ -61,14 +61,12 @@ target_include_directories( alephlib PUBLIC ${aleph_dir}/../inc )
 target_include_directories( alephlib PUBLIC ${aleph_dir}/inc )
 target_compile_options(     alephlib PUBLIC  -fPIC )
 target_link_libraries(      alephlib
-   PUBLIC        Aleph::alephio
-                 Aleph::bos77
-		 ${ALEPH_CERN_SIMLIBRARIES}
+   PUBLIC Aleph::alephio Aleph::bos77 ${ALEPH_CERN_SIMLIBRARIES}
 )
 #
 #
-install(DIRECTORY inc      DESTINATION include)
-install(TARGETS   alephlib EXPORT Aleph
+install(DIRECTORY ${aleph_dir}/inc DESTINATION include)
+install(TARGETS   alephlib         EXPORT      Aleph
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
 )

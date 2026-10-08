@@ -8,7 +8,7 @@
 #
 # ==================================================================================================
 #
-SET( alephio_dir ${CMAKE_CURRENT_SOURCE_DIR} )
+SET( alephio_dir ${ALEPHIO_SOURCE_DIR} )
 #
 message(STATUS "+++ ALEPHIO:    Build library from sources: ${alephio_dir}" )
 file( GLOB alephio_files ${alephio_dir}/alph/*.F
@@ -31,7 +31,7 @@ target_compile_options(     alephio PUBLIC
 )
 target_link_libraries(      alephio PUBLIC Aleph::bos77 ${ALEPH_CERN_LIBRARIES} )
 #
-install(DIRECTORY  inc     DESTINATION include)
+install(DIRECTORY  ${alephio_dir}/inc     DESTINATION include)
 install(TARGETS    alephio EXPORT Aleph
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

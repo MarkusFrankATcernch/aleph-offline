@@ -9,28 +9,28 @@
 # ==================================================================================================
 #
 find_package( X11 REQUIRED )
-SET( galeph_dir ${CMAKE_CURRENT_SOURCE_DIR} )
+SET( galeph_dir ${GALEPH_SOURCE_DIR} )
 message(STATUS "+++ GALEPH:     Build library from sources: ${galeph_dir}" )
 #
-SET( tpc_dir    ${CMAKE_CURRENT_SOURCE_DIR}/../tpcsim )
+SET( tpc_dir    ${TPCSIM_SOURCE_DIR} )
 file( GLOB galeph_files ${galeph_dir}/a_/*.F
-			     ${galeph_dir}/calo/*.F
-			     ${galeph_dir}/draw/*.F
-			     ${galeph_dir}/ecal/*.F
-			     ${galeph_dir}/gal/*.F
-			     ${galeph_dir}/geom/*.F
-			     ${galeph_dir}/guse/*.F
-			     ${galeph_dir}/hcal/*.F
-			     ${galeph_dir}/inc/*.F
-			     ${galeph_dir}/itc/*.F
-			     ${galeph_dir}/lcal/*.F
-			     ${galeph_dir}/muon/*.F
-			     ${galeph_dir}/satr/*.F
-			     ${galeph_dir}/scal/*.F
-			     ${galeph_dir}/skel/*.F
-			     ${galeph_dir}/tpc/*.F
-			     ${galeph_dir}/vdet/*.F
-			     ${tpc_dir}/F77/*.F
+		        ${galeph_dir}/calo/*.F
+		        ${galeph_dir}/draw/*.F
+			${galeph_dir}/ecal/*.F
+			${galeph_dir}/gal/*.F
+			${galeph_dir}/geom/*.F
+			${galeph_dir}/guse/*.F
+			${galeph_dir}/hcal/*.F
+			${galeph_dir}/inc/*.F
+			${galeph_dir}/itc/*.F
+			${galeph_dir}/lcal/*.F
+			${galeph_dir}/muon/*.F
+			${galeph_dir}/satr/*.F
+			${galeph_dir}/scal/*.F
+			${galeph_dir}/skel/*.F
+			${galeph_dir}/tpc/*.F
+			${galeph_dir}/vdet/*.F
+			${tpc_dir}/F77/*.F
 )
 #
 add_executable( galeph ${galeph_files} )
@@ -58,8 +58,8 @@ target_link_libraries( galeph_geom
              ${ALEPH_CERN_SIMLIBRARIES} ${ALEPH_CERN_X11LIBRARIES} ${ALEPH_CERN_LIBRARIES}
 )
 #
-install(DIRECTORY  inc  DESTINATION include)
-install(TARGETS  galeph galeph_geom EXPORT Aleph
+install(DIRECTORY ${galeph_dir}/inc  DESTINATION include)
+install(TARGETS   galeph galeph_geom EXPORT Aleph
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

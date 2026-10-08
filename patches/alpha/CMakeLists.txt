@@ -8,7 +8,7 @@
 #
 # ==================================================================================================
 #
-SET( alpha_dir ${CMAKE_CURRENT_SOURCE_DIR} )
+SET( alpha_dir ${ALPHA_SOURCE_DIR} )
 #
 file( GLOB alphalib_files    ${alpha_dir}/enfl/*.F
 			     ${alpha_dir}/mini/*.F
@@ -32,9 +32,9 @@ target_link_libraries(      alphalib
 )
 #
 add_executable( alpha ${alpha_dir}/pack/qmain.F
-                                       ${alpha_dir}/pack/quibos.F
-                                       ${alpha_dir}/pack/quihis.F
-                                       ${ALEPH_PROGRAM_SOURCES} )
+                      ${alpha_dir}/pack/quibos.F
+                      ${alpha_dir}/pack/quihis.F
+                      ${ALEPH_PROGRAM_SOURCES} )
 target_link_libraries( alpha
    PRIVATE Aleph::alphalib
            Aleph::alephlib
@@ -45,7 +45,7 @@ target_link_libraries( alpha
 	  )
 #
 #
-install(DIRECTORY  inc  DESTINATION include)
+install(DIRECTORY  ${alpha_dir}/inc  DESTINATION include)
 install(TARGETS    alphalib alpha EXPORT Aleph
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib

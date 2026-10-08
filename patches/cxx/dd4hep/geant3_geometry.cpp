@@ -293,23 +293,17 @@ geant3_geometry_imp::~geant3_geometry_imp()  {
 }
 
 namespace alpha  {
-  void instantiate_dd4hep_geometry()  {
-    Detector& detector = Detector::getInstance();
-    detector.fromXML("/home/frankm/Aleph/offline/gitlab/cxx/compact/compact.xml");
+  void instantiate_dd4hep_geometry(const std::string& compact)  {
+    std::pair<int, char**> arg(0, 0);
+    Detector& desc = Detector::getInstance();
 
-    if( nullptr == gApplication )  {
-      const char* app_argv[1] = {"--web=off"};
-      std::pair<int, char**> app_arg(0, (char**)app_argv);
-      std::cout << "Create ROOT interpreter." << std::endl;
-      gApplication = new TRint("DD4hepRint", &app_arg.first, app_arg.second);
-    }
+    desc.fromXML(compact);
+    std::cout << "Create ROOT interpreter." << std::endl;
+    gApplication = new TRint("DD4hepRint", &arg.first, arg.second);
+
     const char* dis_argv[2] = {"-level", "20" };
-    detector.apply("DD4hep_GeometryDisplay", sizeof(dis_argv)/sizeof(dis_argv[0]), (char**)dis_argv);
-
-    if ( !gApplication->IsRunning() )  {
-      std::cout << "Run ROOT interpreter." << std::endl;
-      gApplication->Run();
-    }
+    desc.apply("DD4hep_GeometryDisplay", sizeof(dis_argv)/sizeof(dis_argv[0]), (char**)dis_argv);
+    desc.apply("DD4hep_Rint", 0, nullptr);
   }
 }
 #include "DD4hep/DetFactoryHelper.h"

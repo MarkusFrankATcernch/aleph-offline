@@ -159,7 +159,7 @@ aleph-init()  {
 	    cmake  -DCMAKE_MODULE_PATH=${LCG_VIEW}                  \
 	    -DCERNLIB_DIR=${CERNLIB_DIR}/share/cernlib/cmake \
 	    -DCMAKE_INSTALL_PREFIX=`realpath ${install}`     \
-	    ${ALEPH_OTHER_CMAKE_OPTIONS} ..;
+	    ${ALEPH_OTHER_CMAKE_OPTIONS} ../cmake;
 	make -j 33 install;
 	cd ${curr};
     }

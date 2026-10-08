@@ -8,8 +8,8 @@
 #
 # ==================================================================================================
 #
-SET( alpha_dir ${CMAKE_CURRENT_SOURCE_DIR}/../alpha )
-SET( user_dir  ${CMAKE_CURRENT_SOURCE_DIR} )
+SET( alpha_dir ${ALPHA_SOURCE_DIR} )
+SET( user_dir  ${USER_SOURCE_DIR}  )
 #
 #
 find_package(EDM4HEP REQUIRED)
@@ -18,13 +18,14 @@ if (NOT EDM4HEP_FOUND)
 else()
   message(STATUS "EDM4HEP found. EDM4HEP_INCLUDE_DIR: ${EDM4HEP_INCLUDE_DIR}")
 endif()
-
+#
+#
 find_package(podio REQUIRED)
 if(NOT podio_FOUND)
   message(ERROR "podio not found, Building will fail")
 endif()
 #
-
+#
 find_package(DD4hep)
 if(NOT DD4hep_FOUND)
   message(ERROR "DD4hep not found, Building will fail")
@@ -76,7 +77,7 @@ dd4hep_add_plugin(AlephGeometry SOURCES ${user_dir}/dd4hep/*.cpp
   USES DD4hep::DDCore ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore
 )
 target_include_directories( AlephGeometry PUBLIC  ${user_dir}/include )
-dd4hep_install_dir(compact DESTINATION ${CMAKE_INSTALL_PREFIX} )
+#
 #
 add_executable( alpha_user ${user_dir}/main/quuser.cpp
                            ${ALEPH_PROGRAM_SOURCES} 
@@ -93,7 +94,6 @@ target_link_libraries( alpha_user
 )
 target_compile_options(alpha_user PUBLIC "-fpie")
 target_link_options(alpha_user PUBLIC "-fpie")
-#
 #
 add_executable( alpha_dd4hep ${user_dir}/main/qugeom.cpp
                              ${user_dir}/dd4hep/aleph_geometry.cpp
@@ -114,8 +114,10 @@ target_compile_options(alpha_dd4hep PUBLIC "-fpie")
 target_link_options(alpha_dd4hep PUBLIC "-fpie")
 #
 #
-install(DIRECTORY  include/alpha  DESTINATION include)
-install(DIRECTORY  include/bos    DESTINATION include)
+#
+dd4hep_install_dir(${user_dir}/compact DESTINATION ${CMAKE_INSTALL_PREFIX} )
+install(DIRECTORY  ${user_dir}/include/alpha  DESTINATION include)
+install(DIRECTORY  ${user_dir}/include/bos    DESTINATION include)
 install(TARGETS    userlib alpha_user alpha_dd4hep EXPORT Aleph
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib

@@ -9,7 +9,7 @@
 # ==================================================================================================
 #
 find_package( X11 REQUIRED )
-SET( look_dir ${CMAKE_CURRENT_SOURCE_DIR} )
+SET( look_dir ${LOOK_SOURCE_DIR} )
 message(STATUS "+++ LOOK:       Build library from sources: ${look_dir}" )
 #
 SET( tpc_dir    ${CMAKE_CURRENT_SOURCE_DIR}/../tpcsim )

@@ -9,7 +9,7 @@
 # ==================================================================================================
 #
 find_package( X11 REQUIRED )
-SET( scanbook_dir ${CMAKE_CURRENT_SOURCE_DIR} )
+SET( scanbook_dir ${JSCANBOOK_SOURCE_DIR} )
 message(STATUS "+++ SCANBOOK:       Build library from sources: ${scanbook_dir}" )
 #
 file( GLOB scanbook_files ${scanbook_dir}/fortran/*.f )

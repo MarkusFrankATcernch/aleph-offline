@@ -17,10 +17,10 @@
 #include <DD4hep/Shapes.h>
 #include <DD4hep/Volumes.h>
 #include <DD4hep/Objects.h>
-#include <DD4hep/DD4hepUnits.h>
 #include <DD4hep/Detector.h>
+#include <DD4hep/DD4hepUnits.h>
 
-#include <TGeo4SystemOfUnits.h>
+#include <TGeoSystemOfUnits.h>
 #include <TGeant4SystemOfUnits.h>
 
 /// dd4hep namespace declaration

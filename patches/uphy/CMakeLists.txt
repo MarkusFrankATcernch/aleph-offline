@@ -8,27 +8,27 @@
 #
 # ==================================================================================================
 #
-SET( uphy_dir ${CMAKE_CURRENT_SOURCE_DIR} )
+SET( uphy_dir ${UPHY_SOURCE_DIR} )
 message(STATUS "+++ UPHY:       Build library from sources: ${uphy_dir}" )
 #
 file( GLOB uphy_files    ${uphy_dir}/bcalinfo/*.F
-			     ${uphy_dir}/bhasel/*.F
-			     ${uphy_dir}/elcor/*.F
-			     ${uphy_dir}/jnucle/*.F
-			     ${uphy_dir}/lcalid/*.F
-			     ${uphy_dir}/matrix/*.F
-			     ${uphy_dir}/qbmtag/*.F
-# 			     ${uphy_dir}/qfitw2/*.F
-			     ${uphy_dir}/qfitww/*.F
-			     ${uphy_dir}/qfndip/*.F
-			     ${uphy_dir}/qjcone/*.F
-			     ${uphy_dir}/qnnbtag/*.F
-			     ${uphy_dir}/qnnwwtag/*.F
-			     ${uphy_dir}/qpcorr/*.F
-#			     ${uphy_dir}/qufsim/*.F
-			     ${uphy_dir}/setshad/*.F
-			     ${uphy_dir}/smearfit/*.F
-			     ${uphy_dir}/wmuid/*.F
+			 ${uphy_dir}/bhasel/*.F
+			 ${uphy_dir}/elcor/*.F
+			 ${uphy_dir}/jnucle/*.F
+			 ${uphy_dir}/lcalid/*.F
+			 ${uphy_dir}/matrix/*.F
+			 ${uphy_dir}/qbmtag/*.F
+# 			 ${uphy_dir}/qfitw2/*.F
+			 ${uphy_dir}/qfitww/*.F
+			 ${uphy_dir}/qfndip/*.F
+			 ${uphy_dir}/qjcone/*.F
+			 ${uphy_dir}/qnnbtag/*.F
+			 ${uphy_dir}/qnnwwtag/*.F
+			 ${uphy_dir}/qpcorr/*.F
+#			 ${uphy_dir}/qufsim/*.F
+			 ${uphy_dir}/setshad/*.F
+			 ${uphy_dir}/smearfit/*.F
+			 ${uphy_dir}/wmuid/*.F
 )
 add_library( uphy ${ALEPH_LIBRARY_TYPE} ${uphy_files} )
 add_library( Aleph::uphy ALIAS uphy )

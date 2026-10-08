@@ -43,8 +43,9 @@ namespace alpha  {
 }
 
 using namespace alpha;
-
-extern void instantiate_dd4hep_geometry();
+namespace alpha {
+  void instantiate_dd4hep_geometry(const std::string& compact);
+}
 
 extern "C"  {
   void qquinit_()  {
@@ -56,7 +57,7 @@ extern "C"  {
     if ( edm4hep_proc ) edm4hep_proc->initialize();
   }
   void quinit_()  {
-    instantiate_dd4hep_geometry();
+    alpha::instantiate_dd4hep_geometry("/home/frankm/Aleph/offline/gitlab/cxx/compact/compact.xml");
     ::exit(0);
   }
 

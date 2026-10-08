@@ -19,8 +19,7 @@
   CERN PROGLIB# N101    LOCB            .VERSION KERNFOR  4.36  930602
 */
 
-unsigned int chkloc(iadr)
-   char *iadr;
+unsigned int chkloc(char* iadr)
 {
   /* 64 bit architectures may exceed the 32 bit address space !               */
 

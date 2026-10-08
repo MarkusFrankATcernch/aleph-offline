@@ -8,7 +8,7 @@
 #
 # ==================================================================================================
 #
-SET( kingal_dir ${CMAKE_CURRENT_SOURCE_DIR} )
+SET( kingal_dir ${KIN_SOURCE_DIR} )
 message( STATUS "+++ KINGAL:      Build executables from sources: ${kingal_dir}" )
 #
 #

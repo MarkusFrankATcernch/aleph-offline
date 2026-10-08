@@ -8,7 +8,7 @@
 #
 # ==================================================================================================
 #
-SET( dbase_dir         ${CMAKE_CURRENT_SOURCE_DIR} )
+SET( dbase_dir         ${DBASE_SOURCE_DIR} )
 SET( sbank_dir         ${dbase_dir} )
 #
 file( GLOB sbank_files ${sbank_dir}/subr/*.F
