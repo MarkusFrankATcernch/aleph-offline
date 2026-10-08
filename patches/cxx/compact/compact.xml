@@ -1,0 +1,67 @@
+<!--
+//==========================================================================
+//  ALEPH software suite
+//==========================================================================
+//  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+//  All rights reserved.
+//
+//  For the licensing terms see OnlineSys/LICENSE.
+//
+//==========================================================================
+//
+//  Author     : Markus Frank
+//==========================================================================
+-->
+<lccdd>
+  <info name="aleph_from_geant3"
+        title="ALEPH Geometry import from Geant3"
+        author="Markus Frank"
+        url="https://alephwww.cern.ch"
+        status="development"
+        version="1.0">
+  </info>
+
+  <debug>
+    <type name="constants"   value="1"/>
+    <type name="materials"   value="1"/>
+    <type name="includes"    value="1"/>
+    <type name="detelements" value="1"/>
+  </debug>
+
+  <define>
+    <constant name="world_size"              value="20*m"/>
+    <constant name="world_x"                 value="world_size"/>
+    <constant name="world_y"                 value="world_size"/>
+    <constant name="world_z"                 value="world_size"/>
+  </define>
+
+  <includes>
+    <file ref="elements.xml"/>
+    <file ref="materials.xml"/>
+    <file ref="AlephConstants.xml"/>
+    <file ref="AlephVis.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="ALEPH" type="DD4hep_Geant3Detector" vis="Vis_ALEPH">
+      <volume name="ALEF"/>
+    </detector>
+  </detectors>
+
+  <readouts>
+  </readouts>
+
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="1.5*tesla"
+	   outer_field="-0.5*tesla" 
+	   zmax="365.4*cm"
+	   outer_radius="(248+297.3)/2.0*cm">
+    </field>
+  </fields>
+
+  <plugins>
+    <include ref="AlephPlugins.xml"/>
+  </plugins>
+
+</lccdd>

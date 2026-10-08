@@ -70,7 +70,15 @@ target_link_libraries(      userlib
            ${ALEPH_CERN_LIBRARIES}
 )
 #
-add_executable( alpha_user ${user_dir}/src/quuser.cpp
+include(DD4hepMacros) 
+#
+dd4hep_add_plugin(AlephGeometry SOURCES ${user_dir}/dd4hep/*.cpp
+  USES DD4hep::DDCore ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore
+)
+target_include_directories( AlephGeometry PUBLIC  ${user_dir}/include )
+dd4hep_install_dir(compact DESTINATION ${CMAKE_INSTALL_PREFIX} )
+#
+add_executable( alpha_user ${user_dir}/main/quuser.cpp
                            ${ALEPH_PROGRAM_SOURCES} 
 )
 target_link_libraries( alpha_user
@@ -87,9 +95,28 @@ target_compile_options(alpha_user PUBLIC "-fpie")
 target_link_options(alpha_user PUBLIC "-fpie")
 #
 #
+add_executable( alpha_dd4hep ${user_dir}/main/qugeom.cpp
+                             ${user_dir}/dd4hep/aleph_geometry.cpp
+                             ${user_dir}/dd4hep/geant3_geometry.cpp
+                             ${ALEPH_PROGRAM_SOURCES} 
+)
+target_link_libraries( alpha_dd4hep
+   PRIVATE Aleph::userlib
+           Aleph::alphalib
+           Aleph::alephlib
+           Aleph::julialib
+           Aleph::alephio
+           Aleph::alephlib
+ 	   Aleph::bos77
+           ${ALEPH_CERN_LIBRARIES}
+)
+target_compile_options(alpha_dd4hep PUBLIC "-fpie")
+target_link_options(alpha_dd4hep PUBLIC "-fpie")
+#
+#
 install(DIRECTORY  include/alpha  DESTINATION include)
 install(DIRECTORY  include/bos    DESTINATION include)
-install(TARGETS    userlib alpha_user EXPORT Aleph
+install(TARGETS    userlib alpha_user alpha_dd4hep EXPORT Aleph
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
