@@ -1,15 +1,5 @@
-*
-* $Id: gsposp.F,v 1.1.1.1 1995/10/24 10:20:56 cernlib Exp $
-*
-* $Log: gsposp.F,v $
-* Revision 1.1.1.1  1995/10/24 10:20:56  cernlib
-* Geant
-*
-*
 #include "geant321/pilot.h"
-*CMZ :  3.21/02 29/03/94  15.41.30  by  S.Giani
-*-- Author :
-      SUBROUTINE GSPOSP2(NAME,NR,MOTHER,X,Y,Z,IROT,KONLY,UPAR,NP)
+      SUBROUTINE GSPOSP(NAME,NR,MOTHER,X,Y,Z,IROT,KONLY,UPAR,NP)
 C.
 C.    ******************************************************************
 C.    *                                                                *
@@ -41,10 +31,12 @@ C.
 #include "geant321/gcunit.inc"
 #include "geant321/gcnum.inc"
 #include "geant321/gconsp.inc"
-      CHARACTER*4 NAME,MOTHER,KONLY
+      CHARACTER*4    NAME,MOTHER,KONLY
       CHARACTER*1024 TEXT
-      INTEGER   LENOCC
-      DIMENSION UPAR(*),PAR(50)
+      INTEGER        LENOCC
+      INTEGER        IPLACE
+      COMMON / NUMPLA / IPLACE
+      DIMENSION      UPAR(*),PAR(50)
 C.
 C.    ------------------------------------------------------------------
 C.
@@ -154,7 +146,9 @@ C
 
 *
       CALL UCOPY(PAR,Q(JIN+10),NPAR)
-      WRITE(TEXT,100) IN, NAME, NR, MOTHER, X, Y, Z, IROT,
+       
+      IPLACE = IPLACE+1
+      WRITE(TEXT,100) IPLACE, NAME, NR, MOTHER, X, Y, Z, IROT,
      &  KONLY, ISH
       DO J=1, NPAR
         WRITE(TEXT(LENOCC(TEXT)+1:), 101) PAR(J)

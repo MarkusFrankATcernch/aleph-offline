@@ -1,5 +1,5 @@
 #include "geant321/pilot.h"
-      SUBROUTINE GPTMED2 (NUMB  )
+      SUBROUTINE GPTMED (NUMB  )
 C.
 C.    ******************************************************************
 C.    *                                                                *

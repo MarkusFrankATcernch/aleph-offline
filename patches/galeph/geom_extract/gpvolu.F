@@ -1,15 +1,5 @@
-*
-* $Id: gpvolu.F,v 1.1.1.1 1995/10/24 10:20:54 cernlib Exp $
-*
-* $Log: gpvolu.F,v $
-* Revision 1.1.1.1  1995/10/24 10:20:54  cernlib
-* Geant
-*
-*
 #include "geant321/pilot.h"
-*CMZ :  3.21/04 13/12/94  15.26.17  by  S.Giani
-*-- Author :
-      SUBROUTINE GPVOLU2(NUMB)
+      SUBROUTINE GPVOLU(NUMB)
 C.
 C.    ******************************************************************
 C.    *                                                                *

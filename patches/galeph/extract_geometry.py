@@ -153,6 +153,27 @@ class placement:
     self.position  = (data['x'], data['y'], data['z'])
     self.code      = ''
 
+
+"""
+   \author  M.Frank
+   \version 1.0
+"""
+class division:
+  # =======================================================================================
+  def __init__(self, geo, data):
+    self.geometry   = geo
+    self.data       = data
+    self.name       = data['name']
+    self.volume     = data['volume']
+    self.ndiv       = data['ndiv']
+    self.axis       = data['axis']
+    self.start      = data['start']
+    self.step       = data['step']
+    self.idx_medium = data['idx_medium']
+    self.option     = data['option']
+  
+
+# =========================================================================================
 """
    \author  M.Frank
    \version 1.0
@@ -160,11 +181,12 @@ class placement:
 class geant3_geometry:
   # =======================================================================================
   def __init__(self):
-    self.material = {}
-    self.medium = {}
-    self.volumes = {}
-    self.rotations = {}
+    self.material   = {}
+    self.medium     = {}
+    self.volumes    = {}
+    self.rotations  = {}
     self.placements = []
+    self.divisions  = []
     
   # =======================================================================================
   def add_material(self, mat):
@@ -186,19 +208,28 @@ class geant3_geometry:
   def add_volume(self, vol):
     self.volumes[vol['index']] = volume(self, vol)
 
+  # =======================================================================================
+  def add_division(self, div):
+    self.divisions.append(division(self, div))
+
+
 # =========================================================================================
+"""
+   \author  M.Frank
+   \version 1.0
+"""
 class dd4hep_geometry:
 
   # =======================================================================================
   def __init__(self, geo, output):
     self.print_volumes = False
     self.geant3_geo = geo
-    self.output = output
-    self.material = {}
-    self.medium = {}
-    self.shapes = {}
-    self.volumes = {}
-    self.rotations = {}
+    self.output     = output
+    self.material   = {}
+    self.medium     = {}
+    self.shapes     = {}
+    self.volumes    = {}
+    self.rotations  = {}
     self.placements = []
 
   # =======================================================================================
@@ -210,7 +241,7 @@ class dd4hep_geometry:
 
   # =======================================================================================
   def extract_data(self):
-    open_bracket = '{'
+    open_bracket  = '{'
     close_bracket = '}'
     for idx, vol in self.geant3_geo.volumes.items():
       typ    = vol.shape
@@ -246,21 +277,18 @@ class dd4hep_geometry:
         
       elif typ == 'TRD2':  #      Geant3 parameters:  dx1, dx2, dy1, dy2, dz
         shape = f'dd4hep::Trd2( std::string("{name}"), {vol.params[0]}*units::cm, {vol.params[1]}*units::cm, {vol.params[2]}*units::cm, {vol.params[3]}*units::cm, {vol.params[4]}*units::cm )'
-        
       elif typ == 'TRAP':  #      Geant3 parameters:  z, theta, phi,  h1, bl1, tl1, alpha1, h2, bl2, tl2, alpha2
         shape = f'dd4hep::Trap( std::string("{name}"), {vol.params[0]}*units::cm, {vol.params[1]}*units::degree, {vol.params[2]}*units::degree, ' + \
                 f'{vol.params[3]}*units::degree, {vol.params[4]}*units::cm, {vol.params[5]}*units::cm, {vol.params[6]}*units::degree, ' + \
                 f'{vol.params[7]}*units::degree, {vol.params[8]}*units::cm, {vol.params[9]}*units::cm, {vol.params[10]}*units::degree )'
-                
       elif typ == 'PARA':  #      Geant3 parameters:  dx, dy, dz, alpha, theta, phi
         #shape = f'dd4hep::Parallelepiped( std::string("{name}"), {vol.params[0]}*units::cm, {vol.params[1]}*units::cm, {vol.params[2]}*units::cm, ' + \
         #        f'{vol.params[3]}*units::degree, {vol.params[4]}*units::degree, {vol.params[5]}*units::degree )'
         shape = f'dd4hep::Solid(new TGeoPara( "{name}", {vol.params[0]}*units::cm, {vol.params[1]}*units::cm, {vol.params[2]}*units::cm, ' + \
                 f'{vol.params[3]}, {vol.params[4]}, {vol.params[5]} ))'
-
       elif typ == 'PCON':  #      Geant3 parameters:  phi, dphi, nz, (z, rmin, rmax)
-        nz = int(vol.params[2])
-        z = []
+        nz   = int(vol.params[2])
+        z    = []
         rmin = []
         rmax = []
         for i in range(nz):
@@ -271,8 +299,8 @@ class dd4hep_geometry:
                 f'{to_vector(rmin)}, {to_vector(rmax)}, {to_vector(z)} )'
 
       elif typ == 'PGON':  #      Geant3 parameters:  phi, dphi, nz, (z, rmin, rmax)
-        nz = int(vol.params[2])
-        z = []
+        nz   = int(vol.params[2])
+        z    = []
         rmin = []
         rmax = []
         for i in range(nz):
@@ -350,7 +378,7 @@ class dd4hep_geometry:
     self.write_code( '/// Handle the conversion of the Geant3 media: \n' + \
                      'void dd4hep::geant3_geometry_imp::handle_media()  { \n' )
     for key in self.medium.keys():
-      medium = self.medium[key]['g3']
+      medium   = self.medium[key]['g3']
       material = medium.material()
       self.medium[key]['code'] = f'  this->add_medium( {medium.index}, "{medium.name}", "{material.name}" );'
       self.write_code( self.medium[key]['code'] )
@@ -403,14 +431,28 @@ class dd4hep_geometry:
         code =  '  params.clear();\n'
       else:
         code = f'  params = {ob} {str(place.params)[1:-1]} {cb};\n'
-      x = str(place.position[0])+'*units::cm'
-      y = str(place.position[1])+'*units::cm'
-      z = str(place.position[2])+'*units::cm'
+      x = str(place.position[0]) + '*units::cm'
+      y = str(place.position[1]) + '*units::cm'
+      z = str(place.position[2]) + '*units::cm'
       code = code + \
              f'  this->add_placement({place.index}, "{_trim(place.mother)}", "{_trim(place.name)}", {place.copy_no},' +\
              f' dd4hep::Position({x},{y},{z}), {place.ind_rot}, params);'
       self.write_code( code )
     self.write_code( '} /// End geant3_geometry_imp::handle_placements  \n\n' )
+    return self
+
+  # =======================================================================================
+  def handle_divisions(self):
+    code = '/// Handle the conversion of the Geant3 volume divisions: \n' + \
+                     'void dd4hep::geant3_geometry_imp::handle_divisions()  { \n'
+    for d in self.geant3_geo.divisions:
+      code = code + \
+             f'  this->add_division("{_trim(d.name)}", "{_trim(d.volume)}", ' +\
+             f' {d.axis}, {d.ndiv}, ' +\
+             f' {d.start}*units::degree, {d.step}*units::degree, ' +\
+             f' {d.idx_medium}, "{d.option}");\n'
+    self.write_code( code )
+    self.write_code( '} /// End geant3_geometry_imp::handle_divisions  \n\n' )
     return self
 
 # =========================================================================================
@@ -476,6 +518,7 @@ if num_err == 0:
    print( f'+++ Parsed  {len(aleph_geometry.material)}  material')
    print( f'+++         {len(aleph_geometry.medium)}  media')
    print( f'+++         {len(aleph_geometry.volumes)}  volumes')
+   print( f'+++         {len(aleph_geometry.divisions)}  divisions')
    print( f'+++         {len(aleph_geometry.placements)}  placements')
    output = sys.stdout
    if args.geometry_output:
@@ -489,6 +532,7 @@ if num_err == 0:
      dd4hep.handle_media()
      dd4hep.handle_rotations()
      dd4hep.handle_volumes()
+     dd4hep.handle_divisions()
      dd4hep.handle_placements()
 
 else:

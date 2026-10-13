@@ -13,15 +13,22 @@
 #ifndef ALPHA_GEANT3_GEOMETRY_H
 #define ALPHA_GEANT3_GEOMETRY_H 1
 
-/// dd4hep include files
+/// DD4hep include files
 #include <DD4hep/Shapes.h>
 #include <DD4hep/Volumes.h>
 #include <DD4hep/Objects.h>
 #include <DD4hep/Detector.h>
 #include <DD4hep/DD4hepUnits.h>
 
+/// ROOT include files
 #include <TGeoSystemOfUnits.h>
 #include <TGeant4SystemOfUnits.h>
+
+/// C/C++ include files
+#include <map>
+#include <vector>
+#include <string>
+#include <cstdint>
 
 /// dd4hep namespace declaration
 namespace dd4hep   {
@@ -52,52 +59,88 @@ namespace dd4hep   {
       constexpr static const double degree = 1.0 / TGeant4Unit::radian;
     };
 
+    using params_t = std::vector<double>;
+
   public:
+    enum processing_steps_t  {
+      PROCESSING_STARTING,
+      PROCESSING_MATERIALS,
+      PROCESSING_MATRICES,
+      PROCESSING_VOLUMES,
+      PROCESSING_DIVISIONS,
+      PROCESSING_PLACEMENTS,
+      PROCESSING_FINISHED,
+    };
     Detector& description;
+    std::map<int32_t, PlacedVolume>    placements;
     std::map<std::string, Volume>      volumes;
+    std::map<std::string, TGeoVolume*> divisions;
     std::map<int, Rotation3D>          rotations;
+    std::map<int, Material>            media;
 
     bool debug_materials             { false };
     bool debug_media                 { false };
     bool debug_placements            { false };
-    
+    int32_t processing_step          { PROCESSING_STARTING };
+
+
   public:
+
+    /// Create copy of an existing solid with new parameters
+    Solid create_solid( const TClass* type, const params_t& params);
+    
     /// Access material to build volumes
     Material get_material(const std::string& name)  const;
                      
     /// Add rotation matrix to build placement transformations
-    void     add_rotation( int index, const Rotation3D& rotation );
+    void add_rotation(         int32_t index, const Rotation3D& rotation );
 
     /// Add material to geometry inventory
-    void     add_material( int index,
-                           const std::string& name,
-                           double Z, double A,
-                           double density, double intlen, double radlen);
+    void add_material(         int32_t index,
+                               const std::string& name,
+                               double             Z,
+                               double             A,
+                               double             density,
+                               double             intlen,
+                               double             radlen);
 
-    void     add_mixture(  int index,
-                           const std::string& name,
-                           double Z, double A, double density, double intlen, double radlen,
-                           const std::vector<mixture_entry>& mix);
+    void add_mixture(          int32_t            index,
+                               const std::string& name,
+                               double             Z,
+                               double             A,
+                               double             density,
+                               double             intlen,
+                               double             radlen,
+                               const std::vector<mixture_entry>& mix);
 
     /// Add volume medium to geometry inventory
-    Material add_medium(   int index,
-                           const std::string& name,
-                           const std::string& material);
+    void add_medium(           int32_t            index,
+                               const std::string& name,
+                               const std::string& material);
 
     /// Add volume to geometry inventory
-    Volume   add_volume(   int index,
-                           const std::string& name,
-                           const std::string& material,
-                           Solid solid);
+    void add_volume(           int32_t            index,
+                               const std::string& name,
+                               const std::string& material,
+                               Solid              solid);
 
     /// Add volume medium to geometry inventory
-    PlacedVolume add_placement(int index,
+    void add_placement(        int32_t            index,
                                const std::string& mother,
                                const std::string& volume,
-                               int copy_nr,
-                               const Position& position,
-                               int index_rotation,
-                               const std::vector<double>& params);
+                               int32_t            copy_nr,
+                               const Position&    position,
+                               int32_t            index_rotation,
+                               const params_t&    params);
+    /// Add volume division to geometry inventory
+    void add_division(         const std::string& name,
+                               const std::string& volume,
+                               int32_t            axis,
+                               int32_t            ndiv,
+                               double             start,
+                               double             step,
+                               int32_t            idx_medium,
+                               const char*        opt);
 
   public:
     /// Default constructor
@@ -109,16 +152,19 @@ namespace dd4hep   {
     void construct(const std::string& top_volume);
     
     /// Handle the conversion of the Geant3 materials:
-    virtual void handle_materials() = 0;
+    virtual void handle_materials()  = 0;
 
     /// Handle the conversion of the Geant3 media
-    virtual void handle_media() = 0;
+    virtual void handle_media()      = 0;
 
     /// Handle the conversion of the Geant3 volumes
-    virtual void handle_volumes() = 0;
+    virtual void handle_volumes()    = 0;
+
+    /// Handle the conversion of the Geant3 volume divisions
+    virtual void handle_divisions()  = 0;
 
     /// Handle the conversion of the Geant3 transformation matrices
-    virtual void handle_rotations() = 0;
+    virtual void handle_rotations()  = 0;
     
     /// Handle the conversion of the Geant3 placements
     virtual void handle_placements() = 0;
@@ -148,6 +194,8 @@ namespace dd4hep   {
     virtual void handle_rotations()   override;
     /// Handle the conversion of the Geant3 volumes
     virtual void handle_volumes()     override;
+    /// Handle the conversion of the Geant3 volume divisions
+    virtual void handle_divisions()   override;
     /// Handle the conversion of the Geant3 placements
     virtual void handle_placements()  override;
   };   // End class geant3_geometry_imp

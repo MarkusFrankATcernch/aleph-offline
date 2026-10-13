@@ -1,15 +1,5 @@
-*
-* $Id: gspos.F,v 1.1.1.1 1995/10/24 10:20:56 cernlib Exp $
-*
-* $Log: gspos.F,v $
-* Revision 1.1.1.1  1995/10/24 10:20:56  cernlib
-* Geant
-*
-*
 #include "geant321/pilot.h"
-*CMZ :  3.21/02 29/03/94  15.41.30  by  S.Giani
-*-- Author :
-      SUBROUTINE GSPOS2(CHNAME,NR,CHMOTH,X,Y,Z,IROT,CHONLY)
+      SUBROUTINE GSPOS(CHNAME,NR,CHMOTH,X,Y,Z,IROT,CHONLY)
 C.
 C.    ******************************************************************
 C.    *                                                                *
@@ -39,6 +29,8 @@ C.
 #include "geant321/gcunit.inc"
 #include "geant321/gcnum.inc"
       CHARACTER*4 CHNAME,CHMOTH,CHONLY
+      INTEGER     IPLACE
+      COMMON / NUMPLA / IPLACE
 C.
 C.    ------------------------------------------------------------------
 C.
@@ -111,7 +103,8 @@ C
 C
 C               NOW STORE PARAMETERS INTO BANK AREA
 C
-      WRITE(6,100) IN, CHNAME, NR, CHMOTH, X, Y, Z, IROT, CHONLY
+      IPLACE = IPLACE+1
+      WRITE(6,100) IPLACE, CHNAME, NR, CHMOTH, X, Y, Z, IROT, CHONLY
 
  100  FORMAT('aleph_geometry.add_placement( { ',
      &  '  "index":'      I5,

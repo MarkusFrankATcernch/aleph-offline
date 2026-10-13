@@ -1,5 +1,5 @@
 #include "geant321/pilot.h"
-      SUBROUTINE GPMATE2 (NUMB)
+      SUBROUTINE GPMATE (NUMB)
 C.
 C.    ******************************************************************
 C.    *                                                                *

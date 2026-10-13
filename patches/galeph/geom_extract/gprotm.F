@@ -1,5 +1,5 @@
 C#include "geant321/pilot.h"
-      SUBROUTINE GPROTM2(NUMB)
+      SUBROUTINE GPROTM(NUMB)
 C.
 C.    ******************************************************************
 C.    *                                                                *

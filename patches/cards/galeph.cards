@@ -4,7 +4,7 @@ FILO ' galeph-test.epio | EPIO '
 DATE ${dategeom}          ! Put 90 if 1990 geometry      
 * TIME 100
 * FDBA ' adbs314.daf | DAF '         
-NEVT  1000
+NEVT  1
 DEBU  1 10 1
 *       DATA TPRIN /'VDET','ITC ','TPC ','ECAL','LCAL','SATR','HCAL'
 *     &           ,'MUON','SICA','UNDF'
