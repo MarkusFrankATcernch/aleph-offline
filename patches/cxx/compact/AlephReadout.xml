@@ -1,0 +1,46 @@
+<!--
+//==========================================================================
+//  ALEPH software suite
+//==========================================================================
+//  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+//  All rights reserved.
+//
+//  For the licensing terms see OnlineSys/LICENSE.
+//
+//==========================================================================
+//
+//  Author     : Markus Frank
+//==========================================================================
+-->
+<lccdd>
+
+  <geometry open="false" close="false"/>
+
+  <sensitive_detectors>
+    <sd name="VDET" type="tracker" verbose="true" limits="VDET" hits_collection="VDETHits"/>
+  </sensitive_detectors>
+
+  <regions>
+    <region name="VDETregion" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="VDET"/>
+    </region>
+  </regions>
+  
+  <readouts>
+    <readout name="VDETHits">
+      <id>system:8,barrel:3,layer:4,module:14,sensor:2,side:32:-2,strip:20</id>
+    </readout>        
+  </readouts>
+
+  <limits>
+    <limitset name="TPC">
+      <limit name="step_length_max" particles="*" value="5" unit="mm" />
+      <limit name="ekin_min"  particles="*" value="0.01" unit="MeV" />
+      <limit name="range_min" particles="*" value="5.0" unit="mm" />
+    </limitset>
+    <limitset name="VDET">
+      <limit name="ekin_min" particles="*" value="0.01" unit="MeV" />
+    </limitset>
+  </limits>
+
+</lccdd>

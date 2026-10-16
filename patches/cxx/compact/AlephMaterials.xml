@@ -1,0 +1,209 @@
+<!--
+//==========================================================================
+//  ALEPH software suite
+//==========================================================================
+//  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+//  All rights reserved.
+//
+//  For the licensing terms see OnlineSys/LICENSE.
+//
+//==========================================================================
+//
+//  Author     : Markus Frank
+//==========================================================================
+-->
+<lccdd>
+  <materials>
+
+
+    <material name="UNDEFINED_MATERIAL">
+      <D type="density" unit="g/cm3" value="7.9"/>
+      <composite n="1" ref="Fe"/>
+    </material>
+
+    <material name="AIR_INSIDE_FIELD">
+      <D type="density" unit="g/cm3" value="0.0012"/>
+      <fraction n="0.754" ref="N"/>
+      <fraction n="0.234" ref="O"/>
+      <fraction n="0.012" ref="Ar"/>
+    </material>
+
+    <material name="Aluminized_Mylar">
+      <D type="density" unit="g/cm3" value="0.0012"/>
+      <fraction n="0.45014471"  ref="C"/>
+      <fraction n="0.030220222" ref="H"/>
+      <fraction n="0.23984232"  ref="O"/>
+      <fraction n="0.27979275"  ref="Al"/>
+    </material>
+
+    <material name="BERILLIUM_OXIDE">
+      <D type="density" unit="g/cm3" value="2.900"/>
+      <composite n="1" ref="Be"/>
+      <composite n="1" ref="O"/>
+    </material>
+    
+    <material name="CAMEX">
+      <D type="density" unit="g/cm3" value="2.577"/>
+      <fraction n="0.891" ref="Si"/>
+      <fraction n="0.109" ref="Au"/>
+    </material>
+    
+    <material name="CERAMIC">
+      <D type="density" unit="g/cm3" value="2.577"/>
+      <fraction n="0.529" ref="Al"/>
+      <fraction n="0.471" ref="O"/>
+    </material>
+    
+    <material name="CARBON_FIBER_PLASTIC">
+      <D type="density" unit="g/cm3" value="1.970"/>
+      <composite n="1" ref="C"/>
+    </material>
+
+    <material name="CARBON_FIBER_ALU">
+      <D type="density" unit="g/cm3" value="1.970"/>
+      <fraction n="0.2186" ref="Al"/>
+      <fraction n="0.7814" ref="C"/>
+    </material>
+
+    <material name="ALUMINIUMAIR">
+      <D type="density" unit="g/cm3" value="1.41800"/>
+      <fraction n="0.9997" ref="Al"/>
+      <fraction n="0.0003" ref="Air"/>
+    </material>
+
+    <material name="Aleph_MyLar_Alum">
+      <D type="density" unit="g/cm3" value="1.970"/>
+      <fraction n="0.070" ref="Al"/>
+      <fraction n="0.930" ref="C"/>
+    </material>
+
+    <material name="CARBON_FIBER_CYL">
+      <D type="density" unit="g/cm3" value="1.970"/>
+      <fraction n="0.184" ref="Aleph_MyLar_Alum"/>
+      <fraction n="0.816" ref="C"/>
+    </material>
+
+    <material name="PITCH">
+      <D type="density" unit="g/cm3" value="1.930"/>
+      <composite n="1" ref="C"/>
+    </material>
+
+    <material name="RAIL">
+      <D type="density" unit="g/cm3" value="2.052"/>
+      <composite n="1" ref="C"/>
+    </material>
+
+    <material name="SCAL_ceramics">
+      <D type="density" unit="g/cm3" value="3.860"/>
+      <composite n="1" ref="Na"/>
+    </material>
+
+    <material name="COIL_BODY_AVERAGE">
+      <D type="density" unit="g/cm3" value="1.130"/>
+      <composite n="1" ref="Al"/>
+    </material>
+
+    <material name="COIL_END_BODY_AVE">
+      <D type="density" unit="g/cm3" value="0.500"/>
+      <composite n="1" ref="Al"/>
+    </material>
+
+    <material name="PUMPING_STATION_AVER">
+      <D type="density" unit="g/cm3" value="0.840"/>
+      <composite n="1" ref="Fe"/>
+    </material>
+
+    <material name="COMPENSATOR_AVRG">
+      <D type="density" unit="g/cm3" value="1.950"/>
+      <composite n="1" ref="Fe"/>
+    </material>
+
+    <material name="HCAL_gas">
+      <D type="density" unit="g/cm3" value="0.617"/>
+      <fraction n="0.225" ref="Argon"/>
+      <fraction n="0.475" ref="CO2"/>
+      <fraction n="0.300" ref="Isobutane"/>
+    </material>
+
+    <material name="LCAL_NE110">
+      <D type="density" unit="g/cm3" value="1.032"/>
+      <fraction n="0.915" ref="C"/>
+      <fraction n="0.085" ref="H"/>
+    </material>
+    
+    <material name="LCAL_XE-CO2">
+      <D type="density" unit="g/cm3" value="0.005"/>
+      <fraction n="0.0211" ref="C"/>
+      <fraction n="0.0562" ref="O"/>
+      <fraction n="0.9227" ref="Xe"/>
+    </material>
+    
+    <material name="MYLAR_OR_EQUI._GLUE">
+      <D type="density" unit="g/cm3" value="1.390"/>
+      <fraction n="0.625" ref="C"/>
+      <fraction n="0.042" ref="H"/>
+      <fraction n="0.333" ref="O"/>
+    </material>
+    
+    <material name="TPC_CABLES_AVERAGE">
+      <D type="density" unit="g/cm3" value="1.395"/>
+      <fraction n="0.309" ref="Cu"/>
+      <fraction n="0.691" ref="C"/>
+    </material>
+    
+    <material name="ITC_CABLES_AVERAGE">
+      <D type="density" unit="g/cm3" value="1.395"/>
+      <fraction n="0.413" ref="Cu"/>
+      <fraction n="0.587" ref="C"/>
+    </material>
+
+    <material name="ITC_wires_&amp;_gas">
+      <D type="density" unit="g/cm3" value="0.003"/>
+      <fraction n="0.002" ref="Tungsten"/>
+      <fraction n="0.008" ref="Aluminum"/>
+      <fraction n="0.795" ref="Argon"/>
+      <fraction n="0.195" ref="CO2"/>
+    </material>
+
+    <material name="ITC_inner_wall">
+      <D type="density" unit="g/cm3" value="1.989"/>
+      <fraction n="0.1" ref="Aluminum"/> <!-- assumption -->
+      <fraction n="0.9" ref="C"/>
+    </material>
+
+    <material name="ITC_outer_wall">
+      <D type="density" unit="g/cm3" value="1.359"/>
+      <fraction n="0.1" ref="Aluminum"/> <!-- assumption -->
+      <fraction n="0.9" ref="C"/>
+    </material>
+
+    <material name="TPC_GAS_mixture_Ar/C">
+      <D type="density" unit="g/cm3" value="0.002"/>
+      <fraction n="0.91" ref="Argon"/>
+      <fraction n="0.09" ref="Methane"/>
+    </material>
+
+    <material name="Beam_mask_W">
+      <D type="density" unit="g/cm3" value="0.003"/>
+      <fraction n="0.951" ref="Tungsten"/>
+      <fraction n="0.017" ref="Copper"/>
+      <fraction n="0.032" ref="Ni"/>
+    </material>
+
+    <material name="RESIN_PRESSURE_BAG">
+      <D type="density" unit="g/cm3" value="1.200"/>
+      <fraction n="0.0718" ref="H"/>
+      <fraction n="0.7093" ref="C"/>
+      <fraction n="0.0243" ref="N"/>
+      <fraction n="0.1945" ref="O"/>
+    </material>
+
+    <!-- Wrong ???? -->
+    <material name="UPILEXGLUE">
+      <D type="density" unit="g/cm3" value="0.003"/>
+      <fraction n="0.3349" ref="C"/>
+      <fraction n="0.6651" ref="O"/>
+    </material>
+
+  </materials>
+</lccdd>

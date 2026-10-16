@@ -58,7 +58,11 @@ C     Handed fix: gives bad results otherwise
       IF( NAME.EQ.'VPBO' .OR. NAME.EQ.'STUB' .OR. NAME.EQ.'SEQU' ) THEN
         MOTHER = '    '
       END IF
-      WRITE(TEXT,100) I, NAME, MOTHER, NMED, ISHAP(IS), KONLY
+      IF( KONLY.EQ.1 ) THEN
+        WRITE(TEXT,100) I, NAME, MOTHER, NMED, ISHAP(IS), 'ONLY'
+      ELSE
+        WRITE(TEXT,100) I, NAME, MOTHER, NMED, ISHAP(IS), 'MANY'
+      END IF
       DO J=1, NPAR
         WRITE(TEXT(LENOCC(TEXT)+1:), 102) PAR(J)
       END DO
@@ -71,7 +75,7 @@ C     Handed fix: gives bad results otherwise
      &  ', "mother": "',  (A), '"',
      &  ', "medium":',    I5,
      &  ', "shape": "',   (A), '"',
-     &  ', "only":',      I2,
+     &  ', "only": "',     A4, '"',
      &  ', "params": [ ' )
  102  FORMAT( F10.4, ',' )
  103  FORMAT( (A) )

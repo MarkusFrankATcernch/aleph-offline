@@ -21,55 +21,55 @@
     <vis name="Vis_ALEPH" alpha="0.2" r="0.5" g="0.5" b="0.5" showDaughters="true" visible="false"/>
 
 
-    <!-- ===============================================================================================================================================  -->
+    <!-- ========================================================================================================================================== -->
     <!-- Central detector region  -->
     <vis name="Vis_CDET" alpha="1.0" r="0.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>
 
-    <!-- ===============================================================================================================================================  -->
+    <!-- ========================================================================================================================================== -->
     <vis name="Vis_VDET" alpha="0.3" r="1.0" g="0.0" b="0.0" showDaughters="vis_vdet" visible="false"/>
     <!-- VDET logical walls  -->
     <vis name="Vis_VTUO" alpha="0.4" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="vis_vdet_layer"/>
     <vis name="Vis_VTUM" alpha="0.4" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="vis_vdet_layer"/>
     <vis name="Vis_VTUI" alpha="0.4" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="vis_vdet_layer"/>
     
-    <vis name="Vis_VDF1" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CSFLANGE -->
-    <vis name="Vis_VDF2" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CSFLANGE -->
-    <vis name="Vis_VDF3" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CSFLANGE -->
-    <vis name="Vis_VWSS" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CSFLANGE -->
+    <vis name="Vis_VDF1" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CSFLANGE                  -->
+    <vis name="Vis_VDF2" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CSFLANGE                  -->
+    <vis name="Vis_VDF3" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CSFLANGE                  -->
 
-    <vis name="Vis_VDC1" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CSCARD   -->
-    <vis name="Vis_VDC2" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CSCARD   -->
-    <vis name="Vis_VDC3" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CSCARD   -->
+    <vis name="Vis_VDC1" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CSCARD                    -->
+    <vis name="Vis_VDC2" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CSCARD                    -->
+    <vis name="Vis_VDC3" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CSCARD                    -->
 
-    <!-- Wafer substrate carriers -->
-    <vis name="Vis_VMBA" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR      -->
-    <vis name="Vis_VBCE" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CERAMIC  -->
-    <vis name="Vis_VBGL" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_GLUE     -->
-    <vis name="Vis_VBQU" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_QUARTZ   -->
-    <vis name="Vis_VBSI" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR      -->
-    <vis name="Vis_VSWA" alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="vis_vdet_wafer"/>    <!-- VDET_SILICON  -->
-    <vis name="Vis_VBMG" alpha="0.7" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_GLUE     --> 
+    <!-- Wafer substrate carriers                  -->
+    <vis name="Vis_VMBA" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR                       -->
+    <vis name="Vis_VBCE" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_CERAMIC                   -->
+    <vis name="Vis_VBQU" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_QUARTZ                    -->
+    <vis name="Vis_VBSI" alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>             <!-- VDET_AIR                       -->
+    <vis name="Vis_VBMG" alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_GLUE                      --> 
+    <vis name="Vis_VBGL" alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="vis_vdet_wafer"/>    <!-- VDET_GLUE                      -->
+    <vis name="Vis_VWSS" alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="vis_vdet_wafer"/>    <!-- VDET_SILICON                   -->
+    <vis name="Vis_VSWA" alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="vis_vdet_wafer"/>    <!-- VDET_SILICON                   -->
 
-    <vis name="Vis_VMSI" alpha="0.7" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>             <!-- VDET_AIR      -->
-    <vis name="Vis_VFSI" alpha="0.7" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>             <!-- VDET_AIR      -->
+    <vis name="Vis_VMSI" alpha="0.7" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>             <!-- VDET_AIR                       -->
+    <vis name="Vis_VFSI" alpha="0.1" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>             <!-- VDET_AIR                       -->
 
-    <vis name="Vis_VFPB" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR      -->
-    <vis name="Vis_VMES" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR      -->
-    <vis name="Vis_VMEO" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR      -->
-    <vis name="Vis_VOUP" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR      -->
-    <vis name="Vis_VOKE" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR      -->
-    <vis name="Vis_VKAI" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR      -->
-    <vis name="Vis_VOPI" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR      -->
-    <vis name="Vis_VDAI" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR      -->
-    <vis name="Vis_VRAI" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR      -->
-    <vis name="Vis_VLOC" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR      -->
+    <vis name="Vis_VFPB" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR                       -->
+    <vis name="Vis_VMES" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR                       -->
+    <vis name="Vis_VMEO" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR                       -->
+    <vis name="Vis_VOUP" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR                       -->
+    <vis name="Vis_VOKE" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR                       -->
+    <vis name="Vis_VKAI" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR                       -->
+    <vis name="Vis_VOPI" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR                       -->
+    <vis name="Vis_VDAI" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR                       -->
+    <vis name="Vis_VRAI" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR                       -->
+    <vis name="Vis_VLOC" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_AIR                       -->
 
-    <vis name="Vis_VKEV" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_KEVLAR   -->
-    <vis name="Vis_VKGL" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_KEVLARGLUE -->
+    <vis name="Vis_VKEV" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_KEVLAR                    -->
+    <vis name="Vis_VKGL" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_KEVLARGLUE                -->
 
-    <vis name="Vis_VDKI" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_PITCH    -->
+    <vis name="Vis_VDKI" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_vdet_infra"/>    <!-- VDET_PITCH                     -->
 
-    <vis name="Vis_VDTU" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_WATER    -->
+    <vis name="Vis_VDTU" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="false"/>             <!-- VDET_WATER                     -->
 
     <vis name="Vis_VFPE" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="vis_vdet_infra"/>
     <vis name="Vis_VEMX" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="vis_vdet_infra"/>
@@ -89,55 +89,55 @@
     <vis name="Vis_VLTR" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="vis_vdet_infra"/>
     <vis name="Vis_VLBX" alpha="0.7" r="0.7" g="0.3" b="0.3" showDaughters="true" visible="vis_vdet_infra"/>
 
-    <!-- ===============================================================================================================================================  -->
-    <!-- ITC envelope  -->
-    <vis name="Vis_ITND" alpha="0.2" r="0.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>           <!-- AIR_INSIDE_FIELD -->
-    <vis name="Vis_ITCR" alpha="0.2" r="0.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>           <!-- AIR_INSIDE_FIELD -->
-    <vis name="Vis_ITWI" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ITC_inner_wall   -->
-    <vis name="Vis_ITWO" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ITC_outer_wall   -->
-    <vis name="Vis_ITC"  alpha="0.3" r="0.0" g="0.0" b="0.9" showDaughters="true" visible="vis_itc_gas"/>     <!-- TC_wires_&_gas   -->
-    <vis name="Vis_ITEL" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ITC_electronics  -->
-    <vis name="Vis_ITCA" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ITC_cables       -->
-    <vis name="Vis_ITEP" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ALUMINIUM        -->
-    <vis name="Vis_ITRG" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ALUMINIUM        -->
-    <vis name="Vis_ITSP" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ALUMINIUM        -->
-    <vis name="Vis_ITSU" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ALUMINIUM        -->
+    <!-- ========================================================================================================================================== -->
+    <!-- ITC envelope                 -->
+    <vis name="Vis_ITND" alpha="0.2" r="0.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>           <!-- AIR_INSIDE_FIELD                 -->
+    <vis name="Vis_ITCR" alpha="0.2" r="0.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>           <!-- AIR_INSIDE_FIELD                 -->
+    <vis name="Vis_ITWI" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ITC_inner_wall                   -->
+    <vis name="Vis_ITWO" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ITC_outer_wall                   -->
+    <vis name="Vis_ITC"  alpha="0.3" r="0.0" g="0.0" b="0.9" showDaughters="true" visible="vis_itc_gas"/>     <!-- TC_wires_&_gas                   -->
+    <vis name="Vis_ITEL" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ITC_electronics                  -->
+    <vis name="Vis_ITCA" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ITC_cables                       -->
+    <vis name="Vis_ITEP" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ALUMINIUM                        -->
+    <vis name="Vis_ITRG" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ALUMINIUM                        -->
+    <vis name="Vis_ITSP" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ALUMINIUM                        -->
+    <vis name="Vis_ITSU" alpha="0.2" r="0.1" g="0.2" b="0.6" showDaughters="true" visible="vis_itc_infra"/>   <!-- ALUMINIUM                        -->
 
-    <!-- ===============================================================================================================================================  -->
-    <!-- TPC envelope  -->
-    <vis name="Vis_TPC"  alpha="0.2" r="0.8" g="0.8" b="0.0" showDaughters="true" visible="vis_tpc_gas"/>     <!-- TPC_GAS_medium     -->
-    <vis name="Vis_TPHF" alpha="0.2" r="0.8" g="0.8" b="0.0" showDaughters="true" visible="vis_tpc_gas"/>     <!-- TPC_GAS_medium     -->
-    <vis name="Vis_TPWO" alpha="0.9" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_OUTER_WALL_med -->
-    <vis name="Vis_TPWI" alpha="0.9" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_inner_wall_med -->
-    <vis name="Vis_TPCR" alpha="0.6" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!--  -->
-    <vis name="Vis_TPWR" alpha="0.6" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!--  -->
-    <vis name="Vis_TPEP" alpha="1.0" r="0.9" g="0.9" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TP_ENDPLATE_VOLUME   -->
-    <vis name="Vis_TPIS" alpha="1.0" r="0.9" g="0.9" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_INNERCAGE_SUPPOR -->
-    <vis name="Vis_TPRC" alpha="1.0" r="0.9" g="0.9" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_resistor_chain   -->
-    <vis name="Vis_TPMB" alpha="1.0" r="0.9" g="0.9" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_MYLAR_MEMBRANE   -->
-    <vis name="Vis_TPMG" alpha="1.0" r="0.9" g="0.9" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_MYLAR_MEMBRANE   -->
-    <vis name="Vis_TPMO" alpha="1.0" r="0.9" g="0.9" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_Mylar_outer_sup  -->
+    <!-- ========================================================================================================================================== -->
+    <!-- TPC envelope                 -->
+    <vis name="Vis_TPC"  alpha="0.2" r="0.8" g="0.8" b="0.0" showDaughters="true" visible="vis_tpc_gas"/>     <!-- TPC_GAS_medium                   -->
+    <vis name="Vis_TPHF" alpha="0.2" r="0.8" g="0.8" b="0.0" showDaughters="true" visible="vis_tpc_gas"/>     <!-- TPC_GAS_medium                   -->
+    <vis name="Vis_TPWO" alpha="0.9" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_OUTER_WALL_med               -->
+    <vis name="Vis_TPWI" alpha="0.9" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_inner_wall_med               -->
+    <vis name="Vis_TPCR" alpha="0.6" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!--                 -->
+    <vis name="Vis_TPWR" alpha="0.6" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!--                 -->
+    <vis name="Vis_TPEP" alpha="1.0" r="0.9" g="0.9" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TP_ENDPLATE_VOLUME               -->
+    <vis name="Vis_TPIS" alpha="1.0" r="0.9" g="0.9" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_INNERCAGE_SUPPOR             -->
+    <vis name="Vis_TPRC" alpha="1.0" r="0.9" g="0.9" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_resistor_chain               -->
+    <vis name="Vis_TPMB" alpha="1.0" r="0.9" g="0.9" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_MYLAR_MEMBRANE               -->
+    <vis name="Vis_TPMG" alpha="1.0" r="0.9" g="0.9" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_MYLAR_MEMBRANE               -->
+    <vis name="Vis_TPMO" alpha="1.0" r="0.9" g="0.9" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_Mylar_outer_sup              -->
 
-    <!-- TPC frame: inner rings  -->
-    <vis name="Vis_TPMI" alpha="0.6" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_Mylar_inner_sup  -->
-    <vis name="Vis_TPR1" alpha="0.6" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!--  -->
-    <vis name="Vis_TPR2" alpha="0.6" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!--  -->
-    <vis name="Vis_TPR3" alpha="0.6" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!--  -->
-    <vis name="Vis_TM11" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors          -->
-    <vis name="Vis_TM12" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors          -->
-    <vis name="Vis_TM13" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors          -->
-    <vis name="Vis_TM21" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors          -->
-    <vis name="Vis_TM22" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors          -->
-    <vis name="Vis_TM23" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors          -->
-    <vis name="Vis_TM31" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors          -->
-    <vis name="Vis_TM32" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors          -->
-    <vis name="Vis_TM33" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors          -->
-    <vis name="Vis_TM41" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors          -->
-    <vis name="Vis_TM42" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors          -->
-    <vis name="Vis_TM43" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors          -->
+    <!-- TPC frame: inner rings                 -->
+    <vis name="Vis_TPMI" alpha="0.6" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_Mylar_inner_sup              -->
+    <vis name="Vis_TPR1" alpha="0.6" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!--                 -->
+    <vis name="Vis_TPR2" alpha="0.6" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!--                 -->
+    <vis name="Vis_TPR3" alpha="0.6" r="0.7" g="0.7" b="0.2" showDaughters="true" visible="vis_tpc_infra"/>   <!--                 -->
+    <vis name="Vis_TM11" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors                      -->
+    <vis name="Vis_TM12" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors                      -->
+    <vis name="Vis_TM13" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors                      -->
+    <vis name="Vis_TM21" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors                      -->
+    <vis name="Vis_TM22" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors                      -->
+    <vis name="Vis_TM23" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors                      -->
+    <vis name="Vis_TM31" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors                      -->
+    <vis name="Vis_TM32" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors                      -->
+    <vis name="Vis_TM33" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors                      -->
+    <vis name="Vis_TM41" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors                      -->
+    <vis name="Vis_TM42" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors                      -->
+    <vis name="Vis_TM43" alpha="0.9" r="0.4" g="0.4" b="0.0" showDaughters="true" visible="vis_tpc_infra"/>   <!-- TPC_mirrors                      -->
 
-    <!-- ===============================================================================================================================================  -->
-    <!-- ECAL calorimeter                                                                                                                                 -->
+    <!-- ========================================================================================================================================== -->
+    <!-- ECAL calorimeter                                                                                                                           -->
     <vis name="Vis_ECBL" alpha="0.0" r="0.0" g="0.0" b="0.0" showDaughters="vis_ecal" visible="false"/>
     <vis name="Vis_ECEA" alpha="0.0" r="0.0" g="0.0" b="0.0" showDaughters="vis_ecal" visible="false"/>
     <vis name="Vis_ECEB" alpha="0.0" r="0.0" g="0.0" b="0.0" showDaughters="vis_ecal" visible="false"/>
@@ -195,7 +195,7 @@
     <vis name="Vis_ETHF" alpha="0.5" r="0.2" g="0.8" b="0.2" showDaughters="true" visible="vis_ecal"/>
     <vis name="Vis_ECNE" alpha="1" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="vis_ecal"/>
 
-    <!-- ===============================================================================================================================================  -->
+    <!-- ========================================================================================================================================== -->
     <!-- LCAL calorimeter  -->
     <vis name="Vis_LCEA" alpha="1.0" r="1.0" g="0.0" b="1.0" showDaughters="vis_lcal" visible="false"/>
     <vis name="Vis_LCEB" alpha="1.0" r="1.0" g="0.0" b="1.0" showDaughters="vis_lcal" visible="false"/>
@@ -219,7 +219,7 @@
     <vis name="Vis_LSCP" alpha="0.7" r="1.0" g="0.0" b="1.0" showDaughters="true" visible="vis_lcal"/>
     <vis name="Vis_LEAD" alpha="0.1" r="1.0" g="0.0" b="1.0" showDaughters="true" visible="vis_lcal"/>
 
-    <!-- ===============================================================================================================================================  -->
+    <!-- ========================================================================================================================================== -->
     <!-- SiCAL calorimeter  -->
     <vis name="Vis_SCAL" alpha="1.0" r="0.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>       <!-- SCAL_VOLUME (AIR)  -->
     <vis name="Vis_STOP" alpha="1.0" r="0.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>       <!-- SCAL_VOLUME (AIR)  -->
@@ -262,8 +262,8 @@
     <vis name="Vis_SINX" alpha="0.6" r="0.7" g="0.4" b="0.4" showDaughters="true" visible="vis_scal_infra"/>
     <vis name="Vis_SLLA" alpha="1.0" r="0.7" g="0.4" b="0.4" showDaughters="true" visible="vis_scal_infra"/>
 
-    <!-- ======================================================================================================================================  -->
-    <!-- SAMBA                                                                                                                                   -->
+    <!-- ======================================================================================================================================     -->
+    <!-- SAMBA                                                                                                                                      -->
     <vis name="Vis_SMBA" alpha="1.0" r="0.2" g="0.8" b="0.3" showDaughters="true" visible="vis_samba"/>
     <vis name="Vis_SMCH" alpha="1.0" r="0.2" g="0.8" b="0.3" showDaughters="true" visible="vis_samba"/>
     <vis name="Vis_SMCP" alpha="1.0" r="0.2" g="0.8" b="0.3" showDaughters="true" visible="vis_samba"/>
@@ -272,27 +272,27 @@
     <vis name="Vis_SMIN" alpha="1.0" r="0.2" g="0.8" b="0.3" showDaughters="true" visible="vis_samba"/>
     <vis name="Vis_SMEL" alpha="0.9" r="0.2" g="0.8" b="0.3" showDaughters="true" visible="vis_samba"/>
 
-    <!-- ======================================================================================================================================  -->
-    <!-- HCAL                                                                                                                                    -->
-    <vis name="Vis_HCBL" alpha="0.0" r="0.0" g="0.0" b="0.0" showDaughters="vis_hcal_barrel" visible="false"/>            <!-- HADRON_BL__REGION -->
-    <vis name="Vis_HCEA" alpha="0.0" r="0.0" g="0.0" b="0.0" showDaughters="vis_hcal_endcap" visible="false"/>            <!-- HADRON_EC__REGION -->
-    <vis name="Vis_HCEB" alpha="0.0" r="0.0" g="0.0" b="0.0" showDaughters="vis_hcal_endcap" visible="false"/>            <!-- HADRON_EC__REGION -->
+    <!-- ======================================================================================================================================     -->
+    <!-- HCAL                                                                                                                                       -->
+    <vis name="Vis_HCBL" alpha="0.0" r="0.0" g="0.0" b="0.0" showDaughters="vis_hcal_barrel" visible="false"/>            <!-- HADRON_BL__REGION    -->
+    <vis name="Vis_HCEA" alpha="0.0" r="0.0" g="0.0" b="0.0" showDaughters="vis_hcal_endcap" visible="false"/>            <!-- HADRON_EC__REGION    -->
+    <vis name="Vis_HCEB" alpha="0.0" r="0.0" g="0.0" b="0.0" showDaughters="vis_hcal_endcap" visible="false"/>            <!-- HADRON_EC__REGION    -->
 
-    <vis name="Vis_HBAL" alpha="0.2" r="0.7" g="0.0" b="0.0" showDaughters="true" visible="true"/>                        <!-- HCAL_CALO_VOLUME  -->
-    <vis name="Vis_HBAR" alpha="0.5" r="0.7" g="0.0" b="0.0" showDaughters="true" visible="true"/>                        <!-- HCAL_CALO_VOLUME  -->
-    <vis name="Vis_HBMO" alpha="0.7" r="0.9" g="0.0" b="0.2" showDaughters="true" visible="true"/>                        <!-- HCAL_IRON  -->
+    <vis name="Vis_HBAL" alpha="0.2" r="0.7" g="0.0" b="0.0" showDaughters="true" visible="true"/>                        <!-- HCAL_CALO_VOLUME     -->
+    <vis name="Vis_HBAR" alpha="0.5" r="0.7" g="0.0" b="0.0" showDaughters="true" visible="true"/>                        <!-- HCAL_CALO_VOLUME     -->
+    <vis name="Vis_HBMO" alpha="0.7" r="0.9" g="0.0" b="0.2" showDaughters="true" visible="true"/>                        <!-- HCAL_IRON            -->
 
-    <vis name="Vis_HCPA" alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>                        <!-- HCAL_CALO_VOLUME  -->
-    <vis name="Vis_HCPB" alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>                        <!-- HCAL_CALO_VOLUME  -->
-    <vis name="Vis_HCMA" alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>                        <!-- HCAL_CALO_VOLUME  -->
-    <vis name="Vis_HCMB" alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>                        <!-- HCAL_CALO_VOLUME  -->
+    <vis name="Vis_HCPA" alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>                        <!-- HCAL_CALO_VOLUME     -->
+    <vis name="Vis_HCPB" alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>                        <!-- HCAL_CALO_VOLUME     -->
+    <vis name="Vis_HCMA" alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>                        <!-- HCAL_CALO_VOLUME     -->
+    <vis name="Vis_HCMB" alpha="1.0" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>                        <!-- HCAL_CALO_VOLUME     -->
 
-    <vis name="Vis_HBME" alpha="0.9" r="0.9" g="0.2" b="0.2" showDaughters="true" visible="true"/>                        <!-- HCAL_IRON  -->
-    <vis name="Vis_HBN1" alpha="0.9" r="0.9" g="0.2" b="0.2" showDaughters="true" visible="true"/>                        <!-- CABLES_IN_NOTCHES -->
-    <vis name="Vis_HBN2" alpha="0.9" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="true"/>                        <!-- HCAL_CALO_VOLUME  -->
+    <vis name="Vis_HBME" alpha="0.9" r="0.9" g="0.2" b="0.2" showDaughters="true" visible="true"/>                        <!-- HCAL_IRON            -->
+    <vis name="Vis_HBN1" alpha="0.9" r="0.9" g="0.2" b="0.2" showDaughters="true" visible="true"/>                        <!-- CABLES_IN_NOTCHES    -->
+    <vis name="Vis_HBN2" alpha="0.9" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="true"/>                        <!-- HCAL_CALO_VOLUME     -->
 
-    <vis name="Vis_HCME" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="true"/>                        <!-- HCAL_IRON         -->
-    <vis name="Vis_HCMO" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="true"/>                        <!-- HCAL_IRON         -->
+    <vis name="Vis_HCME" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="true"/>                        <!-- HCAL_IRON            -->
+    <vis name="Vis_HCMO" alpha="0.7" r="0.2" g="0.2" b="0.2" showDaughters="true" visible="true"/>                        <!-- HCAL_IRON            -->
     <vis name="Vis_HCLA" alpha="1.0" r="0.7" g="0.0" b="0.1" showDaughters="true" visible="true"/>                        <!-- HCAL_HSTREAMER_TUBES -->
 
     <vis name="Vis_HBLA" alpha="1.0" r="0.7" g="0.0" b="0.2" showDaughters="true" visible="true"/>                        <!-- HCAL_HSTREAMER_TUBES -->
@@ -302,12 +302,12 @@
     <!-- =========================================================================================================================================  -->
     <!-- MUON chambers: Switch off children to make barrel/endcaps invisible  -->
     <vis name="Vis_MUON" alpha="0.0" r="0.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>                       <!-- MUON_______REGION       material: AIR -->
-    <!-- MUON barrel                                                                                                                                      -->
+    <!-- MUON barrel                                                                                                                                -->
     <vis name="Vis_MUBO" alpha="0.1" r="0.0" g="0.0" b="0.0" showDaughters="vis_muon_barrel" visible="false"/>            <!-- AIR_OUTSIDE_FIELD       material: AIR -->
     <vis name="Vis_MUB1" alpha="0.9" r="1.0" g="0.8" b="0.5" showDaughters="true" visible="true"/>                        <!-- MUON_SENSITIVE_GAS      material: AIR -->
     <vis name="Vis_MUB2" alpha="0.9" r="1.0" g="0.8" b="0.5" showDaughters="true" visible="true"/>                        <!-- MUON_SENSITIVE_GAS      material: AIR -->
 
-    <!-- MUON endcap A/B                                                                                                                                  -->
+    <!-- MUON endcap A/B                                                                                                                            -->
     <vis name="Vis_MUEA" alpha="1.0" r="1.0" g="0.8" b="0.5" showDaughters="vis_muon_endcap" visible="false"/>            <!-- AIR_OUTSIDE_FIELD       material: AIR -->
     <vis name="Vis_MUEB" alpha="1.0" r="1.0" g="0.8" b="0.5" showDaughters="vis_muon_endcap" visible="false"/>            <!-- AIR_OUTSIDE_FIELD       material: AIR -->
     <vis name="Vis_MMIA" alpha="1.0" r="0.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>                       <!-- AIR_OUTSIDE_FIELD       material: AIR -->
@@ -325,9 +325,9 @@
     <vis name="Vis_MCOB" alpha="1.0" r="0.0" g="0.0" b="0.0" showDaughters="true" visible="false"/>                       <!-- AIR_OUTSIDE_FIELD       material: AIR -->
     <vis name="Vis_MUC1" alpha="1.0" r="1.0" g="0.8" b="0.5" showDaughters="true" visible="true"/>                        <!-- MUON_SENSITIVE_GAS      material: AIR -->
     <vis name="Vis_MUC2" alpha="1.0" r="1.0" g="0.8" b="0.5" showDaughters="true" visible="true"/>                        <!-- MUON_SENSITIVE_GAS      material: AIR -->
-    <!-- ===============================================================================================================================================  -->
+    <!-- ========================================================================================================================================== -->
 
-    <!-- ===============================================================================================================================================  -->
+    <!-- ========================================================================================================================================== -->
     <!-- BeamPipe    -->
     <vis name="Vis_BTUB" alpha="0.9" r="0.5" g="0.5" b="0.5" showDaughters="vis_beampipe" visible="false"/>
     <vis name="Vis_BTUP" alpha="0.9" r="0.5" g="0.5" b="0.5" showDaughters="vis_beampipe" visible="false"/>

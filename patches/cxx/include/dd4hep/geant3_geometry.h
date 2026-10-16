@@ -62,6 +62,8 @@ namespace dd4hep   {
     using params_t = std::vector<double>;
 
   public:
+
+    // 
     enum processing_steps_t  {
       PROCESSING_STARTING,
       PROCESSING_MATERIALS,
@@ -71,26 +73,63 @@ namespace dd4hep   {
       PROCESSING_PLACEMENTS,
       PROCESSING_FINISHED,
     };
-    Detector& description;
-    std::map<int32_t, PlacedVolume>    placements;
-    std::map<std::string, Volume>      volumes;
-    std::map<std::string, TGeoVolume*> divisions;
-    std::map<int, Rotation3D>          rotations;
-    std::map<int, Material>            media;
 
-    bool debug_materials             { false };
-    bool debug_media                 { false };
-    bool debug_placements            { false };
+    //
+    struct det_def {
+      std::string name, parent, sensitive, item, volid;
+      int         id;
+    };
+    using det_defs = std::map<std::string, det_def>;
+
+    Detector& description;
+    std::map<int32_t, PlacedVolume>    placements            {         };
+    std::map<std::string, Volume>      volumes               {         };
+    std::map<std::string, TGeoVolume*> divisions             {         };
+    std::map<int, Rotation3D>          rotations             {         };
+    std::map<int, Material>            media                 {         };
+    std::map<int, std::string>         materials             {         };
+
+    std::string                        debug_detector        {         };
+    bool                               debug_materials       {   false };
+    bool                               debug_media           {   false };
+    bool                               debug_volumes         {   false };
+    bool                               debug_placements      {   false };
+    bool                               debug_divisions       {   false };
+    bool                               debug_structure       {   false };
+    bool                               debug_enhancements    {   false };
+    bool                               debug_sensitive       {   false };
+    
     int32_t processing_step          { PROCESSING_STARTING };
+
+    Detector::PropertyValues           material_aliases      {         };
+    
+    det_defs                           detelement_placements {         };
+    det_defs                           detelement_volumes    {         };
+    std::map<std::string,std::string>  sensitive_volumes     {         };
+    /// Get the DetElement parent from the path
+    DetElement get_detelement_parent(const std::string& )  const;
+    /// Add DetElement to structure tree
+    void add_detelement(const det_def& def, PlacedVolume pv)  const;
+    /// Set volume sensitive
+    void set_sensitive( const std::string& sens_det, PlacedVolume pv )  const;
+    /// Enhance PlaceVolume
+    void enhance(const std::string& path, PlacedVolume node)  const;
 
 
   public:
+    /// Determine debug mode for a given subdetectors
+    bool have_debug(char val)  const  {
+      return debug_detector.find(::toupper(val)) != std::string::npos;
+    }
 
     /// Create copy of an existing solid with new parameters
     Solid create_solid( const TClass* type, const params_t& params);
     
+    /// Check if material is supposed to be aliased
+    bool have_material_alias(const std::string& name)  const;
+
     /// Access material to build volumes
-    Material get_material(const std::string& name)  const;
+    Material get_medium(const std::string& name)  const;
                      
     /// Add rotation matrix to build placement transformations
     void add_rotation(         int32_t index, const Rotation3D& rotation );
@@ -122,7 +161,8 @@ namespace dd4hep   {
     void add_volume(           int32_t            index,
                                const std::string& name,
                                const std::string& material,
-                               Solid              solid);
+                               Solid              solid,
+                               const std::string& option);
 
     /// Add volume medium to geometry inventory
     void add_placement(        int32_t            index,
@@ -131,7 +171,9 @@ namespace dd4hep   {
                                int32_t            copy_nr,
                                const Position&    position,
                                int32_t            index_rotation,
-                               const params_t&    params);
+                               const params_t&    params,
+                               const std::string& option);
+    
     /// Add volume division to geometry inventory
     void add_division(         const std::string& name,
                                const std::string& volume,
@@ -143,7 +185,7 @@ namespace dd4hep   {
                                const char*        opt);
 
   public:
-    /// Default constructor
+    /// Initializing constructor
     geant3_geometry(Detector& desc);
     
     /// Default destructor
@@ -182,7 +224,7 @@ namespace dd4hep   {
    */
   class geant3_geometry_imp : public geant3_geometry  {
   public:
-    /// Default constructor
+    /// Initializing constructor
     geant3_geometry_imp(Detector& desc);
     /// Default destructor
     virtual ~geant3_geometry_imp();

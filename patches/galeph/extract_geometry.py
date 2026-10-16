@@ -130,6 +130,7 @@ class volume:
     self.shape      = _trim(data['shape'])
     self.idx_medium = data['medium']
     self.params     = data['params']
+    self.option     = data['only']
 
   def medium(self):
     return self.geometry.medium[self.idx_medium]
@@ -150,6 +151,7 @@ class placement:
     self.ind_rot   = data['rotation']
     self.copy_no   = data['copy']
     self.params    = data['params']
+    self.option    = data['only']
     self.position  = (data['x'], data['y'], data['z'])
     self.code      = ''
 
@@ -244,10 +246,10 @@ class dd4hep_geometry:
     open_bracket  = '{'
     close_bracket = '}'
     for idx, vol in self.geant3_geo.volumes.items():
-      typ    = vol.shape
-      shape  = 'None'
-      error  = None
-      name   = vol.name + '_solid'
+      typ   = vol.shape
+      shape = 'None'
+      error = None
+      name  = vol.name + '_solid'
       if typ == 'BOX':
         shape = f'dd4hep::Box( std::string("{name}"), {vol.params[0]}*units::cm, {vol.params[1]}*units::cm, {vol.params[2]}*units::cm )'
       elif typ == 'TUBE':  #      Geant3 parameters:  rmin, rmax, dz
@@ -410,9 +412,10 @@ class dd4hep_geometry:
       medium = _trim(volume['medium'])
       index  = volume['g3'].index
       shape  = volume['shape']
+      opt    = _trim(volume['g3'].option)
       code = '\n' + \
              f'  solid = {shape}; \n' +\
-             f'  this->add_volume( {index}, "{name}", "{medium}", solid);'
+             f'  this->add_volume( {index}, "{name}", "{medium}", solid, "{opt}");'
       volume['code'] = code
       self.write_code( code )
     self.write_code( '} /// End geant3_geometry_imp::handle_volumes  \n\n' )
@@ -435,8 +438,8 @@ class dd4hep_geometry:
       y = str(place.position[1]) + '*units::cm'
       z = str(place.position[2]) + '*units::cm'
       code = code + \
-             f'  this->add_placement({place.index}, "{_trim(place.mother)}", "{_trim(place.name)}", {place.copy_no},' +\
-             f' dd4hep::Position({x},{y},{z}), {place.ind_rot}, params);'
+             f'  this->add_placement({place.index}, "{_trim(place.mother)}", "{_trim(place.name)}", {place.copy_no},' + \
+             f' dd4hep::Position({x},{y},{z}), {place.ind_rot}, params, "{_trim(place.option)}");'
       self.write_code( code )
     self.write_code( '} /// End geant3_geometry_imp::handle_placements  \n\n' )
     return self
@@ -456,7 +459,7 @@ class dd4hep_geometry:
     return self
 
 # =========================================================================================
-import pdb, argparse
+import argparse
 parser = argparse.ArgumentParser(allow_abbrev=False,
                                  prog='extract_geant3_geometry',
                                  formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -503,7 +506,10 @@ lines = open(geometry_file, 'r').readlines()
 
 aleph_geometry = geant3_geometry()
 
-#pdb.set_trace()
+if args.debug:
+  import pdb
+  pdb.set_trace()
+  
 num_err = 0
 for line in lines:
   if line.find('aleph_geometry.add') >= 0:

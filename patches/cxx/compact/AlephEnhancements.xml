@@ -1,0 +1,170 @@
+<!--
+//==========================================================================
+//  ALEPH software suite
+//==========================================================================
+//  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+//  All rights reserved.
+//
+//  For the licensing terms see OnlineSys/LICENSE.
+//
+//==========================================================================
+//
+//  Author     : Markus Frank
+//==========================================================================
+-->
+<geant3_geometry_enhancements>
+
+  <debug>
+    <!--
+    <detector name="VDET"/>
+    <adetector name="TPC"/>
+    <adetector name="ECal"/>
+    <adetector name="HCal"/>
+    <materials value="true"/>
+    -->
+    <structure value="true"/>
+    <sensitive value="true"/>
+  </debug>
+  
+  <materials>
+    <material name="ALUMINIUM"                 value="Aluminum"/>
+    <material name="BERILLIUM"                 value="Beryllium"/>
+    <material name="COPPER"                    value="Copper"/>
+    <material name="INOX"                      value="Iron"/>
+    <material name="IRON"                      value="Iron"/>
+    <material name="LEAD"                      value="Lead"/>
+    <material name="QUARTZ"                    value="Quartz"/>
+    <material name="SILICON"                   value="Silicon"/>
+    <material name="TUNGSTEN"                  value="Tungsten"/>
+    <material name="WATER"                     value="Water"/>
+    <material name="G10_PC_BOARD"              value="G10"/>
+    
+    <material name="VACUUM"                    value="Vacuum"/>
+    <material name="VACUUM_IN_PIPE_MED"        value="Vacuum"/>
+    <material name="BEAM_VACUUM__MED"          value="Vacuum"/>
+    <material name="BERIL._PIPE__MED"          value="Beryllium"/>
+    <material name="ALU_PARTS____MED"          value="Aluminum"/>
+    <material name="TUNGSTEN_____MED"          value="Tungsten"/>
+
+    <material name="VDET_AIR"                  value="Air"/>
+    <material name="VDET_SILICON"              value="Silicon"/>
+    <material name="VDET_QUARTZ"               value="Quartz"/>
+    <material name="VDET_WATER"                value="Water"/>
+
+    <material name="TPC_G10_reinf_ring"        value="G10"/>
+
+    <material name="SICAL_AIR"                 value="Air"/>
+    <material name="SCAL_G10"                  value="G10"/>
+    <material name="SCAL_SILICIUM"             value="Air"/>
+    <material name="SCAL_LEAD_TUBE"            value="Lead"/>
+    <material name="SCAL_AL_PLATE"             value="Aluminum"/>
+    <material name="SCAL_KAPTON"               value="Kapton"/>
+
+    <material name="LCAL_TUNGSTEN"             value="Tungsten"/>
+    <material name="LC_LEAD_SHIELD"            value="Lead"/>
+    <material name="LC_W_absorber"             value="Tungsten"/>
+    <material name="LC_CALO_VOLUME"            value="Air"/>
+    
+    <material name="TPC_Mylar_inner_sup"       value="Mylar"/>
+    <material name="TPC_Mylar_outer_sup"       value="Mylar"/>
+    <material name="TPC_MYLAR_MEMBRANE"        value="Mylar"/>
+    <material name="TPC_Rohacell_support"      value="Rohacell31"/>
+
+    <material name="EC_BARREL_REGION"          value="Air"/>
+    <material name="EC_ENDCAP_REGION"          value="Air"/>
+    <material name="EC_BARREL_VOLUME"          value="Air"/>
+    <material name="EC_ALU_FRAMES"             value="Aluminum"/>
+
+    <material name="HCAL_CALO_VOLUME"          value="Air"/>
+    <material name="HADRON_BL__REGION"         value="Air"/>
+    <material name="HADRON_EC__REGION"         value="Air"/>
+    <material name="HCAL_IRON"                 value="Iron"/>
+    <material name="LAST_IRON_PLATE_MEDI"      value="Iron"/>
+    <material name="HCAL_SENS._MATERIAL"       value="HCAL_gas"/>
+
+    <material name="MUON_______REGION"         value="Air"/>
+
+    <material name="AIR_OUTSIDE_FIELD"         value="Air"/>
+    <material name="AIR_IN_NON_UNIFORM_B"      value="Air"/>
+    <material name="COIL_REGION"               value="Air"/>
+
+    <material name="KEVLAR"                    value="Kevlar"/>
+
+    <material name="ITC_cables"                 value="UNDEFINED_MATERIAL"/>
+    <material name="ITC_electronics"            value="UNDEFINED_MATERIAL"/>
+    <material name="ITC_CABLES_AVERAGE"         value="UNDEFINED_MATERIAL"/>
+    <material name="TPC_Inner_cage_matte"       value="UNDEFINED_MATERIAL"/>
+    <material name="TPC_Outer_cage_matte"       value="UNDEFINED_MATERIAL"/>
+    <material name="TPC_HORIZONTAL_FEET"        value="UNDEFINED_MATERIAL"/>
+    <material name="TPC_res_chain_matter"       value="UNDEFINED_MATERIAL"/>
+    <material name="TPC_prism_matter"           value="UNDEFINED_MATERIAL"/>
+    <material name="TPC_mirror_matter"          value="UNDEFINED_MATERIAL"/>
+    <material name="TPC_ENDPLATE_MATTER"        value="UNDEFINED_MATERIAL"/>
+    <material name="TPC_VERTICAL__FEET"         value="UNDEFINED_MATERIAL"/>
+    <material name="TPC_CABLES_AVERAGE"         value="UNDEFINED_MATERIAL"/>
+    <material name="AVG_SAMBA_ELECT."           value="UNDEFINED_MATERIAL"/>
+    <material name="QUADR_TUBE_MATTER"          value="UNDEFINED_MATERIAL"/>
+    <material name="Beam_supp_disk"             value="UNDEFINED_MATERIAL"/>
+    <material name="GLASS_FIBER"                value="UNDEFINED_MATERIAL"/>
+    <material name="KEVLARGLUE"                 value="UNDEFINED_MATERIAL"/>
+    <material name="BEOGLUE"                    value="UNDEFINED_MATERIAL"/>
+    <material name="HYBRIDAU31"                 value="UNDEFINED_MATERIAL"/>
+    <material name="HYBRIDAU13"                 value="UNDEFINED_MATERIAL"/>
+    <material name="CSCARD"                     value="UNDEFINED_MATERIAL"/>
+    <material name="LCAL_NE110"                 value="UNDEFINED_MATERIAL"/>
+    <material name="LCAL_screws_front_pl"       value="UNDEFINED_MATERIAL"/>
+    <material name="LCAL_LIGHT_AVERAGE"         value="UNDEFINED_MATERIAL"/>
+    <material name="LCAL_DENSE_AVERAGE"         value="UNDEFINED_MATERIAL"/>
+    <material name="Samba_gas_&amp;_wir"        value="UNDEFINED_MATERIAL"/>
+    <material name="SCAL_CABLING_AVG"           value="UNDEFINED_MATERIAL"/>
+    <material name="SCAL_COOLING_AVG"           value="UNDEFINED_MATERIAL"/>
+    <material name="SCAL_W_THIN__AVG"           value="UNDEFINED_MATERIAL"/>
+    <material name="SCAL_W_THICK_AVG"           value="UNDEFINED_MATERIAL"/>
+    <material name="SCAL_WVERYTH_AVG"           value="UNDEFINED_MATERIAL"/>
+    <material name="SCAL_PASSIVE_AV1"           value="UNDEFINED_MATERIAL"/>
+    <material name="SCAL_PASSIVE_AV2"           value="UNDEFINED_MATERIAL"/>
+    <material name="SCAL_PASSIVE_AV3"           value="UNDEFINED_MATERIAL"/>
+    <material name="SCAL_PASSIVE_LAS"           value="UNDEFINED_MATERIAL"/>
+    <material name="ECAL_BL_PASSIVE_MAT"        value="UNDEFINED_MATERIAL"/>
+    <material name="END_STACK_AVERAGE"          value="UNDEFINED_MATERIAL"/>
+    <material name="EC_LIGHT_AVERAGE_BL"        value="UNDEFINED_MATERIAL"/>
+    <material name="EC_DENSE_AVERAGE_BL"        value="UNDEFINED_MATERIAL"/>
+    <material name="EC_LEFT+RIGHT_AVERAG"       value="UNDEFINED_MATERIAL"/>
+    <material name="EC_VERY_FIRST_LAYER"        value="UNDEFINED_MATERIAL"/>
+    <material name="EC_LIGHT_AVERAGE_EC"        value="UNDEFINED_MATERIAL"/>
+    <material name="EC_DENSE_AVERAGE_EC"        value="UNDEFINED_MATERIAL"/>
+    <material name="ECAL_PETAL_SUPPORT"         value="UNDEFINED_MATERIAL"/>
+    <material name="ECAP_BOTTOM_AVERAGE"        value="UNDEFINED_MATERIAL"/>
+    <material name="EC_ELEC._BOX_AVERAGE"       value="UNDEFINED_MATERIAL"/>
+    <material name="HCBL_PASSIVE_MATERIA"       value="UNDEFINED_MATERIAL"/>
+    <material name="HCAP_AVERAGE_MATTER"        value="UNDEFINED_MATERIAL"/>
+
+  </materials>
+  
+  <sensitives>
+    <volume name="VWSS" sensitive_detector="VDET"/>
+  </sensitives>
+  
+  <detectors>
+    <detector name="VDET"       id="1"   physvolid="system" placement="/ALEF_1/CDET_1/VDET_1" sensitive="tracker"/>
+    <detector name="ITC"        id="3"   physvolid="system" volume="ITCR" sensitive="tracker"/>
+    <detector name="TPC"        id="2"   physvolid="system" volume="TPCR" sensitive="tracker"/>
+    <detector name="ECALBarrel" id="4"   physvolid="system" volume="ECBL" sensitive="calorimeter"/>
+    <detector name="ECALEndA"   id="5"   physvolid="system" volume="ECEA" sensitive="calorimeter"/>
+    <detector name="ECALEndB"   id="6"   physvolid="system" volume="ECEB" sensitive="calorimeter"/>
+    <detector name="HCALBarrel" id="7"   physvolid="system" volume="HCBL" sensitive="calorimeter"/>
+    <detector name="HCALEndA"   id="8"   physvolid="system" volume="HCEA" sensitive="calorimeter"/>
+    <detector name="HCALEndB"   id="9"   physvolid="system" volume="HCEB" sensitive="calorimeter"/>
+    <detector name="MUON"       id="10"  physvolid="system" volume="MUON" sensitive="tracker"/>
+    <detector name="SiCALEndA"  id="21"  physvolid="system" placement="/ALEF_1/ECEA_1/SCAL_1" sensitive="tracker"/>
+    <detector name="SiCALEndB"  id="22"  physvolid="system" placement="/ALEF_1/ECEA_1/SCAL_1" sensitive="tracker"/>
+    <detector name="LCALEndA"   id="23"  physvolid="system" volume="LCEA" sensitive="tracker"/>
+    <detector name="LCALEndB"   id="24"  physvolid="system" volume="LCEB" sensitive="tracker"/>
+    <detector name="BeamTube"   id="100" physvolid="system" volume="BTUB"/>
+
+    <detector name="Gas"        id="1"   physvolid="gas"  placement="/ALEF_1/CDET_1/ITCR_1/ITC_1"        sensitive="tracker"/>
+    <detector name="SideA"      id="1"   physvolid="side" placement="/ALEF_1/CDET_1/TPCR_1/TPC_1/TPHF_2" sensitive="tracker"/>
+    <detector name="SideB"      id="2"   physvolid="side" placement="/ALEF_1/CDET_1/TPCR_1/TPC_1/TPHF_1" sensitive="tracker"/>
+  </detectors>
+
+</geant3_geometry_enhancements>
