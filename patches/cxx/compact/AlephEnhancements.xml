@@ -20,8 +20,8 @@
     <adetector name="TPC"/>
     <adetector name="ECal"/>
     <adetector name="HCal"/>
-    <materials value="true"/>
     -->
+    <materials value="false"/>
     <structure value="true"/>
     <sensitive value="true"/>
   </debug>
@@ -146,7 +146,7 @@
   </sensitives>
   
   <detectors>
-    <detector name="VDET"       id="1"   physvolid="system" placement="/ALEF_1/CDET_1/VDET_1" sensitive="tracker"/>
+    <detector name="VDET"       id="1"   physvolid="system" placement="/ALEF_1/CDET_1/VDET_1" sensitive="tracker" readout="VDET"/>
     <detector name="ITC"        id="3"   physvolid="system" volume="ITCR" sensitive="tracker"/>
     <detector name="TPC"        id="2"   physvolid="system" volume="TPCR" sensitive="tracker"/>
     <detector name="ECALBarrel" id="4"   physvolid="system" volume="ECBL" sensitive="calorimeter"/>
@@ -156,15 +156,18 @@
     <detector name="HCALEndA"   id="8"   physvolid="system" volume="HCEA" sensitive="calorimeter"/>
     <detector name="HCALEndB"   id="9"   physvolid="system" volume="HCEB" sensitive="calorimeter"/>
     <detector name="MUON"       id="10"  physvolid="system" volume="MUON" sensitive="tracker"/>
+    
     <detector name="SiCALEndA"  id="21"  physvolid="system" placement="/ALEF_1/ECEA_1/SCAL_1" sensitive="tracker"/>
     <detector name="SiCALEndB"  id="22"  physvolid="system" placement="/ALEF_1/ECEA_1/SCAL_1" sensitive="tracker"/>
-    <detector name="LCALEndA"   id="23"  physvolid="system" volume="LCEA" sensitive="tracker"/>
-    <detector name="LCALEndB"   id="24"  physvolid="system" volume="LCEB" sensitive="tracker"/>
-    <detector name="BeamTube"   id="100" physvolid="system" volume="BTUB"/>
+    <detector name="LCALEndA"   id="23"  physvolid="system" placement="/ALEF_1/ECEB_1/LCEB_1" sensitive="tracker"/>
+    <detector name="LCALEndB"   id="24"  physvolid="system" placement="/ALEF_1/ECEA_1/LCEA_1" sensitive="tracker"/>
 
     <detector name="Gas"        id="1"   physvolid="gas"  placement="/ALEF_1/CDET_1/ITCR_1/ITC_1"        sensitive="tracker"/>
     <detector name="SideA"      id="1"   physvolid="side" placement="/ALEF_1/CDET_1/TPCR_1/TPC_1/TPHF_2" sensitive="tracker"/>
     <detector name="SideB"      id="2"   physvolid="side" placement="/ALEF_1/CDET_1/TPCR_1/TPC_1/TPHF_1" sensitive="tracker"/>
+
+    <detector name="BeamTube"   id="100" physvolid="system" volume="BTUB"/>
+
   </detectors>
 
 </geant3_geometry_enhancements>

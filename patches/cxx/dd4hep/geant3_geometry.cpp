@@ -13,16 +13,10 @@
 
 /// Framework include files
 #include <dd4hep/geant3_geometry.h>
-
 /// DD4hep include files
 #include <DD4hep/Printout.h>
-
 /// ROOT include files
-#include <TROOT.h>
-#include <TRint.h>
 #include <TClass.h>
-#include <TGeoVolume.h>
-
 /// C/C++ include files
 #include <iomanip>
 #include <memory>
@@ -419,14 +413,26 @@ void geant3_geometry::add_detelement(const det_def& def, PlacedVolume pv)  const
     pv.addPhysVolID( def.volid, def.id );
   }
   SensitiveDetector sd;
+  Readout ro;
   if( !def.sensitive.empty() )  {
     sd = SensitiveDetector( def.name );
     this->description.addSensitiveDetector( sd );
     sd.setType( def.sensitive );
+    if( !def.readout.empty() )  {
+      ro = this->description.readout( def.readout );
+      if( !ro.isValid() )  {
+        printout( ERROR, "geant3_geometry",
+                  "+++ Detector: %s Invalid readout object '%s'",
+                  def.name.c_str(), def.readout.c_str() );
+      }
+      sd.setReadout( ro );
+    }
   }
   printout( this->debug_structure ? ALWAYS : DEBUG, "geant3_geometry",
-            "+++ Assign DetElement '%s'. sensitive:%s placement:%s",
-            detector.path().c_str(), sd.isValid() ? sd.name() : "----",
+            "+++ Assign DetElement %-24s sensitive:%-12s readout:%-12s placement:%s",
+            detector.path().c_str(),
+            sd.isValid() ? sd.name() : "----",
+            ro.isValid() ? ro.name() : "----",
             detector.placementPath().c_str() );
 }
 
@@ -450,14 +456,17 @@ void geant3_geometry::enhance(const std::string& path, PlacedVolume node)  const
   std::string vnam = vol.name();
 
   auto iv = this->detelement_volumes.find(vnam);
-  if( iv != this->detelement_volumes.end() )
+  if( iv != this->detelement_volumes.end() )  {
     this->add_detelement( iv->second, node );
+  }
   auto ip = this->detelement_placements.find(path);      
-  if( ip != this->detelement_placements.end() )
+  if( ip != this->detelement_placements.end() )  {
     this->add_detelement( ip->second, node );
+  }
   auto is = this->sensitive_volumes.find(vnam);
-  if( is != this->sensitive_volumes.end() )
+  if( is != this->sensitive_volumes.end() )  {
     this->set_sensitive( is->second, node );
+  }
 }
 
 /// Initializing constructor
@@ -471,6 +480,9 @@ geant3_geometry_imp::~geant3_geometry_imp()  {
 }
 
 //==========================================================================
+/// ROOT include files
+#include <TROOT.h>
+#include <TRint.h>
 namespace alpha  {
 
   void instantiate_dd4hep_geometry(const std::string& compact)  {

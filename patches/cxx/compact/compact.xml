@@ -22,10 +22,16 @@
   </info>
 
   <debug>
-    <type name="constants"   value="0"/>
-    <type name="materials"   value="0"/>
-    <type name="includes"    value="1"/>
-    <type name="detelements" value="1"/>
+    <type name="includes"      value="1"/>
+    <type name="constants"     value="0"/>
+    <type name="isotopes"      value="0"/>
+    <type name="elements"      value="0"/>
+    <type name="materials"     value="0"/>
+    <type name="readouts"      value="1"/>
+    <type name="limits"        value="1"/>
+    <type name="segmentations" value="1"/>
+    <type name="surfaces"      value="0"/>
+    <type name="detelements"   value="1"/>
   </debug>
 
   <define>
@@ -41,6 +47,7 @@
     <file ref="AlephConstants.xml"/>
     <file ref="AlephMaterials.xml"/>
     <file ref="AlephVis.xml"/>
+    <!-- This include requires a special plugin  -->
     <file ref="AlephEnhancements.xml"/>
   </includes>
 
@@ -49,6 +56,29 @@
       <volume name="ALEF"/>
     </detector>
   </detectors>
+
+  <regions>
+    <region name="VDETregion" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="VDET"/>
+    </region>
+  </regions>
+
+  <readouts>
+    <readout name="VDET">
+      <id>system:8,barrel:3,layer:4,module:14,sensor:2,side:32:-2,strip:20</id>
+    </readout>        
+  </readouts>
+
+  <limits>
+    <limitset name="TPC">
+      <limit name="step_length_max" particles="*" value="5" unit="mm" />
+      <limit name="ekin_min"  particles="*" value="0.01" unit="MeV" />
+      <limit name="range_min" particles="*" value="5.0" unit="mm" />
+    </limitset>
+    <limitset name="VDET">
+      <limit name="ekin_min" particles="*" value="0.01" unit="MeV" />
+    </limitset>
+  </limits>
 
   <fields>
     <field name="GlobalSolenoid" type="solenoid" 
@@ -60,7 +90,7 @@
   </fields>
 
   <plugins>
-    <include ref="AlephPlugins.xml"/>
+    <include ref="AlephReadout.xml"/>
   </plugins>
 
 </lccdd>

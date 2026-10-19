@@ -25,7 +25,7 @@
 
 //==========================================================================
 namespace  {
-  dd4hep::geant3_geometry& geometry(dd4hep::Detector& dsc)  {
+  dd4hep::geant3_geometry& geometry( dd4hep::Detector& dsc )  {
     dd4hep::geant3_geometry* ext = dsc.extension<dd4hep::geant3_geometry>(false);
     if( nullptr == ext )  {
       auto* e = new dd4hep::geant3_geometry_imp(dsc);
@@ -38,11 +38,11 @@ namespace  {
 
 //==========================================================================
 static dd4hep::Ref_t
-geant3_geometry_create(dd4hep::Detector& description, xml_h e, dd4hep::Ref_t /* sens */)  {
+geant3_geometry_create( dd4hep::Detector& description, xml_h e, dd4hep::Ref_t /* sens */ )  {
   using namespace dd4hep;
-  geant3_geometry& geo = geometry(description);
+  geant3_geometry& geo = geometry( description );
   xml_det_t  x_det = e;
-  xml_comp_t volume (x_det.child(_U(volume)));
+  xml_comp_t volume ( x_det.child(_U(volume)) );
 
   geo.handle_divisions();
   geo.processing_step = geant3_geometry::PROCESSING_MATERIALS;
@@ -58,25 +58,25 @@ geant3_geometry_create(dd4hep::Detector& description, xml_h e, dd4hep::Ref_t /* 
   geo.handle_placements();
   geo.processing_step = geant3_geometry::PROCESSING_FINISHED;
   
-  auto im = geo.volumes.find(volume.nameStr());
+  auto im = geo.volumes.find( volume.nameStr() );
   if( im != geo.volumes.end() )  {
     Volume     vol = im->second;
     DetElement det( x_det.nameStr(), x_det.id() );
-    Volume     mother = description.pickMotherVolume(det);
+    Volume     mother = description.pickMotherVolume( det );
 
-    geo.description.manager().SetTopVolume(vol.ptr());
+    geo.description.manager().SetTopVolume( vol.ptr() );
     geo.description.init();
-    geo.description.endDocument("close");
-    PlacedVolume phv = mother.placeVolume(vol);
-    vol.setVisAttributes(description, x_det.visStr());
-    vol.setLimitSet(description, x_det.limitsStr());
-    vol.setRegion(description, x_det.regionStr());
-    det.setPlacement(phv);
+    geo.description.endDocument( "close" );
+    PlacedVolume phv = mother.placeVolume( vol );
+    vol.setVisAttributes( description, x_det.visStr() );
+    vol.setLimitSet( description, x_det.limitsStr() );
+    vol.setRegion( description, x_det.regionStr() );
+    det.setPlacement( phv );
     return det;
   }
-  except("geant3_geometry",
-         "Invalid world volume for this detector: %s",
-         volume.nameStr().c_str());
+  except( "geant3_geometry",
+          "Invalid world volume for this detector: %s",
+          volume.nameStr().c_str() );
   return {};
 }
 
@@ -93,15 +93,15 @@ namespace {
   struct debug;
 }
 namespace dd4hep {
-  template <> void Converter<sensitives>::operator()(xml_h e) const;
-  template <> void Converter<properties>::operator()(xml_h e) const;
-  template <> void Converter<material>::operator()(xml_h e) const;
-  template <> void Converter<detector>::operator()(xml_h e) const;
-  template <> void Converter<debug>::operator()(xml_h e) const;
+  template <> void Converter<sensitives>::operator()( xml_h e) const;
+  template <> void Converter<properties>::operator()( xml_h e) const;
+  template <> void Converter<material>::operator()( xml_h e) const;
+  template <> void Converter<detector>::operator()( xml_h e) const;
+  template <> void Converter<debug>::operator()( xml_h e) const;
 }
 
 /// Converter for material aliases
-template <> void dd4hep::Converter<material>::operator()(xml_h element) const {
+template <> void dd4hep::Converter<material>::operator()( xml_h element ) const {
   xml_comp_t c = element;
   auto& geo = this->_object<geant3_geometry>();
   geo.material_aliases.emplace( c.nameStr(), c.valueStr() );
@@ -111,7 +111,7 @@ template <> void dd4hep::Converter<material>::operator()(xml_h element) const {
 }
 
 /// Converter to declare sensitive elements
-template <> void dd4hep::Converter<sensitives>::operator()(xml_h element) const  {
+template <> void dd4hep::Converter<sensitives>::operator()( xml_h element ) const  {
   xml_comp_t  c = element;
   std::string nam = c.nameStr();
   std::string det = c.attr<std::string>(_U(sensitive_detector));
@@ -122,25 +122,26 @@ template <> void dd4hep::Converter<sensitives>::operator()(xml_h element) const 
 }
 
 /// Converter for DetElement pathes/volumes
-template <> void dd4hep::Converter<detector>::operator()(xml_h element) const {
+template <> void dd4hep::Converter<detector>::operator()( xml_h element ) const {
   xml_comp_t c = element;
   auto& geo = this->_object<geant3_geometry>();
   auto par  = c.hasAttr(_U(parent))    ? c.attr<std::string>(_U(parent))    : std::string();
   auto sens = c.hasAttr(_U(sensitive)) ? c.attr<std::string>(_U(sensitive)) : std::string();
+  auto ro   = c.hasAttr(_U(readout))   ? c.attr<std::string>(_U(readout))   : std::string();
   auto vid  = c.hasAttr(_U(physvolid)) ? c.attr<std::string>(_U(physvolid)) : 0;
   auto nam  = c.nameStr();
   int  id   = c.id();
 
   if( c.hasAttr(_U(placement)) )  {
     auto place = c.attr<std::string>(_U(placement));
-    geo.detelement_placements[place] = { nam, par, sens, place, vid, id };
+    geo.detelement_placements[place] = { nam, par, sens, place, vid, ro, id };
     printout( geo.debug_enhancements ? ALWAYS : DEBUG, "geant3_geometry",
               "+++ add_detelement_place:  detelement:%16s.%-8s id:%2d vid:%-8s --> place:%s",
               par.c_str(), nam.c_str(), id, vid.c_str(), place.c_str() );
   }
   else if( c.hasAttr(_U(volume)) )  {
     auto vol = c.attr<std::string>(_U(volume));
-    geo.detelement_volumes[vol] = { nam, par, sens, vol, vid, id };
+    geo.detelement_volumes[vol] = { nam, par, sens, vol, vid, ro, id };
     printout( geo.debug_enhancements ? ALWAYS : DEBUG, "geant3_geometry",
               "+++ add_detelement_volume: detelement:%16s.%-8s id:%2d vid:%-8s --> volume:%s",
               par.c_str(), nam.c_str(), id, vid.c_str(), vol.c_str() );
@@ -151,56 +152,57 @@ template <> void dd4hep::Converter<detector>::operator()(xml_h element) const {
 }
 
 /// Converter to setup debugging and printouts
-template <> void dd4hep::Converter<debug>::operator()(xml_h element) const {
-  xml_comp_t  c = element;
-  auto tag = element.tag();
+template <> void dd4hep::Converter<debug>::operator()( xml_h element ) const {
   auto geo = this->_param<geant3_geometry>();
-
-  if( tag == "detector" )  {
-    auto dets = c.attr<std::string>(_U(name));
-    if( dets.length() > 0 )  {
-      geo->debug_detector += char(::toupper(dets[0]));
+  for (xml_coll_t coll(element, _U(star)); coll; ++coll) {
+    xml_comp_t  c = coll;
+    std::string tag = coll.tag();
+    
+    if( tag == "detector" )  {
+      auto dets = c.attr<std::string>(_U(name));
+      if( dets.length() > 0 )  {
+        geo->debug_detector += char(::toupper(dets[0]));
+      }
     }
-  }
-  else if( tag == "materials" )  {
-    geo->debug_materials    = c.attr<bool>(_U(value));
-  }
-  else if( tag == "medium" )  {
-    geo->debug_media        = c.attr<bool>(_U(value));
-  }
-  else if( tag == "volume" )  {
-    geo->debug_volumes      = c.attr<bool>(_U(value));
-  }
-  else if( tag == "placement" )  {
-    geo->debug_placements   = c.attr<bool>(_U(value));
-  }
-  else if( tag == "division" )  {
-    geo->debug_divisions    = c.attr<bool>(_U(value));
-  }
-  else if( tag == "structure" )  {
-    geo->debug_structure    = c.attr<bool>(_U(value));
-  }
-  else if( tag == "sensitive" )  {
-    geo->debug_sensitive   = c.attr<bool>(_U(value));
-  }
-  else if( tag == "enhancements" )  {
-    geo->debug_enhancements = c.attr<bool>(_U(value));
-  }
-  else  {
-    except("Converter<detector>", "+++ Unknown debug information selector.");
+    else if( tag == "materials" )  {
+      geo->debug_materials    = c.attr<bool>(_U(value));
+    }
+    else if( tag == "medium" )  {
+      geo->debug_media        = c.attr<bool>(_U(value));
+    }
+    else if( tag == "volume" )  {
+      geo->debug_volumes      = c.attr<bool>(_U(value));
+    }
+    else if( tag == "placement" )  {
+      geo->debug_placements   = c.attr<bool>(_U(value));
+    }
+    else if( tag == "division" )  {
+      geo->debug_divisions    = c.attr<bool>(_U(value));
+    }
+    else if( tag == "structure" )  {
+      geo->debug_structure    = c.attr<bool>(_U(value));
+    }
+    else if( tag == "sensitive" )  {
+      geo->debug_sensitive   = c.attr<bool>(_U(value));
+    }
+    else if( tag == "enhancements" )  {
+      geo->debug_enhancements = c.attr<bool>(_U(value));
+    }
+    else  {
+      except("Converter<detector>", "+++ Unknown debug information selector: "+tag);
+    }
   }
 }
 
 /// Properties converter
-template <> void dd4hep::Converter<properties>::operator()(xml_h element) const {
+template <> void dd4hep::Converter<properties>::operator()( xml_h element ) const {
   xml_elt_t compact(element);
   auto geo = this->_param<geant3_geometry>();
   geo->debug_detector = "";
-  xml_coll_t( compact, _U(debug) ).for_each( _U(detector), Converter<debug>(description, geo));
-  xml_coll_t( compact, _U(debug) ).for_each( _U(materials), Converter<debug>(description, geo));
-  xml_coll_t( compact, _U(materials) ).for_each( _U(material), Converter<material>(description, geo));
-  xml_coll_t( compact, _U(detectors) ).for_each( _U(detector), Converter<detector>(description, geo));
-  xml_coll_t( compact, _U(sensitives) ).for_each( _U(volume), Converter<sensitives>(description, geo));
+  xml_coll_t( compact, _U(debug) ).for_each( Converter<debug>(description, geo) );
+  xml_coll_t( compact, _U(materials) ).for_each( _U(material), Converter<material>(description, geo) );
+  xml_coll_t( compact, _U(detectors) ).for_each( _U(detector), Converter<detector>(description, geo) );
+  xml_coll_t( compact, _U(sensitives) ).for_each( _U(volume), Converter<sensitives>(description, geo) );
 }
 
 static long geant3_geo_enhancements(dd4hep::Detector& description, const xml_h& element) {

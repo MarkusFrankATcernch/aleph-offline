@@ -13,7 +13,18 @@
 //==========================================================================
 -->
 <lccdd>
+  <geometry open="false" close="false"/>
+
   <plugins>
+    <!--
+    <plugin name="DD4hep_GeometryDisplay">
+      <argument value="-level"/>
+      <argument value="20"/>
+    </plugin>
+    <plugin name="DD4hep_InteractiveUI">
+      <argument value="++web=off"/>
+    </plugin>
+    -->
     <!--
     <plugin name="DD4hep_VolumeDump">
       <argument value="-pathes"/>
@@ -22,19 +33,8 @@
       <argument value="-positions"/>
       <argument value="-vis"/>
     </plugin>
-    <plugin name="DD4hep_GeometryDisplay">
-      <argument value="-level"/>
-      <argument value="20"/>
-    </plugin>
-    <plugin name="DD4hep_InteractiveUI">
-      <argument value="++web=off"/>
-    </plugin>
--->
-    <include ref="AlephReadout.xml"/>
-    <plugin  name="geant3_process_enhancements"/>
+    -->
     <plugin  name="DD4hep_InteractiveUI"/>
-    <plugin name="DD4hep_DetectorDump">
-      <argument value="-volids"/>
-    </plugin>
+    <plugin  name="geant3_process_enhancements"/>
   </plugins>
 </lccdd>

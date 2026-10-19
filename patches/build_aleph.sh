@@ -155,8 +155,14 @@ aleph-init()  {
 	cd ${ALEPH_BUILD_DIR}/build64;
 	#
 	install=`pwd`/../install64;
+	local CMAKE_OPT=;
+	if test -n "${CMAKE_MODULE_PATH}"; then
+	    CMAKE_OPT="-DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}";
+	else
+	    CMAKE_OPT="-DCMAKE_MODULE_PATH=${LCG_VIEW}";
+	fi;
 	aleph_commands_exec_echo \
-	    cmake  -DCMAKE_MODULE_PATH=${LCG_VIEW}                  \
+	    cmake  ${CMAKE_OPT}                              \
 	    -DCERNLIB_DIR=${CERNLIB_DIR}/share/cernlib/cmake \
 	    -DCMAKE_INSTALL_PREFIX=`realpath ${install}`     \
 	    ${ALEPH_OTHER_CMAKE_OPTIONS} ../cmake;

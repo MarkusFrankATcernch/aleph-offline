@@ -76,7 +76,7 @@ namespace dd4hep   {
 
     //
     struct det_def {
-      std::string name, parent, sensitive, item, volid;
+      std::string name, parent, sensitive, item, volid, readout;
       int         id;
     };
     using det_defs = std::map<std::string, det_def>;
