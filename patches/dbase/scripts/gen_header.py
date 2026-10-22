@@ -648,6 +648,7 @@ if args.print_info:
   gen_header = False
   printout = 1
 #
+bank_names = None
 if args.show_banks:
    print(all_banks.replace('\n',' ').replace('  ',' '))
    sys.exit(0)
@@ -656,6 +657,12 @@ elif args.generate_all:
 else:
    bank_names = args.bank_name
 
+if not bank_names:
+   print(' No bank names given to determine input information. Choose one of:')
+   print( all_banks )
+   parser.print_help()
+   sys.exit(1)
+   
 lbf_file = args.lbf_file
 banks = bank_names.replace(' ',',').split(',')
 global_debug = args.debug

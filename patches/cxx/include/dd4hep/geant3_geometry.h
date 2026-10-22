@@ -82,12 +82,14 @@ namespace dd4hep   {
     using det_defs = std::map<std::string, det_def>;
 
     Detector& description;
-    std::map<int32_t, PlacedVolume>    placements            {         };
-    std::map<std::string, Volume>      volumes               {         };
-    std::map<std::string, TGeoVolume*> divisions             {         };
-    std::map<int, Rotation3D>          rotations             {         };
-    std::map<int, Material>            media                 {         };
-    std::map<int, std::string>         materials             {         };
+    std::map<std::string, PlacedVolume> placement_pathes     {         };
+    std::map<int32_t,     PlacedVolume> placements           {         };
+    std::map<std::string, Volume>       volumes              {         };
+    std::map<std::string, TGeoVolume*>  divisions            {         };
+    std::map<int, Rotation3D>           rotations            {         };
+    std::map<int, Material>             media                {         };
+    std::map<int, std::string>          materials            {         };
+    std::map<int, std::string>          materials_z          {         };
 
     std::string                        debug_detector        {         };
     bool                               debug_materials       {   false };
@@ -98,7 +100,8 @@ namespace dd4hep   {
     bool                               debug_structure       {   false };
     bool                               debug_enhancements    {   false };
     bool                               debug_sensitive       {   false };
-    
+
+    int32_t resolve_materials  { 1 };
     int32_t processing_step          { PROCESSING_STARTING };
 
     Detector::PropertyValues           material_aliases      {         };
@@ -106,36 +109,78 @@ namespace dd4hep   {
     det_defs                           detelement_placements {         };
     det_defs                           detelement_volumes    {         };
     std::map<std::string,std::string>  sensitive_volumes     {         };
+
+
+    
     /// Get the DetElement parent from the path
     DetElement get_detelement_parent(const std::string& )  const;
     /// Add DetElement to structure tree
-    void add_detelement(const det_def& def, PlacedVolume pv)  const;
+    DetElement add_detelement(const det_def& def, PlacedVolume pv)  const;
     /// Set volume sensitive
     void set_sensitive( const std::string& sens_det, PlacedVolume pv )  const;
     /// Enhance PlaceVolume
     void enhance(const std::string& path, PlacedVolume node)  const;
 
 
+    /// Access TGeo material to build volumes
+    TGeoMaterial* get_material( const std::string& name )  const;
+    /// Clone existing material with new name and density
+    TGeoMaterial* clone_material( TGeoMaterial* mat, const std::string& name, double density );
+    /// Access material name with possibility of approximation
+    std::pair<bool, std::string> get_material_z( double Z )  const;
+    bool add_material_z( int index, TGeoMaterial* mat );
+    
+    int resolve_material(       int32_t            index,
+                                const std::string& name,
+                                double             Z,
+                                double             density);
+    int approximate_material(   int32_t            index,
+                                const std::string& name,
+                                double             Z,
+                                double             A,
+                                double             density);
+    int make_material(          int32_t            index,
+                                const std::string& name,
+                                double             Z,
+                                double             A,
+                                double             density,
+                                double             intlen,
+                                double             radlen);
+    int approximate_mixture(    int32_t            index,
+                                const std::string& name,
+                                double             Z,
+                                double             A,
+                                double             density,
+                                const std::vector<mixture_entry>& mixture);
+    int make_mixture(           int32_t            index,
+                                const std::string& name,
+                                double             Z,
+                                double             A,
+                                double             density,
+                                const std::vector<mixture_entry>& mixture);
+
+
+    
   public:
     /// Determine debug mode for a given subdetectors
-    bool have_debug(char val)  const  {
+    bool have_debug( char val )  const  {
       return debug_detector.find(::toupper(val)) != std::string::npos;
     }
 
     /// Create copy of an existing solid with new parameters
-    Solid create_solid( const TClass* type, const params_t& params);
+    Solid create_solid(        const TClass* type, const params_t& params);
     
     /// Check if material is supposed to be aliased
-    bool have_material_alias(const std::string& name)  const;
+    bool have_material_alias(  const std::string& name)  const;
 
     /// Access material to build volumes
-    Material get_medium(const std::string& name)  const;
+    Material get_medium(       const std::string& name)  const;
                      
     /// Add rotation matrix to build placement transformations
     void add_rotation(         int32_t index, const Rotation3D& rotation );
 
     /// Add material to geometry inventory
-    void add_material(         int32_t index,
+    int add_material(          int32_t            index,
                                const std::string& name,
                                double             Z,
                                double             A,
@@ -143,7 +188,7 @@ namespace dd4hep   {
                                double             intlen,
                                double             radlen);
 
-    void add_mixture(          int32_t            index,
+    int add_mixture(           int32_t            index,
                                const std::string& name,
                                double             Z,
                                double             A,
@@ -153,7 +198,7 @@ namespace dd4hep   {
                                const std::vector<mixture_entry>& mix);
 
     /// Add volume medium to geometry inventory
-    void add_medium(           int32_t            index,
+    int add_medium(            int32_t            index,
                                const std::string& name,
                                const std::string& material);
 

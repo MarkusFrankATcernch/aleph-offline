@@ -97,6 +97,7 @@ target_link_options(alpha_user PUBLIC "-fpie")
 #
 add_executable( alpha_dd4hep ${user_dir}/main/qugeom.cpp
                              ${user_dir}/dd4hep/aleph_geometry.cpp
+                             ${user_dir}/dd4hep/geant3_dump.cpp
                              ${user_dir}/dd4hep/geant3_geometry.cpp
                              ${ALEPH_PROGRAM_SOURCES} 
 )

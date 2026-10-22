@@ -25,15 +25,6 @@
       <argument value="++web=off"/>
     </plugin>
     -->
-    <!--
-    <plugin name="DD4hep_VolumeDump">
-      <argument value="-pathes"/>
-      <argument value="-materials"/>
-      <argument value="-shapes"/>
-      <argument value="-positions"/>
-      <argument value="-vis"/>
-    </plugin>
-    -->
     <plugin  name="DD4hep_InteractiveUI"/>
     <plugin  name="geant3_process_enhancements"/>
   </plugins>

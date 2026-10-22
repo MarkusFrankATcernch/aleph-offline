@@ -52,21 +52,84 @@
   </includes>
 
   <detectors>
-    <detector id="1000" name="ALEPH" type="DD4hep_Geant3Detector" vis="Vis_ALEPH">
-      <volume name="ALEF"/>
+    <detector id="1000" name="ALEPH" type="DD4hep_Geant3Detector" volume="ALEF" vis="Vis_ALEPH"/>
+    <detector name="CDET" id="1001" type="DD4hep_Geant3SubDetector" debug="0"
+              parent="/world" placement="/world_volume_1/ALEF_1/CDET_1"/>
+
+    <detector name="VDET" id="1" type="DD4hep_Geant3SubDetector" debug="0"
+              parent="/world" placement="/world_volume_1/ALEF_1/CDET_1/VDET_1" sensitive="tracker"
+              readout="VDET" region="VDET" limits="VDET">
+      <daughter name="VFSI" volume="VFSI" physvolid="ladder" region="VDET" limits="VDET">
+        <daughter name="VMSI" volume="VMSI" physvolid="side" region="VDET" limits="VDET">
+          <daughter name="VSWA" volume="VSWA" physvolid="module" region="VDET" limits="VDET">
+            <daughter name="VWSS" volume="VWSS" physvolid="sensor" region="VDET" limits="VDET" sensitive="true"/>
+          </daughter>
+        </daughter>
+      </daughter>
     </detector>
+    <detector name="ITC"        id="3"   type="DD4hep_Geant3SubDetector" debug="0"
+              parent="world" volume="ITCR" sensitive="tracker"  readout="ITC"/>
+    <detector name="TPC"        id="2"   type="DD4hep_Geant3SubDetector" debug="0"
+              parent="world"  volume="TPCR" sensitive="tracker" readout="TPC" limits="TPC"/>
+    <detector name="ECALBarrel" id="0"   type="DD4hep_Geant3SubDetector" debug="0"
+              parent="world" volume="ECBL" sensitive="calorimeter" readout="ECAL"/>
+    <detector name="ECALEndA"   id="5"   type="DD4hep_Geant3SubDetector" debug="0"
+              parent="world" volume="ECEA" sensitive="calorimeter" readout="ECAL"/>
+    <detector name="ECALEndB"   id="6"   type="DD4hep_Geant3SubDetector" debug="0"
+              parent="world" volume="ECEB" sensitive="calorimeter" readout="ECAL"/>
+    <detector name="HCALBarrel" id="7"   type="DD4hep_Geant3SubDetector" debug="0"
+              parent="world" volume="HCBL" sensitive="calorimeter" readout="HCAL"/>
+    <detector name="HCALEndA"   id="8"   type="DD4hep_Geant3SubDetector" debug="0"
+              parent="world" volume="HCEA" sensitive="calorimeter" readout="HCAL"/>
+    <detector name="HCALEndB"   id="9"   type="DD4hep_Geant3SubDetector" debug="0"
+              parent="world" volume="HCEB" sensitive="calorimeter" readout="HCAL"/>
+    <detector name="MUON"       id="10"  type="DD4hep_Geant3SubDetector" debug="0"
+              parent="world" volume="MUON" sensitive="tracker"     readout="MUON"/>
+    
+    <detector name="SiCALEndA"  id="21"  type="DD4hep_Geant3SubDetector" debug="0"
+              parent="world" placement="/world_volume_1/ALEF_1/ECEA_1/SCAL_1" sensitive="tracker" readout="SCAL"/>
+    <detector name="SiCALEndB"  id="22"  type="DD4hep_Geant3SubDetector" debug="0"
+              parent="world" placement="/world_volume_1/ALEF_1/ECEA_1/SCAL_1" sensitive="tracker" readout="SCAL"/>
+    <detector name="LCALEndA"   id="23"  type="DD4hep_Geant3SubDetector" debug="0"
+              parent="world" placement="/world_volume_1/ALEF_1/ECEB_1/LCEB_1" sensitive="tracker" readout="LCAL"/>
+    <detector name="LCALEndB"   id="24"  type="DD4hep_Geant3SubDetector" debug="0"
+              parent="world" placement="/world_volume_1/ALEF_1/ECEA_1/LCEA_1" sensitive="tracker" readout="LCAL"/>
+    <detector name="BeamTube"   id="100" type="DD4hep_Geant3SubDetector" debug="0"
+              parent="world" volume="BTUB"/>
+
   </detectors>
 
   <regions>
-    <region name="VDETregion" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+    <region name="VDET" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
       <limitsetref name="VDET"/>
     </region>
   </regions>
 
   <readouts>
     <readout name="VDET">
-      <id>system:8,barrel:3,layer:4,module:14,sensor:2,side:32:-2,strip:20</id>
-    </readout>        
+      <id>system:8,side:2,ladder:6,module:8,sensor:8,strip:32</id>
+    </readout>
+    <readout name="ITC">
+      <id>system:8,z:12,phi:12,wire:30</id>
+    </readout>
+    <readout name="TPC">
+      <id>system:8,side:2,sector:5,padrow:5,pad:12,wire:32</id>
+    </readout>
+    <readout name="ECAL">
+      <id>system:8,barrel:2,stack:3</id>
+    </readout>
+    <readout name="HCAL">
+      <id>system:8,barrel:2,layer:5,tube:8,z:8</id>
+    </readout>
+    <readout name="MUON">
+      <id>system:8,barrel:2,layer:5,x:16,y:16</id>
+    </readout>
+    <readout name="SCAL">
+      <id>system:8,side:2,layer:5</id>
+    </readout>
+    <readout name="LCAL">
+      <id>system:8,side:2,layer:5</id>
+    </readout>
   </readouts>
 
   <limits>

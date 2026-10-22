@@ -14,20 +14,45 @@
 -->
 <lccdd>
 
-  <geometry open="false" close="false"/>
-
   <includes>
     <file ref="AlephPlugins.xml"/>
   </includes>
-
-  <sensitive_detectors>
-    <sd name="VDET" type="tracker" verbose="true" limits="VDET" hits_collection="VDET"/>
-  </sensitive_detectors>
-
   <plugins>
-    <plugin name="DD4hep_DetectorDump">
+    <nplugin name="DD4hep_DetectorDump">
+      <argument value="--detector"/>
+      <argument value="TPC"/>
+      <argument value="-volids"/>
+    </nplugin>
+    <nplugin name="DD4hep_VolumeDump">
+      <argument value="-detector"/>
+      <argument value="TPC"/>
+      <argument value="-materials"/>
+      <argument value="-shapes"/>
+      <argument value="-positions"/>
+      <noargument value="-sensitive"/>
+      <argument value="-volids"/>
+    </nplugin>
+
+    <!--
+    <plugin name="DD4hep_VolumeDump">
+      <argument value="-detector"/>
+      <argument value="VDET"/>
+      <argument value="-materials"/>
+      <argument value="-shapes"/>
+      <argument value="-positions"/>
+      <noargument value="-sensitive"/>
       <argument value="-volids"/>
     </plugin>
+    <plugin name="DD4hep_DetectorVolumeDump">
+      <argument value="-detector"/>
+      <argument value="VDET"/>
+      <argument value="-materials"/>
+      <argument value="-shapes"/>
+      <noargument value="-sensitive"/>
+      <argument value="-volids"/>
+    </plugin>
+    -->
+
   </plugins>
 
 </lccdd>
