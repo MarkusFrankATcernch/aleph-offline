@@ -139,12 +139,13 @@ aleph-init()  {
     aleph-gen-headers()  {
 	curr=`pwd`;
 	mkdir -p ${ALEPH_BUILD_DIR}/build64;
+	mkdir -p ${ALEPH_BUILD_DIR}/aleph_headers/alpha;
 	cd ${ALEPH_BUILD_DIR}/build64;
 	LBF_OPT=;
 	if test -n "${SBANK_LBF}"; then
 	    LBF_OPT="-l ${SBANK_LBF}";
 	fi;
-	python ../dbase/scripts/gen_header.py -o ../aleph_headers/alpha -a ${LBF_OPT};
+	python ${ALEPH_BUILD_DIR}/dbase/scripts/gen_header.py -o ${ALEPH_BUILD_DIR}/aleph_headers/alpha -a ${LBF_OPT};
 	cd ${curr};
     }
     # ==================================================================================================
@@ -165,14 +166,14 @@ aleph-init()  {
 	    cmake  ${CMAKE_OPT}                              \
 	    -DCERNLIB_DIR=${CERNLIB_DIR}/share/cernlib/cmake \
 	    -DCMAKE_INSTALL_PREFIX=`realpath ${install}`     \
-	    ${ALEPH_OTHER_CMAKE_OPTIONS} ../cmake;
+	    ${ALEPH_OTHER_CMAKE_OPTIONS} ..;
 	make -j 33 install;
 	cd ${curr};
     }
     # ==================================================================================================
     #
     aleph-build()  {
-	mkdir -p ${ALEPH_BUILD_DIR};
+	mkdir -p ${ALEPH_BUILD_DIR}/build64;
 	#
 	aleph-do-checkout;
 	#

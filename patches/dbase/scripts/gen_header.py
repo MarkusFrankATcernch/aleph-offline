@@ -684,14 +684,17 @@ if banks is not None:
         #sys.exit(2)
       else:
         if args.output:
+          #print( f'+++ Creating directory: {args.output}' ) 
           if not os.path.exists(args.output):
             pit = str(args.output).split(os.sep)
             dir = pit[0]
             for p in pit[1:]:
               if not os.path.exists(dir):
+                #print( f'+++ Creating directory: {dir}' ) 
                 os.mkdir(dir)
                 dir = dir + os.sep + p
                 if not os.path.exists(dir):
+                  #print( f'+++ Creating directory: {dir}' )
                   os.mkdir(dir)
           file_name = args.output / (bank_name.lower() + '.h')
           file = open(file_name,'w')
