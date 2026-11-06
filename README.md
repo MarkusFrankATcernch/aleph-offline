@@ -32,7 +32,7 @@ $> mkdir -p Aleph/offline
 $> cd Aleph/offline
 $> git clone  gitlab ssh://git@gitlab.cern.ch:7999/frankm/aleph-offline.git
 $>
-$> # Edit this file:  
+$> # Edit this file:  aleph-offline/patches/build_aleph.ssh
 $> # Set ALEPH_SOFT=<current directory>
 #> #
 $> . aleph-offline/patches/build_aleph.ssh
