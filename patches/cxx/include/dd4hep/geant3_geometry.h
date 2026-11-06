@@ -10,8 +10,8 @@
 //
 //  Author     : Markus Frank
 //==========================================================================
-#ifndef ALPHA_GEANT3_GEOMETRY_H
-#define ALPHA_GEANT3_GEOMETRY_H 1
+#ifndef DDG3_GEANT3_GEOMETRY_H
+#define DDG3_GEANT3_GEOMETRY_H 1
 
 /// DD4hep include files
 #include <DD4hep/Shapes.h>
@@ -40,19 +40,8 @@ namespace dd4hep   {
    */
   class geant3_geometry  {
   public:
-
-    class MaterialWrapper  {
-      Material material;
-    public:
-      MaterialWrapper(Material m) : material(m) {}
-      ~MaterialWrapper() = default;
-      MaterialWrapper& add_composite(double Z, double A, double weight);
-    };
-
     struct mixture_entry { double Z, A, fraction; };
     
-  protected:
-
     class units  {
     public:
       constexpr static const double cm     = TGeant4Unit::cm;
@@ -288,4 +277,4 @@ namespace dd4hep   {
     virtual void handle_placements()  override;
   };   // End class geant3_geometry_imp
 }      // End namespace dd4hep
-#endif // ALPHA_GEANT3_GEOMETRY_H
+#endif // DDG3_GEANT3_GEOMETRY_H
