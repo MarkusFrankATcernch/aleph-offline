@@ -8,7 +8,7 @@
 #
 # ==================================================================================================
 #
-SET( alpha_dir ${ALPHA_SOURCE_DIR} )
+SET( alpha_dir ${CMAKE_CURRENT_SOURCE_DIR} )
 #
 file( GLOB alphalib_files    ${alpha_dir}/enfl/*.F
 			     ${alpha_dir}/mini/*.F

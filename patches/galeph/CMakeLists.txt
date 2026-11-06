@@ -9,10 +9,10 @@
 # ==================================================================================================
 #
 find_package( X11 REQUIRED )
-SET( galeph_dir ${GALEPH_SOURCE_DIR} )
+SET( galeph_dir ${CMAKE_CURRENT_SOURCE_DIR} )
 message(STATUS "+++ GALEPH:     Build library from sources: ${galeph_dir}" )
 #
-SET( tpc_dir    ${TPCSIM_SOURCE_DIR} )
+SET( tpc_dir    ${CMAKE_CURRENT_SOURCE_DIR}/../tpcsim )
 file( GLOB galeph_files ${galeph_dir}/a_/*.F
 		        ${galeph_dir}/calo/*.F
 		        ${galeph_dir}/draw/*.F

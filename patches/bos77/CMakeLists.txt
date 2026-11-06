@@ -9,7 +9,7 @@
 #
 find_package( CERNLIB REQUIRED )
 #
-SET( bos77_dir ${BOS77_SOURCE_DIR} )
+SET( bos77_dir ${CMAKE_CURRENT_SOURCE_DIR} )
 message(STATUS "+++ BOS77:      Build library from sources: ${bos77_dir}" )
 #
 file( GLOB bos_files  ${bos77_dir}/F77/*.F )

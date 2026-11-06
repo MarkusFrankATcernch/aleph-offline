@@ -10,7 +10,7 @@
 #
 find_package( CERNLIB REQUIRED )
 #
-SET( aleph_dir ${ALEPHLIB_SOURCE_DIR} )
+SET( aleph_dir ${CMAKE_CURRENT_SOURCE_DIR} )
 message(STATUS "+++ ALEPHLIB:   Build library from sources: ${aleph_dir}" )
 #
 #

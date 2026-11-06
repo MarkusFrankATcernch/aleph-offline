@@ -8,7 +8,7 @@
 #
 # ==================================================================================================
 #
-SET( uphy_dir ${UPHY_SOURCE_DIR} )
+SET( uphy_dir ${CMAKE_CURRENT_SOURCE_DIR} )
 message(STATUS "+++ UPHY:       Build library from sources: ${uphy_dir}" )
 #
 file( GLOB uphy_files    ${uphy_dir}/bcalinfo/*.F

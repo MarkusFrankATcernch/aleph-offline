@@ -8,7 +8,7 @@
 #
 # ==================================================================================================
 #
-SET( alephio_dir ${ALEPHIO_SOURCE_DIR} )
+SET( alephio_dir ${CMAKE_CURRENT_SOURCE_DIR} )
 #
 message(STATUS "+++ ALEPHIO:    Build library from sources: ${alephio_dir}" )
 file( GLOB alephio_files ${alephio_dir}/alph/*.F

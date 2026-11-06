@@ -8,7 +8,7 @@
 #
 # ==================================================================================================
 #
-SET( julia_dir ${JULIA_SOURCE_DIR} )
+SET( julia_dir ${CMAKE_CURRENT_SOURCE_DIR} )
 message(STATUS "+++ JULIA:      Build library from sources: ${julia_dir}" )
 #
 file( GLOB julia_files ${julia_dir}/a_/*.F
