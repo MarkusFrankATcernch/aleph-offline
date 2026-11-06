@@ -21,7 +21,7 @@
     <adetector name="ECal"/>
     <adetector name="HCal"/>
     -->
-    <materials value="true"/>
+    <materials value="false"/>
     <structure value="true"/>
     <sensitive value="true"/>
   </debug>
@@ -89,68 +89,6 @@
     <material name="Beam_supp_disk"            value="Beryllium"/>
 
     <material name="GLASS_FIBER"                value="UNDEFINED_MATERIAL"/>
+  </materials>
 
-</materials>
-
-
-
-  <nomaterials>
-    <material name="BERIL._PIPE__MED"          value="Beryllium"/>
-
-    <material name="TPC_G10_reinf_ring"        value="G10"/>
-
-    <material name="LC_CALO_VOLUME"            value="Air"/>
-    
-
-    <material name="HCAL_SENS._MATERIAL"       value="HCAL_gas"/>
-
-
-    <material name="ITC_cables"                 value="UNDEFINED_MATERIAL"/>
-    <material name="ITC_electronics"            value="UNDEFINED_MATERIAL"/>
-    <material name="ITC_CABLES_AVERAGE"         value="UNDEFINED_MATERIAL"/>
-    <material name="TPC_Inner_cage_matte"       value="UNDEFINED_MATERIAL"/>
-    <material name="TPC_Outer_cage_matte"       value="UNDEFINED_MATERIAL"/>
-    <material name="TPC_HORIZONTAL_FEET"        value="UNDEFINED_MATERIAL"/>
-    <material name="TPC_res_chain_matter"       value="UNDEFINED_MATERIAL"/>
-    <material name="TPC_prism_matter"           value="UNDEFINED_MATERIAL"/>
-    <material name="TPC_mirror_matter"          value="UNDEFINED_MATERIAL"/>
-    <material name="TPC_ENDPLATE_MATTER"        value="UNDEFINED_MATERIAL"/>
-    <material name="TPC_VERTICAL__FEET"         value="UNDEFINED_MATERIAL"/>
-    <material name="TPC_CABLES_AVERAGE"         value="UNDEFINED_MATERIAL"/>
-    <material name="AVG_SAMBA_ELECT."           value="UNDEFINED_MATERIAL"/>
-    <material name="Beam_supp_disk"             value="UNDEFINED_MATERIAL"/>
-    <material name="KEVLARGLUE"                 value="UNDEFINED_MATERIAL"/>
-    <material name="BEOGLUE"                    value="UNDEFINED_MATERIAL"/>
-    <material name="HYBRIDAU31"                 value="UNDEFINED_MATERIAL"/>
-    <material name="HYBRIDAU13"                 value="UNDEFINED_MATERIAL"/>
-    <material name="CSCARD"                     value="UNDEFINED_MATERIAL"/>
-    <material name="LCAL_NE110"                 value="UNDEFINED_MATERIAL"/>
-    <material name="LCAL_screws_front_pl"       value="UNDEFINED_MATERIAL"/>
-    <material name="LCAL_LIGHT_AVERAGE"         value="UNDEFINED_MATERIAL"/>
-    <material name="LCAL_DENSE_AVERAGE"         value="UNDEFINED_MATERIAL"/>
-    <material name="Samba_gas_&amp;_wir"        value="UNDEFINED_MATERIAL"/>
-    <material name="SCAL_CABLING_AVG"           value="UNDEFINED_MATERIAL"/>
-    <material name="SCAL_COOLING_AVG"           value="UNDEFINED_MATERIAL"/>
-    <material name="SCAL_W_THIN__AVG"           value="UNDEFINED_MATERIAL"/>
-    <material name="SCAL_W_THICK_AVG"           value="UNDEFINED_MATERIAL"/>
-    <material name="SCAL_WVERYTH_AVG"           value="UNDEFINED_MATERIAL"/>
-    <material name="SCAL_PASSIVE_AV1"           value="UNDEFINED_MATERIAL"/>
-    <material name="SCAL_PASSIVE_AV2"           value="UNDEFINED_MATERIAL"/>
-    <material name="SCAL_PASSIVE_AV3"           value="UNDEFINED_MATERIAL"/>
-    <material name="SCAL_PASSIVE_LAS"           value="UNDEFINED_MATERIAL"/>
-    <material name="ECAL_BL_PASSIVE_MAT"        value="UNDEFINED_MATERIAL"/>
-    <material name="END_STACK_AVERAGE"          value="UNDEFINED_MATERIAL"/>
-    <material name="EC_LIGHT_AVERAGE_BL"        value="UNDEFINED_MATERIAL"/>
-    <material name="EC_DENSE_AVERAGE_BL"        value="UNDEFINED_MATERIAL"/>
-    <material name="EC_LEFT+RIGHT_AVERAG"       value="UNDEFINED_MATERIAL"/>
-    <material name="EC_VERY_FIRST_LAYER"        value="UNDEFINED_MATERIAL"/>
-    <material name="EC_LIGHT_AVERAGE_EC"        value="UNDEFINED_MATERIAL"/>
-    <material name="EC_DENSE_AVERAGE_EC"        value="UNDEFINED_MATERIAL"/>
-    <material name="ECAL_PETAL_SUPPORT"         value="UNDEFINED_MATERIAL"/>
-    <material name="ECAP_BOTTOM_AVERAGE"        value="UNDEFINED_MATERIAL"/>
-    <material name="EC_ELEC._BOX_AVERAGE"       value="UNDEFINED_MATERIAL"/>
-    <material name="HCBL_PASSIVE_MATERIA"       value="UNDEFINED_MATERIAL"/>
-    <material name="HCAP_AVERAGE_MATTER"        value="UNDEFINED_MATERIAL"/>
-  </nomaterials>
-  
 </geant3_geometry_enhancements>

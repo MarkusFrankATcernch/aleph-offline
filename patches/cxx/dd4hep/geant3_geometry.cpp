@@ -24,11 +24,14 @@
 #include <iomanip>
 #include <memory>
 
+using namespace dd4hep;
+
 namespace  {
+
   static UInt_t unique_mat_id = 0xBFFEFEED;
+
 }
 
-using namespace dd4hep;
 #define Z_FACTOR 100
 #define Z_REL_ACCURRACY  0.05
 
@@ -105,7 +108,7 @@ geant3_geometry::get_material_z( double Z )  const  {
       delta = zdelta/Z;
       acc = m->GetName();
     }
-    if ( zdelta/Z < 1e-3 )  {
+    if ( zdelta/Z < 1e-5 )  {
       return { false, { m->GetName() } };
     }
   }
@@ -145,7 +148,7 @@ geant3_geometry::get_material_z( double Z )  const  {
 bool geant3_geometry::add_material_z( int index, TGeoMaterial* mat )  {
   if( index > 0 )  {
     if( this->materials.find(index) == this->materials.end() )  {
-      this->materials[index] = mat->GetName();
+      this->materials[index] = mat;
     }
   }
   int iz = int(::round(mat->GetZ() * Z_FACTOR));
@@ -199,7 +202,7 @@ int geant3_geometry::add_material( int32_t            index,
                                    double             radlen)
 {
   if( this->resolve_materials == 0 )
-    return this->resolve_material( index, name, Z, density );
+    return this->resolve_material( index, name, Z, A, density );
   else if( this->resolve_materials == 1 )
     return this->approximate_material( index, name, Z, A, density );
   return this->make_material( index, name, Z, A, density, intlen, radlen );
@@ -216,7 +219,7 @@ int geant3_geometry::add_mixture(  int32_t            index,
                                    const std::vector<mixture_entry>& mixture)
 {
   if( this->resolve_materials == 0 )
-    return this->resolve_material( index, name, Z, density );
+    return this->resolve_material( index, name, Z, A, density );
   else if( this->resolve_materials == 1 )
     return this->approximate_mixture( index, name, Z, A, density, mixture );
   return this->make_mixture( index, name, Z, A, density, mixture );
@@ -225,6 +228,7 @@ int geant3_geometry::add_mixture(  int32_t            index,
 int geant3_geometry::resolve_material( int32_t            index,
                                        const std::string& name,
                                        double             Z,
+                                       double             A,
                                        double             density)
 {
   static int recurses = 0;
@@ -238,7 +242,10 @@ int geant3_geometry::resolve_material( int32_t            index,
   TGeoMaterial* mat = mgr.GetMaterial( name.c_str() );
 
   if( nullptr != mat )  {
-    this->materials[index] = name;
+    printout(  this->debug_materials ? ALWAYS : DEBUG, "geant3_geometry",
+              "add_material: %-14s %-24s %-24s index:%3d Z:%8.3f/%8.3f A:%5.1f dens:%7.5f g/cm3",
+              "EXISTING", name.c_str(), mat->GetName(), index, Z, mat->GetZ(), A, density);
+    this->materials[index] = mat;
     return 1;
   }
   if( recurses > 10 )  {
@@ -246,14 +253,17 @@ int geant3_geometry::resolve_material( int32_t            index,
   }
   auto iv = this->material_aliases.find( name );
   if( iv != this->material_aliases.end() )  {
-    if( this->resolve_material( index, iv->second, Z, density ) )  {
+    if( this->resolve_material( index, iv->second, Z, A, density ) )  {
       mat = mgr.GetMaterial( name.c_str() );
     }
   }
   if( nullptr != mat )  {
     auto* mix = this->clone_material( mat, name, density );
     if( mix )  {
-      this->materials[index] = name;
+      printout(  this->debug_materials ? ALWAYS : DEBUG, "geant3_geometry",
+                 "add_material: %-14s %-24s %-24s index:%3d Z:%8.3f/%8.3f A:%5.1f dens:%7.5f g/cm3",
+                 "EXISTING.ALIAS", name.c_str(), mix->GetName(), index, Z, mix->GetZ(), A, density);
+      this->materials[index] = mix;
       return 1;
     }
   }
@@ -282,24 +292,24 @@ int geant3_geometry::approximate_material( int32_t            index,
     if( !alias.empty() )  {
       TGeoMaterial* mat = mgr.GetMaterial(alias.c_str());
       if( mat )  {
-        printout( ALWAYS, "geant3_geometry",
-                  "add_material:     %-11s    %-24s %-24s index:%3d Z:%8.3f/%8.3f A:%5.1f dens:%7.5f g/cm3",
+        printout(  this->debug_materials ? ALWAYS : DEBUG, "geant3_geometry",
+                  "add_material: %-11s    %-24s %-24s index:%3d Z:%8.3f/%8.3f A:%5.1f dens:%7.5f g/cm3",
                   type.c_str(), name.c_str(), mat->GetName(), index, Z, mat->GetZ(), A, density);
         if( name != mat->GetName() )  {
           TGeoMaterial* nmat = this->clone_material( mat, name, density );
           if( nmat != nullptr )  {
-            this->materials[index] = nmat->GetName();
+            this->materials[index] = nmat;
             return 1;
           }
         }
         else  {
-          this->materials[index] = mat->GetName();
+          this->materials[index] = mat;
           return 1;
         }
       }
     }
     printout( ERROR, "geant3_geometry",
-              "add_material:     %-11s    %-24s FAILED material resolution index:%3d Z:%8.3f A:%5.1f dens:%7.5f g/cm3",
+              "add_material: %-11s    %-24s FAILED material resolution index:%3d Z:%8.3f A:%5.1f dens:%7.5f g/cm3",
               type.c_str(), name.c_str(), index, Z, A, density);
   }
   return 0;
@@ -537,6 +547,13 @@ void geant3_geometry::add_division( const std::string& name,
   auto deg = units::degree;
   VisAttr vis = this->description.visAttributes( "Vis_"+name );
   Volume  div = vol.divide( name, axis, ndiv, start/deg, step/deg, idx_medium, opt );
+  for( int i=0, num=vol->GetNdaughters(); i<num; ++i )   {
+    auto* n = vol->GetNode(i);
+    auto* ext = n->GetUserExtension();
+    if( nullptr == ext )  {
+      n->SetUserExtension( new PlacedVolume::Object() );
+    }
+  }
   if( vis.isValid() )  {
     div.setVisAttributes( vis );
   }
@@ -603,7 +620,7 @@ void geant3_geometry::add_placement( int                index,
   Material mat = vol.material();
   VisAttr  vis = this->description.visAttributes("Vis_"+volume);
   if( !params.empty() )  {
-    Solid    new_solid = this->create_solid( vol.solid()->IsA(), params);
+    Solid  new_solid = this->create_solid( vol.solid()->IsA(), params);
     if( !new_solid.isValid() )  {
       printout(WARNING, "geant3_geometry",
                "+++ add_placement: Unhandled shape placement with parameters: %s of type %s",

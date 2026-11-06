@@ -72,10 +72,10 @@
       <fraction n="0.0940" ref="Beryllium"/>
     </material>
    
-    <material name="IaNOX">
+    <material name="INOX">
       <D value="8" unit="g/cm3"/>
-      <fraction n="0.9060" ref="Iron"/>
-      <fraction n="0.0940" ref="Beryllium"/>
+      <fraction n="0.925" ref="Iron"/>
+      <fraction n="0.075" ref="Chromium"/>
     </material>
    
     <material name="UNDEFINED_MATERIAL">

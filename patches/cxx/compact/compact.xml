@@ -67,12 +67,26 @@
         </daughter>
       </daughter>
     </detector>
+
     <detector name="ITC"        id="3"   type="DD4hep_Geant3SubDetector" debug="0"
-              parent="world" volume="ITCR" sensitive="tracker"  readout="ITC"/>
+              parent="world" volume="ITCR" sensitive="tracker"  readout="ITC">
+      <daughter name="Gas" volume="ITC" physvolid="sensitive" region="ITC" limits="ITC"/>
+    </detector>
+
     <detector name="TPC"        id="2"   type="DD4hep_Geant3SubDetector" debug="0"
-              parent="world"  volume="TPCR" sensitive="tracker" readout="TPC" limits="TPC"/>
+              parent="world"  volume="TPCR" sensitive="tracker" readout="TPC">
+      <daughter name="Side" volume="TPHF" physvolid="side" region="TPC" limits="TPC" sensitive="true"/>
+    </detector>
+
     <detector name="ECALBarrel" id="0"   type="DD4hep_Geant3SubDetector" debug="0"
-              parent="world" volume="ECBL" sensitive="calorimeter" readout="ECAL"/>
+              parent="world" volume="ECBL" sensitive="calorimeter" readout="ECAL">
+      <daughter name="module" volume="EBAR" physvolid="module">
+        <daughter name="stack1" volume="EBS1" physvolid="side" region="calorimeters" limits="calorimeters" sensitive="true"/>
+        <daughter name="stack2" volume="EBS2" physvolid="side" region="calorimeters" limits="calorimeters" sensitive="true"/>
+        <daughter name="stack3" volume="EBS3" physvolid="side" region="calorimeters" limits="calorimeters" sensitive="true"/>
+      </daughter>
+    </detector>
+
     <detector name="ECALEndA"   id="5"   type="DD4hep_Geant3SubDetector" debug="0"
               parent="world" volume="ECEA" sensitive="calorimeter" readout="ECAL"/>
     <detector name="ECALEndB"   id="6"   type="DD4hep_Geant3SubDetector" debug="0"
@@ -102,6 +116,15 @@
   <regions>
     <region name="VDET" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
       <limitsetref name="VDET"/>
+    </region>
+    <region name="ITC" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="ITC"/>
+    </region>
+    <region name="TPC" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="TPC"/>
+    </region>
+    <region name="calorimeters" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="calorimeters"/>
     </region>
   </regions>
 
@@ -133,12 +156,18 @@
   </readouts>
 
   <limits>
+    <limitset name="VDET">
+      <limit name="ekin_min" particles="*" value="0.01" unit="MeV" />
+    </limitset>
+    <limitset name="ITC">
+      <limit name="ekin_min" particles="*" value="0.01" unit="MeV" />
+    </limitset>
     <limitset name="TPC">
       <limit name="step_length_max" particles="*" value="5" unit="mm" />
       <limit name="ekin_min"  particles="*" value="0.01" unit="MeV" />
       <limit name="range_min" particles="*" value="5.0" unit="mm" />
     </limitset>
-    <limitset name="VDET">
+    <limitset name="calorimeters">
       <limit name="ekin_min" particles="*" value="0.01" unit="MeV" />
     </limitset>
   </limits>

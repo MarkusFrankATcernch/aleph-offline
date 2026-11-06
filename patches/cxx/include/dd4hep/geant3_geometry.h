@@ -88,7 +88,7 @@ namespace dd4hep   {
     std::map<std::string, TGeoVolume*>  divisions            {         };
     std::map<int, Rotation3D>           rotations            {         };
     std::map<int, Material>             media                {         };
-    std::map<int, std::string>          materials            {         };
+    std::map<int, TGeoMaterial*>        materials            {         };
     std::map<int, std::string>          materials_z          {         };
 
     std::string                        debug_detector        {         };
@@ -133,6 +133,7 @@ namespace dd4hep   {
     int resolve_material(       int32_t            index,
                                 const std::string& name,
                                 double             Z,
+                                double             A,
                                 double             density);
     int approximate_material(   int32_t            index,
                                 const std::string& name,
