@@ -316,7 +316,6 @@ namespace alpha  {
       VDET_HIT_ZT             = 1<<3,
       ITC_COORDINATE          = 1<<4,
 
-
       TPC_COORDINATE          = 1<<4,
       TPC_RAW_PAD_COORDINATE  = 1<<5,
 
@@ -365,39 +364,39 @@ namespace alpha  {
     experiment_t&                        exp;
     data_access_t&                       data;
 
-    edm4hep::EventHeaderCollection       event_headers           {  };
-    std::map<std::string, int32_t>       eveh_properties         {  };
-    std::map<std::string, int32_t>       revh_properties         {  };
-    std::map<std::string, int32_t>       gene_properties         {  };
+    edm4hep::EventHeaderCollection       event_headers                   {  };
+    std::map<std::string, int32_t>       eveh_properties                 {  };
+    std::map<std::string, int32_t>       revh_properties                 {  };
+    std::map<std::string, int32_t>       gene_properties                 {  };
 
     /// Container withg Monte-Carlo tracks
-    edm4hep::MCParticleCollection        particles_mc            {  };
+    edm4hep::MCParticleCollection        particles_mc                    {  };
     /// Container with reconstructed tracks
-    edm4hep::TrackCollection             particles_reco          {  };
+    edm4hep::TrackCollection             particles_reco                  {  };
     /// Relationship between reconstructed tracks and Monte-Carlo tracks
-    track2mctrack_t                      rel_part_reco_mc        {  };
+    track2mctrack_t                      rel_part_reco_mc                {  };
 
-    edm4hep::TrackCollection             calorimeter_objects     {  };
+    edm4hep::TrackCollection             calorimeter_objects             {  };
 
     /// Sim tracker hits as produced by Galeph
-    simtrackerhits_t                     simhits_vdht            {  };
+    simtrackerhits_t                     simhits_vdht                    {  };
     
     /// VDET XY raw hits from rphi wafers
-    trackerhits_t                        hits_vdxy               {  };
+    trackerhits_t                        hits_vdxy                       {  };
     /// VDET ZT raw hits from z wafers
-    trackerhits_t                        hits_vdzt               {  };
+    trackerhits_t                        hits_vdzt                       {  };
 
     /** VDET coordinates used:  */
     /// Reconstructed VDET coordinates
-    trackerhits_t                        hits_vdco               {  };
-    trhit2trhit_t                        rel_hits_vdco_vdxy      {  };
-    trhit2trhit_t                        rel_hits_vdco_vdzt      {  };
+    trackerhits_t                        hits_vdco                       {  };
+    trhit2trhit_t                        rel_hits_vdco_vdxy              {  };
+    trhit2trhit_t                        rel_hits_vdco_vdzt              {  };
     /// VDCO fractional charge and strips count in rphi from VDFK
-    trhit2mcp_t                          percent_charge_vdco_fkin_rphi        {  };
-    trhit2mcp_t                          strips_count_vdco_fkin_rphi          {  };
+    trhit2mcp_t                          percent_charge_vdco_fkin_rphi   {  };
+    trhit2mcp_t                          strips_count_vdco_fkin_rphi     {  };
     /// VDCO fractional charge and strips count in Z from VDFK
-    trhit2mcp_t                          percent_charge_vdco_fkin_z           {  };
-    trhit2mcp_t                          strips_count_vdco_fkin_z             {  };
+    trhit2mcp_t                          percent_charge_vdco_fkin_z      {  };
+    trhit2mcp_t                          strips_count_vdco_fkin_z        {  };
 
     /** VDET hits unused by pattern reconstruction:   */
     /// VDXY fractional charge and strips count in XY from VUFK (not used)
@@ -408,58 +407,55 @@ namespace alpha  {
     trhit2mcp_t                          strips_count_unused_vdzt_fkin   {  };
     
 
-    trackerhits_t                        hits_icco               {  };
+    trackerhits_t                        hits_icco                       {  };
     /// ITC R-Phi hits
-    trackerhits_t                        hits_itco1              {  };
+    trackerhits_t                        hits_itco1                      {  };
     /// ITC R-Phi hits (ambiguity)
-    trackerhits_t                        hits_itco2              {  };
+    trackerhits_t                        hits_itco2                      {  };
     /// TPC corrected coordinates
-    trackerhits_t                        hits_tpco               {  };
+    trackerhits_t                        hits_tpco                       {  };
     /// Raw TPC pad hits transformed to global coordinate system
-    trackerhits_t                        hits_ptnc               {  };
+    trackerhits_t                        hits_ptnc                       {  };
     /// dEdx data: Truncated mean of dE/dx measurements
-    dedxdata_t                           dedx_trunc_mean         {  };
+    dedxdata_t                           dedx_trunc_mean                 {  };
     /// dEdx data: Average drift length of samples
-    dedxdata_t                           dedx_avg_drift          {  };
+    dedxdata_t                           dedx_avg_drift                  {  };
     /// dEdx data: Useful length of track for dE/dx
-    dedxdata_t                           dedx_tracklen           {  };
+    dedxdata_t                           dedx_tracklen                   {  };
     /// dEdx data: Number of samples used for dE/dx
-    dedxdata_t                           dedx_num_samples        {  };
+    dedxdata_t                           dedx_num_samples                {  };
 
     /// ECAL hits from PECO
-    calohits_t                           hits_ecal               {  };
+    calohits_t                           hits_ecal                       {  };
     /// ECAL wire hits
-    rawcalohits_t                        hits_ecal_wire          {  };
+    rawcalohits_t                        hits_ecal_wire                  {  };
 
     /// HCAL hits from PHCO
-    calohits_t                           hits_hcal               {  };
+    calohits_t                           hits_hcal                       {  };
     ///
-    rawcalohits_t                        hits_hcal_plane         {  };
-
-
-
+    rawcalohits_t                        hits_hcal_plane                 {  };
 
     /// Relationship between ALEPH MC particles and edm4hep::MCParticles
-    std::map<int, std::size_t>           alpha2edm4hep_particles {  };
+    std::map<int, std::size_t>           alpha2edm4hep_particles         {  };
     /// Relationship between ALEPH MC particles from FKIN and edm4hep::MCParticles
-    std::map<int, std::size_t>           fkin2edm4hep_particles  {  };
+    std::map<int, std::size_t>           fkin2edm4hep_particles          {  };
     /// Relationship between ALEPH FRFT track rows and edm4hep::Tracks
-    std::map<int, std::size_t>           alpha2edm4hep_charged   {  };
+    std::map<int, std::size_t>           alpha2edm4hep_charged           {  };
 
     /// Relationship between reconstructed VDET hits and VDET tracker hits in hits_vdco
-    std::map<int, std::size_t>           alpha2edm4hep_vdco      {  };
+    std::map<int, std::size_t>           alpha2edm4hep_vdco              {  };
     /// Relationship between reconstructed VDET hits from VDXY and tracker hits in hits_vdxy
-    std::map<int, std::size_t>           alpha2edm4hep_vdxy      {  };
+    std::map<int, std::size_t>           alpha2edm4hep_vdxy              {  };
     /// Relationship between reconstructed VDET hits from VDZT and tracker hits in hits_vdzt
-    std::map<int, std::size_t>           alpha2edm4hep_vdzt      {  };
+    std::map<int, std::size_t>           alpha2edm4hep_vdzt              {  };
 
     /// Relationship between VDZT row pointer and identifier in alpha2edm4hep_vdzt
-    std::map<int, const class vdco*>     alpha2vdco              {  };
-    std::map<int, const class vdzt*>     alpha2vdzt              {  };
-    std::map<int, object_table<class vdmr>* > banks_vdmr         {  };
+    std::map<int, const class vdco*>     alpha2vdco                      {  };
+    std::map<int, const class vdzt*>     alpha2vdzt                      {  };
+    std::map<int, object_table<class vdmr>* > banks_vdmr                 {  };
 
     /// Invalid MC particle
-    mcparticle_t                         invalid_mc_particle     {  };
+    mcparticle_t                         invalid_mc_particle             {  };
 
     /// Default constructor
     event_t(experiment_t& experiment, data_access_t& data);
@@ -577,6 +573,7 @@ namespace alpha  {
   };
 }
 
+#include <TDirectory.h>
 #include <alpha/processor.h>
 namespace {
   std::unique_ptr<alpha::edm4hep_output> conv;
@@ -655,12 +652,20 @@ void alpha::edm4hep_output::io_t::begin()  {
   if( this->debug ) ::printf("+++ Begin transaction\n");
   this->podio_frame = { };
 }
-#include <TDirectory.h>
+
 /// Commit frame to event stream
 void alpha::edm4hep_output::io_t::commit()  {
   TDirectory::TContext context;
-  if( this->debug ) ::printf("+++ Commit frame to file\n");
-  this->podio_file->writeFrame( this->podio_frame, "ALEPH" );
+  if( this->podio_file.get() )  {
+    if( this->debug )  {
+      ::printf("+++ Commit frame to file.\n");
+    }
+    this->podio_file->writeFrame( this->podio_frame, "ALEPH" );
+    return;
+  }
+  else if( this->debug )  {
+    ::printf("+++ NO podio frame commit. No PODIO-file\n.");
+  }
 }
 
 /// Default constructor

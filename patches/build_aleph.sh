@@ -287,6 +287,7 @@ aleph-init()  {
     #
     if test -n "`uname -a | grep -e 'lxplus.*cern.ch'`"; then
 	#
+	echo "+++ Setup ALEPH software environment for LXPLUS ";
 	export LCG_VIEW=/cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-el9-gcc15-opt;
 	export CERNLIB_DIR=/cvmfs/dphep.cern.ch/cernlib/releases/almalinux-9-x86_64/cm/std/gcc/new;
 	export ALEPH_SOFT=/afs/cern.ch/work/f/frankb/frankm/Aleph/offline;
@@ -294,8 +295,19 @@ aleph-init()  {
 	#
     elif test -n "`uname -a | grep Ubuntu`"; then
 	#
-	export LCG_VIEW=/cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-ubuntu2404-gcc13-opt;
-	export CERNLIB_DIR=/cvmfs/dphep.cern.ch/cernlib/releases/ubuntu-24-x86_64/cm/std/gcc/new;
+	if test -n "`lsb_release -a | grep 'Ubuntu 24.'`"; then
+	    echo "+++ Setup ALEPH software environment for UBUNTU 24 ";
+	    export LCG_VIEW=/cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-ubuntu2404-gcc13-opt/;
+	    export CERNLIB_DIR=/cvmfs/dphep.cern.ch/cernlib/releases/ubuntu-24-x86_64/cm/std/gcc/new;
+        elif test -n "`lsb_release -a | grep 'Ubuntu 26.'`"; then
+	    echo "+++ Setup ALEPH software environment for UBUNTU 26 ";
+	    export LCG_VIEW=/cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-ubuntu2604-gcc15-opt/
+	    export CERNLIB_DIR=/cvmfs/dphep.cern.ch/cernlib/releases/ubuntu-26-x86_64/cm/std/gcc/new;
+	else
+	    echo "+++ Unknown UBUNTU version: ";
+	    lsb_release -a;
+	    return;
+	fi;
 	export ALEPH_SOFT=${HOME}/Aleph/offline;
 	export ALEPH_DBASE=${ALEPH_SOFT};
 	#
@@ -309,7 +321,7 @@ aleph-init()  {
     export BANKALFMT=${ALEPH_DBASE}/reference/dbase/bankal.fmt;
     export BOSKEY=${ALEPH_DBASE}/reference/dbase/boskey.ddl;
     export DBASBANK=${ALEPH_DBASE}/reference/phy/dbas.bank;
-    export BEAMPOSITION=${ALEPH_DBASE}/reference/phy/boskey.ddl;
+    export BEAMPOSITION=${ALEPH_DBASE}/reference/phy/beam.position;
     #
     aleph-pathes;
     aleph-info;

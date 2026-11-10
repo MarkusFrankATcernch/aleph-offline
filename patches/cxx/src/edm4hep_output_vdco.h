@@ -42,17 +42,17 @@ void alpha::edm4hep_output::event_t::process_vdco()  {
      8    TN  I    TrackNumber      [0,100000]
                    associated track in FRFT
   */
-  std::stringstream log;
-  auto* tab  = this->data.vdco.load<object_table<class vdco> >(true);
-  auto& vdet = *this->exp.vdet;
-  auto& desc = vdet.descriptor;
+  std::stringstream     log;
+  auto*                 tab  = this->data.vdco.load<object_table<class vdco> >(true);
+  detector_vdet_t&      vdet = *this->exp.vdet;
+  dd4hep::IDDescriptor& desc = vdet.descriptor;
   if( this->data.vdco.debug )  {
     log << bos77::to_string(tab) << std::endl;
   }
   for( uint32_t itk=1, siz=tab->size(); itk <= siz; ++itk )  {
     std::size_t     key = this->hits_vdco.size();
-    auto            hit = this->hits_vdco.create();
-    auto*           ah  = this->data.vdco.row<class vdco>(itk);
+    trackerhit_t    hit = this->hits_vdco.create();
+    const vdco*     ah  = this->data.vdco.row<class vdco>(itk);
     double          sigrphi2 = ah->sigRphi2();   //
     double          sigz2    = ah->sigZ2();      //
     PositionRhoZPhi pos(_LEN(ah->r()), _LEN(ah->z()), ah->phi());

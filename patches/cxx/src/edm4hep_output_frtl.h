@@ -105,10 +105,10 @@ void alpha::edm4hep_output::event_t::process_frtl()  {
 
   for( int itk = qcde.KFCHT; itk <= qcde.KLCHT; ++itk )  {
     std::size_t itr    = itk - qcde.KFCHT + 1;
-    auto*       frtl   = tab_frtl->row(itr);
-    auto        nvdet  = frtl->narcV();
-    auto        nitc   = frtl->narcI();
-    auto        ntpc   = frtl->narcT();
+    class frtl* frtl   = tab_frtl->row(itr);
+    int32_t     nvdet  = frtl->narcV();
+    int32_t     nitc   = frtl->narcI();
+    int32_t     ntpc   = frtl->narcT();
     const char* tag_vd = nvdet>0 ? " VDCO:" : "";
     const char* tag_it = nitc>0 ? " ITCO:" : "";
     const char* tag_tp = ntpc>0 ? " TPCO:" : "";
@@ -120,7 +120,7 @@ void alpha::edm4hep_output::event_t::process_frtl()  {
     for( int32_t i=0; i < nvdet; ++i )  {
       int32_t idx = frtl->ioffV()+i;
       int32_t num = tab_fvcl->at(idx)->ivdco();
-      auto    hit = this->hits_vdco[num-1];
+      trackerhit_t hit = this->hits_vdco[num-1];
       this->link_hit_to_frft_track( itr, hit );
       if( dbg ) log << std::setw(2) << num << " ";
     }
@@ -130,7 +130,7 @@ void alpha::edm4hep_output::event_t::process_frtl()  {
       int32_t idx = frtl->ioffI()+i;
       int32_t num = tab_ficl->at(idx)->iitco();
       // See ITCO bank description for handling of negative indices
-      auto    hit = (num > 0) ? this->hits_itco1.at(num-1) : this->hits_itco2.at(-num-1);
+      trackerhit_t hit = (num > 0) ? this->hits_itco1.at(num-1) : this->hits_itco2.at(-num-1);
       this->link_hit_to_frft_track( itr, hit );
       if( dbg ) log << std::setw(2) << num << " ";
     }
@@ -142,8 +142,8 @@ void alpha::edm4hep_output::event_t::process_frtl()  {
         ::printf("TPC Coordinate %d outside limit: %d\n", idx, tab_ftcl->size());
         continue;
       }
-      int32_t num = tab_ftcl->at(idx)->itpco();
-      auto    hit = this->hits_tpco[num-1];
+      int32_t      num = tab_ftcl->at(idx)->itpco();
+      trackerhit_t hit = this->hits_tpco[num-1];
       this->link_hit_to_frft_track( itr, hit );
       if( dbg ) log << std::setw(2) << num << " ";
     }

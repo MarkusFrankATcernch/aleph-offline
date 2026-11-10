@@ -40,19 +40,21 @@ else()
 endif()
 #
 #
-file( GLOB userlib_files     ${user_dir}/src/*.F
-			     ${user_dir}/src/*.cpp	
-			     ${user_dir}/tests/*.F
-			     ${user_dir}/tests/*.cpp )
-add_library( userlib STATIC  ${userlib_files} )
-add_library( Aleph::userlib ALIAS userlib )
 #
-target_include_directories( userlib
+file( GLOB alpha_userlib_files ${user_dir}/src/*.cpp	
+			       ${user_dir}/tests/*.cpp
+                               ${user_dir}/dd4hep/aleph_geometry.cpp
+                               ${user_dir}/dd4hep/geant3_dump.cpp
+                               ${user_dir}/dd4hep/geant3_geometry.cpp )
+add_library( alpha_userlib SHARED  ${alpha_userlib_files} )
+add_library( Aleph::alpha_userlib ALIAS alpha_userlib )
+#
+target_include_directories( alpha_userlib
    PUBLIC  ${user_dir}/include
            ${user_dir}
 	   ${user_dir}/../aleph_headers
 )
-target_link_libraries(      userlib
+target_link_libraries(      alpha_userlib
    PUBLIC  Aleph::alphalib
 	   Aleph::julialib
            Aleph::alephlib
@@ -79,11 +81,12 @@ dd4hep_add_plugin(AlephGeometry SOURCES ${user_dir}/dd4hep/*.cpp
 target_include_directories( AlephGeometry PUBLIC  ${user_dir}/include )
 #
 #
-add_executable( alpha_user ${user_dir}/main/quuser.cpp
-                           ${ALEPH_PROGRAM_SOURCES} 
+file( GLOB alpha_user_files ${user_dir}/src/*.F ${user_dir}/tests/*.F )
+add_executable( alpha_user  ${alpha_user_files} ${user_dir}/main/quuser.cpp
+                            ${ALEPH_PROGRAM_SOURCES} 
 )
 target_link_libraries( alpha_user
-   PRIVATE Aleph::userlib
+   PRIVATE Aleph::alpha_userlib
            Aleph::alphalib
            Aleph::alephlib
            Aleph::julialib
@@ -95,31 +98,10 @@ target_link_libraries( alpha_user
 target_compile_options(alpha_user PUBLIC "-fpie")
 target_link_options(alpha_user PUBLIC "-fpie")
 #
-add_executable( alpha_dd4hep ${user_dir}/main/qugeom.cpp
-                             ${user_dir}/dd4hep/aleph_geometry.cpp
-                             ${user_dir}/dd4hep/geant3_dump.cpp
-                             ${user_dir}/dd4hep/geant3_geometry.cpp
-                             ${ALEPH_PROGRAM_SOURCES} 
-)
-target_link_libraries( alpha_dd4hep
-   PRIVATE Aleph::userlib
-           Aleph::alphalib
-           Aleph::alephlib
-           Aleph::julialib
-           Aleph::alephio
-           Aleph::alephlib
- 	   Aleph::bos77
-           ${ALEPH_CERN_LIBRARIES}
-)
-target_compile_options(alpha_dd4hep PUBLIC "-fpie")
-target_link_options(alpha_dd4hep PUBLIC "-fpie")
-#
-#
-#
 dd4hep_install_dir(${user_dir}/compact DESTINATION ${CMAKE_INSTALL_PREFIX} )
 install(DIRECTORY  ${user_dir}/include/alpha  DESTINATION include)
 install(DIRECTORY  ${user_dir}/include/bos    DESTINATION include)
-install(TARGETS    userlib alpha_user alpha_dd4hep EXPORT Aleph
+install(TARGETS    alpha_userlib alpha_user EXPORT Aleph
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

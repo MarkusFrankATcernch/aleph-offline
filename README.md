@@ -35,7 +35,7 @@ $>
 $> # Edit this file:  aleph-offline/patches/build_aleph.ssh
 $> # Set ALEPH_SOFT=<current directory>
 #> #
-$> . aleph-offline/patches/build_aleph.ssh
+$> . aleph-offline/patches/build_aleph.sh
 $> # build all software (cross fingers)
 $> aleph-build
 

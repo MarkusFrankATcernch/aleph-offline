@@ -51,8 +51,8 @@ void alpha::edm4hep_output::event_t::process_icco()  {
     std::cout << bos77::to_string(tab) << std::endl;
   }
   for( uint32_t i=1; i <= tab->size(); ++i )  {
-    class icco*     ah  = tab->row(i);
-    auto            hit = this->hits_icco.create();
+    const icco*     ah  = tab->row(i);
+    trackerhit_t    hit = this->hits_icco.create();
     PositionRhoZPhi pos(_LEN(ah->rvalue()), _LEN(ah->zvalue()), ah->phi());
     PositionRhoZPhi err(std::sqrt(ah->sigmaRphi()), std::sqrt(ah->sigmaZ()), std::sqrt(ah->sigmaRphi()));
     uint64_t        cell = 1;

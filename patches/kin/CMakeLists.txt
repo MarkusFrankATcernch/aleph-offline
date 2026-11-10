@@ -9,7 +9,7 @@
 # ==================================================================================================
 #
 SET( kingal_dir ${CMAKE_CURRENT_SOURCE_DIR} )
-message( STATUS "+++ KINGAL:      Build executables from sources: ${kingal_dir}" )
+message( STATUS "+++ KINGAL:     Build executables from sources: ${kingal_dir}" )
 #
 #
 function(aleph_kin_generator name)

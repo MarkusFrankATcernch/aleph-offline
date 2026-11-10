@@ -46,9 +46,9 @@ void alpha::edm4hep_output::event_t::process_hpdi()  {
       log << bos77::to_string(tab) << std::endl;
     }
     for( uint32_t i=0, siz=tab->size(); i < siz; ++i )  {
-      const auto* plane = tab->at(i);
-      const auto   edep = plane->energyDepos();
-      uint64_t     cell = uint64_t(plane->planeAddres());
+      const class hpdi* plane = tab->at(i);
+      int32_t  edep = plane->energyDepos();
+      uint64_t cell = uint64_t(plane->planeAddres());
       this->hits_hcal_plane.create(cell, edep, 0e0);
       if( dbg )  {
         char text[256];

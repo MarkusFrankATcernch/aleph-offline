@@ -13,15 +13,20 @@
 
 /// Framework include files
 #include <alpha/qcde.h>
+#include <alpha/qcnami.h>
 #include <alpha/processor.h>
 #include <alpha/edm4hep_output.h>
 #include <iostream>
 #include <cstring>
+#include <cstdlib>
+#include <climits>
+#include <cerrno>
 #include <string>
 #include <memory>
 
 extern "C"  {
-  extern alpha::qcde_t    qcde_;
+  extern alpha::qcde_t      qcde_;
+  extern alpha::qcnami_t    qcnami_;
   void qminit_();
   void qmread_();
   void abruev_(int& irun, int& ievt);
@@ -30,6 +35,7 @@ extern "C"  {
 
 namespace alpha  {
   qcde_t& qcde = qcde_;
+  qcnami_t& qcnami = qcnami_;
   const std::string& bos_bank_lists = "CERST";
 
   class test_processor;
@@ -46,6 +52,7 @@ using namespace alpha;
 
 extern "C"  {
 
+  /// Initialization function
   void quinit_()  {
     bool debug = false;
     bool print = false;
@@ -55,6 +62,7 @@ extern "C"  {
     if ( edm4hep_proc ) edm4hep_proc->initialize();
   }
 
+  /// Finalization function
   void quterm_()  {
     if ( edm4hep_proc ) edm4hep_proc->finalize();
     if ( test_proc    ) test_proc->terminate();
@@ -63,6 +71,7 @@ extern "C"  {
     event_proc.reset();
   }
 
+  /// Event processing function
   void quevnt_()  {
     if ( event_proc   ) event_proc->handle_event(params);
     if ( test_proc    ) test_proc->handle_event(params);
@@ -71,6 +80,7 @@ extern "C"  {
 }
 
 namespace  {
+
   void usage(int argc, char** argv, const char* msg)  {
     ::printf("Arguments: ");
     for(int i=0; i<argc; ++i)  {
@@ -81,6 +91,16 @@ namespace  {
       ::printf("%s\n", msg);
     }
     ::exit(0);
+  }
+  void set_alpha_cards( const char* value )  {
+    char resolved[PATH_MAX];
+    if( nullptr == ::realpath(value, resolved) )  {
+      ::printf( "+++ Non existing cards file: %s  [%s]\n",
+                value, ::strerror(errno) );
+      ::exit(ENOENT);
+    }
+    ::printf( "+++ Set ALPHACARDS=%s\n", resolved );
+    ::setenv("ALPHACARDS", resolved, 1);
   }
 }
 
@@ -93,19 +113,23 @@ int main(int argc, char** argv)   {
     const char* p = argv[iarg];
     while( *p == '-' ) ++p;
     if( strncmp(p,"help",1) == 0 ) {
-      usage(argc, argv, nullptr);
+      usage( argc, argv, nullptr );
     }
-    else if( strcmp(p,"debug") == 0 ) {
+    else if( strcmp( p, "debug" ) == 0 ) {
       debug = true;
     }
-    else if( strncmp(p,"test",1) == 0 ) {
-      test_proc = std::make_unique<processor<test_processor> >(debug, true);
+    else if( strncmp( p, "test", 1 ) == 0 ) {
+      test_proc = std::make_unique<processor<test_processor> >( debug, true );
     }
-    else if( strncmp(p,"edm4hep",1) == 0 ) {
+    else if( strncmp( p, "cards", 1 ) == 0 ) {
+      ++iarg;
+      set_alpha_cards( argv[iarg] );
+    }
+    else if( strncmp( p, "edm4hep", 1 ) == 0 ) {
       edm4hep_proc = std::make_unique<edm4hep_output>();
     }
     else {
-      int ret = edm4hep_proc->set_option(argv[iarg], argv[iarg+1]);
+      int ret = edm4hep_proc->set_option( argv[iarg], argv[iarg+1] );
       if( ret == 2 ) ++iarg;
     }
   }

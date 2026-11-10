@@ -17,7 +17,6 @@
 /// DD4hep include files
 #include <DD4hep/Printout.h>
 #include <DD4hep/DetFactoryHelper.h>
-//#include <XML/DetectorStructure.h>
 #include <XML/Conversions.h>
 
 /// C/C++ include files
