@@ -17,13 +17,6 @@
 #include <cstdint>
 #include <string>
 
-extern "C"  {
-  void    bosta_ ( );
-  int32_t namind_( const char* bname, int );
-  int32_t nlinc_ ( int32_t&    nami,  int& nr );
-  int32_t nlink_ ( const char* bname, int& nr, int );
-}
-
 namespace bos77  {
 
   /// Forward declarations

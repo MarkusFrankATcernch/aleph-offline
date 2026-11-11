@@ -176,7 +176,7 @@ add_subdirectory( uphy )
 add_subdirectory( mini )
 add_subdirectory( look )
 add_subdirectory( jscanbook )
-##add_subdirectory( dali )
+add_subdirectory( dali )
 #
 if( ALEPH_EDM4HEP )
   add_subdirectory( cxx )

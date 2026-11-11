@@ -16,6 +16,9 @@
 #include <alpha/qcde.h>
 #include <alpha/processor.h>
 
+extern "C"  {
+  void bosta_ ( );
+}
 namespace alpha {  class event_processor;   }
 
 /// Framework initialization callback

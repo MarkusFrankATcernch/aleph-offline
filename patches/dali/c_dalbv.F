@@ -23,6 +23,9 @@ C
 C    Called by :
 C ---------------------------------------------------------------------
 c      DVHC0=0
+      INCLUDE 'A_BCS.INC'
+      INCLUDE 'J_RCURNT.INC'
+      INCLUDE 'A_BMACRO.INC'
       NUM=0
       IF(IW(30).NE.12345) RETURN
       IHSDA = IW(NAMIND('HSDA'))
@@ -345,9 +348,9 @@ C    Called by :
 C ---------------------------------------------------------------------
 C     equivalent to IDTP, but uses FRFT, FRTL, etc.  -ecb
 *CA BCS
+      INCLUDE 'A_BCS.INC'
       INCLUDE 'DALI_CF.INC'
 *CA BMACRO
-      INCLUDE 'A_BCS.INC'
       INCLUDE 'J_RCURNT.INC'
       INCLUDE 'A_BMACRO.INC'
       IDVCHT=IW(ITRA+K)

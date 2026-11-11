@@ -12,6 +12,7 @@
 //==========================================================================
 
 /// Framework include files
+#include <bos/bosbank.h>
 #include <alpha/qcde.h>
 #include <alpha/qcnami.h>
 #include <alpha/processor.h>
@@ -24,7 +25,7 @@
 #include <string>
 #include <memory>
 
-extern "C"  {
+extern "C"  { 
   extern alpha::qcde_t      qcde_;
   extern alpha::qcnami_t    qcnami_;
   void qminit_();
@@ -34,9 +35,8 @@ extern "C"  {
 }
 
 namespace alpha  {
-  qcde_t& qcde = qcde_;
+  qcde_t&   qcde = qcde_;
   qcnami_t& qcnami = qcnami_;
-  const std::string& bos_bank_lists = "CERST";
 
   class test_processor;
   class edm4hep_output;
@@ -49,6 +49,11 @@ namespace alpha  {
 }
 
 using namespace alpha;
+
+extern "C" int64_t mem_addr_(int32_t& value)  {
+  int64_t val = (int64_t)&value;
+  return val;
+}
 
 extern "C"  {
 

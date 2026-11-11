@@ -2097,7 +2097,7 @@ C      Istat = system(T72(1:Len))
         EndIf
       EndDo
       End
-
+#if 0
       Integer Function LENOCC(TEXT)
 C  A private LENOCC function that discard all characters < 33
 C  Björn S. Nilsson, 29-May-1994
@@ -2113,7 +2113,7 @@ C
       I2 = 0
   100 LENOCC = I2
       End
-
+#endif
       Subroutine DGWAIT(Secnds)
       Real Secnds
 C Next UNIX specific!
@@ -2222,7 +2222,7 @@ C  This is the first kludge. DEC Fortran opens stdout with LIST carriage
 C  control:-(
 C
 C      OPEN(Unit=MUN6DU,CarriageControl='FORTRAN',Status='UNKNOWN')
-      OPEN(Unit=MUN6DU,Status='UNKNOWN')
+CC MSF      OPEN(Unit=MUN6DU,Status='UNKNOWN')
 COSF/1
 C
 C Clear the event flags 1 - 7

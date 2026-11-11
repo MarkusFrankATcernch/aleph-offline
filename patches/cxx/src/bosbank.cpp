@@ -20,21 +20,31 @@
 #include <iostream>
 
 extern "C"  {
-  extern union bos77::bcs_t    bcs_;
-  extern class bos77::sysbos_t sysbos_;
-  void nlistb_(char*, int32_t, int32_t*, uint32_t*, const char*, int);
+  void    bosta_ ( );
+  int32_t namind_( const char* bname, int );
+  int32_t nlinc_ ( int32_t&    nami,  int& nr );
+  int32_t nlink_ ( const char* bname, int& nr, int );
+  void    nlistb_(char*, int32_t, int32_t*, uint32_t*, const char*, int);
 }
+
+#if 0
+extern "C"  {
+  void    (*bosta_) ( );
+  int32_t (*ptr_namind_)( const char* bname, int );
+  int32_t (*nlinc_) ( int32_t&    nami,  int& nr );
+  int32_t (*nlink_) ( const char* bname, int& nr, int );
+  void    (*nlistb_)(char*, int32_t, int32_t*, uint32_t*, const char*, int);
+}
+#endif
 
 /// bos77 namespace declaration
 namespace bos77  {
-  union bcs_t&       bcs    = bcs_;
-  class sysbos_t&    sysbos = sysbos_;
+  union bcs_t&       get_bcs();
+  class sysbos_t&    get_sysbos();
+  union bcs_t&       bcs    = get_bcs();
+  class sysbos_t&    sysbos = get_sysbos();
   const std::string& bos_bank_lists = "CERST";
-}
-
-/// bos77 namespace declaration
-namespace bos77  {
-
+  
   /// Access to next bank of the same type: Works only if the offset work is correct (Aleph offline)
   const class bank_header* bank_header::next_bank_offset()  const  {
     const void* cptr = (const void*)this;

@@ -10,7 +10,6 @@
 //
 //  Author     : Markus Frank
 //==========================================================================
-
 /// Framework include files
 #include <tests/tests.h>
 
@@ -110,11 +109,6 @@ namespace {
 }
 
 extern "C" text_io_t textio_;
-
-extern "C" int64_t mem_addr_(int32_t& value)  {
-  int64_t val = (int64_t)&value;
-  return val;
-}
 
 namespace alpha  {
   /// Access PECO objects as calo_object entities

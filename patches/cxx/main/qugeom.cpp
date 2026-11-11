@@ -47,6 +47,11 @@ namespace alpha {
   void instantiate_dd4hep_geometry(const std::string& compact);
 }
 
+extern "C" int64_t mem_addr_(int32_t& value)  {
+  int64_t val = (int64_t)&value;
+  return val;
+}
+
 extern "C"  {
   void qquinit_()  {
     bool debug = false;

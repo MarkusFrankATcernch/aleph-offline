@@ -142,13 +142,9 @@ void dghlp(
 	FortranString *tcom,
 	FortranString *t,
 	int *l,
-#ifdef VMS
-	int *inv
-#else
 	int *inv,
 	int l_tcom,
 	int l_t
-#endif
 )
 /*
  * Perform various operations on the HELP window.
@@ -522,15 +518,8 @@ void dghlev(
 	XGCValues gval;
 	int tmp = 0, index;
 	unsigned long fgi, bgi;
-#ifdef vms
-	static unsigned char doc[] = "DO";
-	static unsigned char blc[] = " ";
-	static FortranString do_d = {sizeof(doc)-1,0,0,doc};
-	static FortranString bl_d = {sizeof(blc)-1,0,0,blc};
-#else
 	static FortranString do_d[] = "DO";
 	static FortranString bl_d[] = " ";
-#endif
 
 	gval.foreground = fgi = (unsigned long) ddefco.ltabdd[*fg];
 	gval.background = bgi = (unsigned long) ddefco.ltabdd[*bg];
@@ -2124,11 +2113,7 @@ after_rotation:
  * Wait here until something is typed on the keyboard or the pointer is moved.
  * An expose event should also bring us here,
  */
-#ifdef vms
-		dgtlnx(&maxlen, iosb, &f_char_d);
-#else
 		dgtlnx(&maxlen, iosb, &f_char, l_f_char);
-#endif /* VMS characters */
 /*
  * First check if the screen has been updated from backing store.
  */
@@ -2226,21 +2211,13 @@ after_rotation:
 /*
  * Toggle HELP window.
  */
-#ifdef vms
-					dqhlp(&hlp_d);
-#else
 					dqhlp(hlp_d);
-#endif /* VMS characters */
 					continue;
 				case '^':
 /*
  * Pop DALI window.
  */
-#ifdef vms
-					dgpop(&pop_d);
-#else
 					dgpop(pop_d);
-#endif /* VMS characters */
 					continue;
 				default:
 					printf("%s%", back_space); fflush(stdout);
