@@ -23,7 +23,7 @@
 void alpha::edm4hep_output::event_t::process_charged_tracks()  {
   this->alpha2edm4hep_charged.clear();
   if( this->data.debug_charged_tracks )  {
-  std::cout << "+++ Charged Tracks: KFCHT=" << qcde.KFCHT << " KLCHT:" << qcde.KLCHT << std::endl;
+    std::cout << "+++ Charged Tracks: KFCHT=" << qcde.KFCHT << " KLCHT:" << qcde.KLCHT << std::endl;
   }
   for( int itk = qcde.KFCHT; itk <= qcde.KLCHT; ++itk )  {
     std::size_t key   = this->particles_reco.size();
@@ -34,6 +34,7 @@ void alpha::edm4hep_output::event_t::process_charged_tracks()  {
     }
     int32_t frft_track = track->ktn();
     auto    trk = this->particles_reco.create();
+    const auto* cov = frft->ecovarM();
 
     this->alpha2edm4hep_charged[frft_track] = key;
     trk.setType(track->kclass());
@@ -43,7 +44,6 @@ void alpha::edm4hep_output::event_t::process_charged_tracks()  {
 
     if( this->data.debug_charged_tracks )  {
       std::cout << track->to_string() << std::endl;
-      // std::cout << ">>> FRFT track:" << frft_track << " Key:" << key << std::endl;
     }
     edm4hep::TrackState state;
     state.location       = edm4hep::TrackState::AtIP;
@@ -54,8 +54,28 @@ void alpha::edm4hep_output::event_t::process_charged_tracks()  {
     state.omega          = frft->inverseRadi();
     state.tanLambda      = frft->tanLambda();
     state.referencePoint = { 0e0, 0e0, 0e0 };
-    for( uint32_t i=0; i<21; ++i )
-      state.covMatrix.values[i] = frft->ecovarM()[i];
+    state.setCovMatrix(cov[0],     edm4hep::TrackParams::omega,     edm4hep::TrackParams::omega);
+    state.setCovMatrix(cov[1],     edm4hep::TrackParams::tanLambda, edm4hep::TrackParams::omega);
+    state.setCovMatrix(cov[2],     edm4hep::TrackParams::tanLambda, edm4hep::TrackParams::tanLambda);
+    state.setCovMatrix(cov[3],     edm4hep::TrackParams::phi,       edm4hep::TrackParams::omega);
+    state.setCovMatrix(cov[4],     edm4hep::TrackParams::phi,       edm4hep::TrackParams::tanLambda);
+    state.setCovMatrix(cov[5],     edm4hep::TrackParams::phi,       edm4hep::TrackParams::phi);
+    state.setCovMatrix(cov[6],     edm4hep::TrackParams::d0,        edm4hep::TrackParams::omega);
+    state.setCovMatrix(cov[7],     edm4hep::TrackParams::d0,        edm4hep::TrackParams::tanLambda);
+    state.setCovMatrix(cov[8],     edm4hep::TrackParams::d0,        edm4hep::TrackParams::phi);
+    state.setCovMatrix(cov[9],     edm4hep::TrackParams::d0,        edm4hep::TrackParams::d0);
+    state.setCovMatrix(cov[10],    edm4hep::TrackParams::z0,        edm4hep::TrackParams::omega);
+    state.setCovMatrix(cov[11],    edm4hep::TrackParams::z0,        edm4hep::TrackParams::tanLambda);
+    state.setCovMatrix(cov[12],    edm4hep::TrackParams::z0,        edm4hep::TrackParams::phi);
+    state.setCovMatrix(cov[13],    edm4hep::TrackParams::z0,        edm4hep::TrackParams::d0);
+    state.setCovMatrix(cov[14],    edm4hep::TrackParams::z0,        edm4hep::TrackParams::z0);
+    state.setCovMatrix(9999999999, edm4hep::TrackParams::time,      edm4hep::TrackParams::omega);
+    state.setCovMatrix(9999999999, edm4hep::TrackParams::time,      edm4hep::TrackParams::tanLambda);
+    state.setCovMatrix(9999999999, edm4hep::TrackParams::time,      edm4hep::TrackParams::phi);
+    state.setCovMatrix(9999999999, edm4hep::TrackParams::time,      edm4hep::TrackParams::d0);
+    state.setCovMatrix(9999999999, edm4hep::TrackParams::time,      edm4hep::TrackParams::z0);
+    state.setCovMatrix(9999999999, edm4hep::TrackParams::time,      edm4hep::TrackParams::time);
+   
     trk.addToTrackStates(state);
 
     /** Add here all auxiliary track information if present.
@@ -64,11 +84,11 @@ void alpha::edm4hep_output::event_t::process_charged_tracks()  {
     auto* frtl = track->frtl(); // Present for all charged tracks
     /// See 'sbank FRTL' for details
     trk.addToSubdetectorHitNumbers(charged_track_items::FRTL_DATA);
-    trk.addToSubdetectorHitNumbers(frtl ? frtl->narcV()                : 0);
-    trk.addToSubdetectorHitNumbers(frtl ? frtl->narcI()                : 0);
-    trk.addToSubdetectorHitNumbers(frtl ? frtl->nrEsti()               : 0);
-    trk.addToSubdetectorHitNumbers(frtl ? frtl->narcT()                : 0);
-    trk.addToSubdetectorHitNumbers(frtl ? frtl->nrestt()               : 0);
+    trk.addToSubdetectorHitNumbers(frtl ? frtl->narcV()                : 0); // VDET hits
+    trk.addToSubdetectorHitNumbers(frtl ? frtl->narcI()                : 0); // ITC  hits
+    trk.addToSubdetectorHitNumbers(frtl ? frtl->nrEsti()               : 0); // 
+    trk.addToSubdetectorHitNumbers(frtl ? frtl->narcT()                : 0); // TPC hits
+    trk.addToSubdetectorHitNumbers(frtl ? frtl->nrestt()               : 0); // TPC hits spirals
     trk.addToSubdetectorHitNumbers(0);
 
     auto* frid = track->frid(); // Present for all charged tracks

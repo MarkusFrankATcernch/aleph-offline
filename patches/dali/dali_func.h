@@ -1,0 +1,52 @@
+XtEventHandler displaywinpix(Widget w, Pixmapsize *data, XEvent *junk);
+void dgalgr(int *iwind, int *lev, char *tlet, int idir, float h1, float v1,
+	float h2, float v2);
+XtEventHandler keyinput(Widget w, caddr_t junk, XKeyEvent *cdata);
+void dgpusg();
+void drawtextvert(float *htxt, float *vtxt, int xoffset, int yoffset,
+	char *text, int *n, int fontflag);
+void dgrotg(int np, float x[], float y[], float h, float v);
+void setXcursor(char data[], int fg, int bg, int hsx, int hsy);
+void text_to_PS();
+void mprintf(char* text,int);
+void write_colors_to_meta();
+void dgbtit(),dgcome(char*, int);
+void mdgclpa(int*, float*, float*, float*, float*);
+void mdgalph(int*, float*, float*, int*);
+void mdgpoin(float*, float*);
+void mdgplot(int*, float*, float*);
+void mdgdraw(int*, float*, float*);
+void mdgtext(float*, float*, unsigned char*, int*, int*);
+void mdgtxtg1(float*, float*, unsigned char*, int*, int*, int*);
+void mdgtxtg2(int*, int*, unsigned char*, int*);
+void mdgtdir(int*), mdglevl(int*), mdglevs(int*, long unsigned int*);
+void mdgarcl(int*, float*, float*, int*);
+void mdgarea(int*, float*, float*);
+void mdgcler(float*, float*, float*, float*);
+void make_PS_postamble();
+void mdgalgr(int*, int*, char*, int*, float*, float*, float*, float*, unsigned char*, int*);
+void mdgdash(int*, int*);
+void dgsppt(int*, int*), dgooba(int), dgswpt(int32_t*);
+int make_PS_prolog();
+int tty_reset(void);
+void tty_end(void);
+
+XtEventHandler redrawhelp(Widget w, caddr_t junk1, XEvent *event);
+static logical IsPtrInDaliWin(int *x, int *y, unsigned int *button);
+static logical IsPtrInHelpWin(int *x, int *y, unsigned int *button);
+XtEventHandler dgpast(Widget w, int *evprm, XEvent *event);
+XtEventHandler dgbast(Widget w, int *evprm, XEvent *event);
+void dgiast(int *ncase, int *ncurs);
+void dgeast(int *ncase, int *ncurs);
+void dgchkx(), dgclev(int*);
+void dgdraw(int *, float *, float *);
+void dgetst(unsigned char**, int*, int*, int*, int);
+void dglevl(int*), dgstev(int*);
+void dgtlnx(int*, short int *, FortranString *, int);
+void dqcl0(float, float, float, float);
+void dqclp(float*, float*, float*, float*, int*);
+void dqhlp(FortranString*);
+void dqzrb(float*, float*, float*, float*, float*, float*, int*);
+void mdgtxtm(int*, int*, FortranString*, float*, float*, float*, float*, int*,int*,
+             unsigned char**, int*);
+void ucopy(void*, void*, int*);

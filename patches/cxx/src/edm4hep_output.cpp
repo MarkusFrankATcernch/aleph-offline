@@ -336,11 +336,13 @@ namespace alpha  {
     using track_t             = edm4hep::MutableTrack;
     using mcparticle_t        = edm4hep::MutableMCParticle;
     using trackerhit_t        = edm4hep::MutableTrackerHit3D;
+    using trackerplanehit_t   = edm4hep::MutableTrackerHitPlane;
     using sim_trackerhit_t    = edm4hep::MutableSimTrackerHit;
 
     using podio_trhit2trhit_t = podio::LinkCollection<edm4hep::TrackerHit, edm4hep::TrackerHit>;
     using podio_trhit2mcp_t   = podio::LinkCollection<edm4hep::TrackerHit, edm4hep::MCParticle>;
 
+    using trackerplanehits_t  = edm4hep::TrackerHitPlaneCollection;
     using trackerhits_t       = edm4hep::TrackerHit3DCollection;
     using simtrackerhits_t    = edm4hep::SimTrackerHitCollection;
     /// Relationship type definitions between tracks and MC particles
@@ -389,6 +391,8 @@ namespace alpha  {
     /** VDET coordinates used:  */
     /// Reconstructed VDET coordinates
     trackerhits_t                        hits_vdco                       {  };
+    trackerplanehits_t                   hitplanes_vdco                  {  };
+    
     trhit2trhit_t                        rel_hits_vdco_vdxy              {  };
     trhit2trhit_t                        rel_hits_vdco_vdzt              {  };
     /// VDCO fractional charge and strips count in rphi from VDFK
@@ -410,10 +414,13 @@ namespace alpha  {
     trackerhits_t                        hits_icco                       {  };
     /// ITC R-Phi hits
     trackerhits_t                        hits_itco1                      {  };
+    trackerplanehits_t                   hitplanes_itco1                 {  };
     /// ITC R-Phi hits (ambiguity)
     trackerhits_t                        hits_itco2                      {  };
+    trackerplanehits_t                   hitplanes_itco2                 {  };
     /// TPC corrected coordinates
     trackerhits_t                        hits_tpco                       {  };
+    trackerplanehits_t                   hitplanes_tpco                  {  };
     /// Raw TPC pad hits transformed to global coordinate system
     trackerhits_t                        hits_ptnc                       {  };
     /// dEdx data: Truncated mean of dE/dx measurements
@@ -500,6 +507,8 @@ namespace alpha  {
 
     /// Create VDET 3D hit from VDCO bank
     void         process_vdco();
+    /// Create VDET hit planes from VDCO bank
+    void         process_vdco_planes();
     /// Create VDET simulation hit from VDHT bank (produced by GALEPH)
     void         process_vdht();
     /// Process VDCO relations to FKIN and create VDET simulation hits from VDHT
@@ -520,9 +529,12 @@ namespace alpha  {
     void         process_icco();
     /// ITCO table bank: ITc COordinates (Recon. Bank)
     void         process_itco();
+    /// ITCO table bank: ITc COordinates (Recon. Bank) to TrackerHitPlanes
+    void         process_itco_planes();
 
     /// Process TPC coordinates from TPCO
     void         process_tpco();
+    void         process_tpco_planes();
     /// Create Production output Tpc pad Coordinates (NR=0)
     void         process_ptnc();
     /// Production output Tpc track pad dE/dX (NR=0)
@@ -816,6 +828,7 @@ void alpha::edm4hep_output::end_event(event_t& event)  {
 
   if( this->save_vdet_reco ) {
     pio.put(event.hits_vdco,                       "VDCO_Hits" );
+    //pio.put(event.hitplanes_vdco,                  "VDCO_HitPlanes" );
   }
   if( this->save_vdet_sim )  {
     pio.put(event.hits_vdxy,                       "VDXY_Hits" );
@@ -969,6 +982,7 @@ void alpha::edm4hep_output::event_t::convert_vdet()  {
   this->process_vdht();
   /// Create all VDET clusters from VDCO
   this->process_vdco();
+  //this->process_vdco_planes();
   /// Process VDCO relations to FKIN
   this->process_vdfk();
 
@@ -991,12 +1005,14 @@ void alpha::edm4hep_output::event_t::convert_itc()  {
   this->process_icco();
   /// ITCO table bank: ITc COordinates (Recon. Bank)
   this->process_itco();
+  //this->process_itco_planes();
 }
 
 /// Convert TPC hits and clusters
 void alpha::edm4hep_output::event_t::convert_tpc()  {
   /// Process TPC coordinates from TPCO
   this->process_tpco();
+  //this->process_tpco_planes();
   /// CreateProduction output Tpc pad Coordinates (NR=0)
   this->process_ptnc();
   /// Production output Tpc track pad dE/dX (NR=0)
@@ -1266,7 +1282,8 @@ namespace {
   double _ENE(double val) { return val * ENECONV;   }
 
   constexpr static const double LENCONV = (TGeoUnit::GeV/G4::GeV);
-  double _LEN(double val) { return val * LENCONV;   }
+  double _LEN(double val)  { return val * LENCONV;   }
+  double _LEN2(double val) { return val * LENCONV * LENCONV;   }
 
   constexpr static const double TIMECONV = (TGeoUnit::ns/G4::ns);
   double _TIM(double val) { return val * TIMECONV;  }
