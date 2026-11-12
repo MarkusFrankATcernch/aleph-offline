@@ -15,12 +15,6 @@
 #include <alpha/texs.h>
 #include <alpha/tpcgeom.h>
 
-namespace {
-  edm4hep::Quantity _dedx(int tag, float v, float e)  {
-    return { tag, v, e };
-  }
-}
-
 /// Production output Tpc track pad dE/dX (NR=0)
 void alpha::edm4hep_output::event_t::process_texs()  {
   /**
@@ -29,8 +23,8 @@ void alpha::edm4hep_output::event_t::process_texs()  {
      +------+  track segment per sector
                crossed
      ..............................................................
-     1          I    Number of words per segment (=7)
-     2          I    Number of segments
+       1          I    Number of words per segment (=7)
+       2          I    Number of segments
      ..............................................................
       1    SI  I    SegmentId        [1,*]
                        Sector slot number

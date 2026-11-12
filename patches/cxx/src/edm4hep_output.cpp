@@ -328,7 +328,8 @@ namespace alpha  {
       DEDX_AVERAGE_DRIFT      = 1<<1,
       DEDX_NUM_SAMPLES        = 1<<2,
       DEDX_TRACKLENGTH        = 1<<3,
-      DEDX_TRACK_OVERLAP      = 1<<4,
+      DEDX_IONIZATION         = 1<<4,
+      DEDX_TRACK_OVERLAP      = 1<<5,
 
       NONE
     };
@@ -338,7 +339,8 @@ namespace alpha  {
     using trackerhit_t        = edm4hep::MutableTrackerHit3D;
     using trackerplanehit_t   = edm4hep::MutableTrackerHitPlane;
     using sim_trackerhit_t    = edm4hep::MutableSimTrackerHit;
-
+    using quantity_t          = edm4hep::Quantity;
+    
     using podio_trhit2trhit_t = podio::LinkCollection<edm4hep::TrackerHit, edm4hep::TrackerHit>;
     using podio_trhit2mcp_t   = podio::LinkCollection<edm4hep::TrackerHit, edm4hep::MCParticle>;
 
@@ -423,6 +425,7 @@ namespace alpha  {
     trackerplanehits_t                   hitplanes_tpco                  {  };
     /// Raw TPC pad hits transformed to global coordinate system
     trackerhits_t                        hits_ptnc                       {  };
+
     /// dEdx data: Truncated mean of dE/dx measurements
     dedxdata_t                           dedx_trunc_mean                 {  };
     /// dEdx data: Average drift length of samples
@@ -431,6 +434,24 @@ namespace alpha  {
     dedxdata_t                           dedx_tracklen                   {  };
     /// dEdx data: Number of samples used for dE/dx
     dedxdata_t                           dedx_num_samples                {  };
+
+    /// dEdx data: Truncated mean of dE/dx measurements from QDEDX for charged tracks
+    dedxdata_t                           dedx_wire_trunc_mean            {  };
+    /// dEdx data: Useful length of track for dE/dx from QDEDX for charged tracks
+    dedxdata_t                           dedx_wire_tracklen              {  };
+    /// dEdx data: Number of samples used for dE/dx from QDEDX for charged tracks
+    dedxdata_t                           dedx_wire_num_samples           {  };
+    /// dEdx data: Ionization+error of dE/dX from QDEDX for charged tracks
+    dedxdata_t                           dedx_wire_ionization            {  };
+
+    /// dEdx data: Truncated mean of dE/dx measurements from QPADX for charged tracks
+    dedxdata_t                           dedx_pads_trunc_mean            {  };
+    /// dEdx data: Useful length of track for dE/dx from QPADX for charged tracks
+    dedxdata_t                           dedx_pads_tracklen              {  };
+    /// dEdx data: Number of samples used for dE/dx from QPADX for charged tracks
+    dedxdata_t                           dedx_pads_num_pads           {  };
+    /// dEdx data: Ionization+error of dE/dX from QPADX for charged tracks
+    dedxdata_t                           dedx_pads_ionization            {  };
 
     /// ECAL hits from PECO
     calohits_t                           hits_ecal                       {  };
@@ -469,8 +490,11 @@ namespace alpha  {
     /// Default destructor
     virtual ~event_t();
 
+    quantity_t _dedx( int tag, float value, float error )  const
+    {  return { tag, value, error };      }
 
-
+    void _add_dedx( dedxdata_t& cont, track_t& track, quantity_t& quantity );
+    
     /// Main event conversion entry point
     void convert_event();
 
@@ -540,6 +564,8 @@ namespace alpha  {
     /// Production output Tpc track pad dE/dX (NR=0)
     void         process_texs();
     void         process_t2xs();
+    void         process_dedx_wires();
+    void         process_dedx_pads();
 
     /// Process relationships between charged tracks and VDCO, ITCO and TPCO
     void         process_frtl();
@@ -856,7 +882,18 @@ void alpha::edm4hep_output::end_event(event_t& event)  {
     pio.put(event.dedx_avg_drift,                  "DEDX_AverageDrivt" );
     pio.put(event.dedx_tracklen,                   "DEDX_TrackLength" );
     pio.put(event.dedx_num_samples,                "DEDX_NumberSamples" );
+    
+    pio.put(event.dedx_wire_trunc_mean,            "DEDX_Wire_trunc_mean" );
+    pio.put(event.dedx_wire_tracklen,              "DEDX_Wire_track_length" );
+    pio.put(event.dedx_wire_num_samples,           "DEDX_Wire_num_samples" );
+    pio.put(event.dedx_wire_ionization,            "DEDX_Wire_ionization" );
+
+    pio.put(event.dedx_pads_trunc_mean,            "DEDX_Pads_trunc_mean" );
+    pio.put(event.dedx_pads_tracklen,              "DEDX_Pads_track_length" );
+    pio.put(event.dedx_pads_num_pads,              "DEDX_Pads_num_pads" );
+    pio.put(event.dedx_pads_ionization,            "DEDX_Pads_ionization" );
   }
+
   if( this->save_ecal_reco )  {
     pio.put(event.hits_ecal,                       "ECAL_Clusters" );
   }
@@ -891,7 +928,19 @@ loop_banks(alpha::bank_access_t& acc, FUNC func)  {
   return { num_rows, count };
 }
 
+
 #include <alpha/fkin.h>
+
+void alpha::edm4hep_output::event_t::_add_dedx(dedxdata_t& cont,
+                                               track_t& track,
+                                               edm4hep::Quantity& quantity)
+{
+  edm4hep::MutableRecDqdx dedx;
+  dedx.setDQdx(quantity);
+  dedx.setTrack(track);
+  cont.push_back(dedx);
+}
+
 void alpha::edm4hep_output::event_t::convert_event()  {
   int num_rows;
 
@@ -1017,7 +1066,9 @@ void alpha::edm4hep_output::event_t::convert_tpc()  {
   this->process_ptnc();
   /// Production output Tpc track pad dE/dX (NR=0)
   this->process_texs();
-  this->process_t2xs();
+  this->process_t2xs();  
+  this->process_dedx_wires();
+  this->process_dedx_pads();
 }
 
 /// Convert ECAL hits and clusters
@@ -1352,6 +1403,8 @@ namespace {
 /// Process Production output Tpc track pad dE/dX (NR=0)
 #include "edm4hep_output_texs.h"
 #include "edm4hep_output_t2xs.h"
+/// Extract DeDx using QDEDX and QPADX
+#include "edm4hep_output_dedx.h"
 
 /// Process FRTL table: Tpc+Itc+Vdet Geometry Track point List
 #include "edm4hep_output_frtl.h"

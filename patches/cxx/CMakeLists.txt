@@ -46,7 +46,7 @@ file( GLOB alpha_userlib_files ${user_dir}/src/*.cpp
                                ${user_dir}/dd4hep/aleph_geometry.cpp
                                ${user_dir}/dd4hep/geant3_dump.cpp
                                ${user_dir}/dd4hep/geant3_geometry.cpp )
-add_library( alpha_userlib SHARED  ${alpha_userlib_files} )
+add_library( alpha_userlib STATIC  ${alpha_userlib_files} )
 add_library( Aleph::alpha_userlib ALIAS alpha_userlib )
 #
 target_include_directories( alpha_userlib
@@ -56,11 +56,11 @@ target_include_directories( alpha_userlib
 )
 target_link_libraries(      alpha_userlib
    PUBLIC
-#           Aleph::alphalib
-#	   Aleph::julialib
-#           Aleph::alephlib
-#	   Aleph::alephio
-#	   Aleph::bos77
+           Aleph::alphalib
+	   Aleph::julialib
+           Aleph::alephlib
+	   Aleph::alephio
+	   Aleph::bos77
            DD4hep::DDCore
            EDM4HEP::edm4hep
            EDM4HEP::edm4hepDict
@@ -96,28 +96,30 @@ target_link_libraries( alpha_user
            ${ALEPH_CERN_LIBRARIES}
 )
 target_compile_options(alpha_user PUBLIC "-fpie")
-target_link_options(alpha_user PUBLIC "-fpie")
+target_link_options(alpha_user PUBLIC    "-fpie")
 #
-add_executable( alpha_test  ${alpha_user_files} ${user_dir}/main/qutest.cpp
-                            ${ALEPH_PROGRAM_SOURCES} 
-)
-target_link_libraries( alpha_test
-   PRIVATE Aleph::alphalib
-           Aleph::alephlib
-           Aleph::julialib
-           Aleph::alephio
-           Aleph::alephlib
- 	   Aleph::bos77 Aleph::alpha_userlib
-           ${ALEPH_CERN_LIBRARIES}
-)
-target_compile_options(alpha_test PUBLIC "-fpie")
-target_include_directories(alpha_test PUBLIC  ${user_dir} ${user_dir}/include )
-target_link_options(alpha_test PUBLIC "-fpie")
+#
+#add_executable( alpha_test  ${alpha_user_files} ${user_dir}/main/qutest.cpp
+#                            ${ALEPH_PROGRAM_SOURCES} 
+#)
+#target_link_libraries( alpha_test
+#   PRIVATE Aleph::alpha_userlib
+#           Aleph::alphalib
+#           Aleph::alephlib
+#           Aleph::julialib
+#           Aleph::alephio
+#           Aleph::alephlib
+# 	   Aleph::bos77 Aleph::alpha_userlib
+#           ${ALEPH_CERN_LIBRARIES}
+#)
+#target_compile_options(alpha_test PUBLIC "-fpie")
+#target_include_directories(alpha_test PUBLIC  ${user_dir} ${user_dir}/include )
+#target_link_options(alpha_test PUBLIC    "-fpie")
 #
 dd4hep_install_dir(${user_dir}/compact DESTINATION ${CMAKE_INSTALL_PREFIX} )
 install(DIRECTORY  ${user_dir}/include/alpha  DESTINATION include)
 install(DIRECTORY  ${user_dir}/include/bos    DESTINATION include)
-install(TARGETS    alpha_userlib alpha_user alpha_test EXPORT Aleph
+install(TARGETS    alpha_userlib alpha_user EXPORT Aleph
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

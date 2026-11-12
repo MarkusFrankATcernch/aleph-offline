@@ -65,18 +65,17 @@ namespace  {
     return nullptr;
   }
 }
-
+#if 0
 namespace alpha  {
   qcde_t* qcde;// = qcde_;
   qcnami_t* qcnami;// = qcnami_;
   const std::string& bos_bank_lists = "CERST";
 }
+// extern "C" int32_t* textio_;
+#endif
 
 extern "C"  {
-
-  int32_t* textio_;
-
-  
+ 
   /// Initialization function
   void init_111( const std::vector<std::string>& argv)  {
     bool debug = false;
