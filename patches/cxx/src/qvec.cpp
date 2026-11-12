@@ -13,6 +13,8 @@
 
 /// Framework include files
 #include <alpha/alpha.h>
+#include <alpha/f77functions.h>
+
 #include <alpha/qcde.h>
 #include <alpha/qvec.h>
 #include <alpha/qdet.h>
@@ -36,13 +38,11 @@
 /// C/C++ include files
 #include <cstring>
 
-extern "C" void get_particle_name_(const int32_t& pcode, int32_t& len, char* text, int32_t siz);
-
 /// Track's particle name (see ALPHA user's manual for details)
 std::string alpha::qvec::cqtpn() const   {
   int32_t len = 0;
   char text[128];
-  get_particle_name_(this->particle_code, len, text, int(sizeof(text)));
+  f77::fun->get_particle_name_(this->particle_code, len, text, int(sizeof(text)));
   text[len] = 0;
   return text;
 }

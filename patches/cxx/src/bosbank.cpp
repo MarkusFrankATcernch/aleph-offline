@@ -13,12 +13,14 @@
 
 /// Framework include files
 #include <bos/bosbank.h>
+#include <alpha/f77functions.h>
 
 /// C/C++ include files
 #include <sstream>
 #include <iomanip>
 #include <iostream>
 
+#if 0
 extern "C"  {
   void    bosta_ ( );
   int32_t namind_( const char* bname, int );
@@ -26,24 +28,15 @@ extern "C"  {
   int32_t nlink_ ( const char* bname, int& nr, int );
   void    nlistb_(char*, int32_t, int32_t*, uint32_t*, const char*, int);
 }
-
-#if 0
-extern "C"  {
-  void    (*bosta_) ( );
-  int32_t (*ptr_namind_)( const char* bname, int );
-  int32_t (*nlinc_) ( int32_t&    nami,  int& nr );
-  int32_t (*nlink_) ( const char* bname, int& nr, int );
-  void    (*nlistb_)(char*, int32_t, int32_t*, uint32_t*, const char*, int);
-}
 #endif
+#include <alpha/f77functions.h>
 
 /// bos77 namespace declaration
 namespace bos77  {
-  union bcs_t&       get_bcs();
-  class sysbos_t&    get_sysbos();
-  union bcs_t&       bcs    = get_bcs();
-  class sysbos_t&    sysbos = get_sysbos();
-  const std::string& bos_bank_lists = "CERST";
+
+  extern union bcs_t&    bcs;
+  extern class sysbos_t& sysbos;
+  const std::string&     bos_bank_lists = "CERST";
   
   /// Access to next bank of the same type: Works only if the offset work is correct (Aleph offline)
   const class bank_header* bank_header::next_bank_offset()  const  {
@@ -63,7 +56,7 @@ namespace bos77  {
   /// Resolve hashed name index of the bank
   int32_t namind(const char* bank)   {
     // Offset here call to iw[namind(xxx))] which starts in F77 with 1
-    return namind_(bank,4);
+    return f77::fun->namind_(bank,4);
   }
 
   /// Resolve hashed name index of the bank
@@ -73,7 +66,7 @@ namespace bos77  {
 
   /// Get bank instance 'num' of bank type 'bnam'
   int32_t nlink(const char* bnam, int32_t num)  {
-    int32_t off = ::nlink_(bnam, num, 4);
+    int32_t off = f77::fun->nlink_(bnam, num, 4);
     if( off )  {
       return off - bankheader_words;
     }
@@ -87,21 +80,21 @@ namespace bos77  {
 
   /// Get bank instance 'num' of bank type 'bnam'
   int32_t nlinc(int32_t nami, int32_t num)  {
-    return ::nlinc_(nami, num);
+    return f77::fun->nlinc_(nami, num);
   }
 
   /// Access bank names in bank list
   std::string nlistb(uint32_t i, char list)  {
     char ret[32];
     i = i + 1;
-    ::nlistb_(ret, sizeof(ret), bcs.iw, &i, &list, 1);
+    f77::fun->nlistb_(ret, sizeof(ret), bcs.iw, &i, &list, 1);
     if( ret[0] == ' ' )  return {};
     return std::string(ret, ret+4);
   }
 
   /// Access bank from BOS common by index: Get bank instance 'num' of bank name identifier
   class bank* get_bank(int32_t nami, int32_t num)  {
-    int32_t off = ::nlinc_(nami, num);
+    int32_t off = f77::fun->nlinc_(nami, num);
     if( off )  {
       off -= bos77::bankheader_words;
       class bank* bank = (class bank*)(bcs.iw + off);
@@ -113,7 +106,7 @@ namespace bos77  {
 
   /// Get bank instance 'num' of bank type 'bnam'
   class bank* get_bank(const char* bnam, int32_t num)  {
-    int32_t off = bnam ? ::nlink_(bnam, num, 4) : 0;
+    int32_t off = bnam ? f77::fun->nlink_(bnam, num, 4) : 0;
     if( off )  {
       off -= bos77::bankheader_words;
       class bank* bank = (class bank*)(bcs.iw + off);

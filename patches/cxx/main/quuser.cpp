@@ -21,6 +21,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <climits>
+#include <climits>
 #include <cerrno>
 #include <string>
 #include <memory>
@@ -37,6 +38,8 @@ extern "C"  {
 namespace alpha  {
   qcde_t&   qcde = qcde_;
   qcnami_t& qcnami = qcnami_;
+  
+  void forward_functions();
 
   class test_processor;
   class edm4hep_output;
@@ -45,7 +48,6 @@ namespace alpha  {
   std::unique_ptr<processor<test_processor> >  test_proc;
   std::unique_ptr<processor<event_processor> > event_proc;
   std::unique_ptr<edm4hep_output> edm4hep_proc;
-
 }
 
 using namespace alpha;
@@ -61,6 +63,9 @@ extern "C"  {
   void quinit_()  {
     bool debug = false;
     bool print = false;
+    alpha::forward_functions();
+    // f77::load(funcs, com);
+
     event_proc   = std::make_unique<processor<event_processor> >(debug, print);
     if ( event_proc   ) event_proc->initialize();
     if ( test_proc    ) test_proc->initialize();
@@ -78,9 +83,9 @@ extern "C"  {
 
   /// Event processing function
   void quevnt_()  {
-    if ( event_proc   ) event_proc->handle_event(params);
-    if ( test_proc    ) test_proc->handle_event(params);
-    if ( edm4hep_proc ) edm4hep_proc->handle_event(params);
+    if ( event_proc   ) event_proc->handle_event();
+    if ( test_proc    ) test_proc->handle_event();
+    if ( edm4hep_proc ) edm4hep_proc->handle_event();
   }
 }
 
@@ -108,8 +113,6 @@ namespace  {
     ::setenv("ALPHACARDS", resolved, 1);
   }
 }
-
-#include <climits>
 
 int main(int argc, char** argv)   {
   int irun, ievt;

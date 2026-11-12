@@ -12,12 +12,9 @@
 //==========================================================================
 
 /// Framework include files
-#define DEFINE_QCDE_STORAGE 1
-#include <alpha/qcde.h>
-#define DEFINE_QCNAMI_STORAGE 1
-#include <alpha/qcnami.h>
 #include <alpha/processor.h>
 #include <alpha/edm4hep_output.h>
+#include <alpha/f77functions.h>
 
 #include <iostream>
 #include <cstring>
@@ -28,15 +25,17 @@
 #include <memory>
 #include <dlfcn.h>
 
+using namespace alpha;
+
 namespace alpha  {
   class test_processor;
   class edm4hep_output;
   class event_processor;
 }
-using namespace alpha;
 
 namespace  {
-  std::unique_ptr<processor<test_processor> >  test_proc;
+
+  //std::unique_ptr<processor<test_processor> >  test_proc;
   std::unique_ptr<processor<event_processor> > event_proc;
   std::unique_ptr<edm4hep_output> edm4hep_proc;
   void* load_func(const char* lib_name, const char* sym_name)  {
@@ -66,21 +65,20 @@ namespace  {
   }
 }
 
-namespace alpha  {
-  qcde_t* qcde;// = qcde_;
-  qcnami_t* qcnami;// = qcnami_;
-  const std::string& bos_bank_lists = "CERST";
-}
+namespace f77 { void load(void*, void*); }
 
 extern "C"  {
 
   int32_t* textio_;
 
-  
   /// Initialization function
-  void init_111( const std::vector<std::string>& argv)  {
+  void init_111(void* funcs, void* com, const std::vector<std::string>& argv)  {
     bool debug = false;
+    bool print = true;
     int  ret;
+
+    f77::load(funcs, com);
+
     for( std::size_t iarg=0, argc = argv.size(); iarg < argc; ++iarg )  {
       const char* p = argv[iarg].c_str();
       while( *p == '-' ) ++p;
@@ -88,7 +86,7 @@ extern "C"  {
         debug = true;
       }
       else if( strncmp( p, "test", 1 ) == 0 ) {
-        test_proc = std::make_unique<processor<test_processor> >( debug, true );
+        //test_proc = std::make_unique<processor<test_processor> >( debug, true );
       }
       else if( strncmp( p, "edm4hep", 1 ) == 0 ) {
         edm4hep_proc = std::make_unique<edm4hep_output>();
@@ -100,19 +98,22 @@ extern "C"  {
         if( ret == 2 ) ++iarg;
       }
     }
-    void* pointer = load_func(nullptr, "namind_");
-    std::cout << "Namind pointer is " << pointer << std::endl;
-
-    if ( test_proc    ) test_proc->initialize();
+    event_proc   = std::make_unique<processor<event_processor> >(debug, print);
+    //if ( test_proc    ) test_proc->initialize();
     if ( edm4hep_proc ) edm4hep_proc->initialize();
   }
   
   void event_111()  {
-    if ( test_proc    ) test_proc->handle_event(params);
-    if ( edm4hep_proc ) edm4hep_proc->handle_event(params);
+    if( event_proc   )  {
+      event_proc->handle_event();
+    }
+    //if ( test_proc    ) test_proc->handle_event();
+    if ( edm4hep_proc ) edm4hep_proc->handle_event();
   }
+  
   void fini_111()  {
-    if ( test_proc    ) test_proc->terminate();
+    //if ( test_proc    ) test_proc->terminate();
     if ( edm4hep_proc ) edm4hep_proc->finalize();
+    if ( event_proc )  event_proc->terminate();
   }
 }

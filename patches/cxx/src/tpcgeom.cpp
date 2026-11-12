@@ -11,13 +11,12 @@
 //
 //==========================================================================
 
-/// Framework include files
-#include <alpha/tpcgeom.h>
-
-extern "C" alpha::tpcgeom_t tpgeom_;
-extern "C" alpha::tpcgeop_t tpgeop_;
+#include <cstdint>
 
 namespace alpha  {
-  tpcgeom_t& tpcgeom = tpgeom_;
-  tpcgeop_t& tpcgeop = tpgeop_;  
+
+  struct tpcgeom_t;
+  struct tpcgeop_t;
+  // tpcgeom_t* tpcgeom = nullptr; // tpgeom_;
+  // tpcgeop_t* tpcgeop = nullptr; // tpgeop_;
 }

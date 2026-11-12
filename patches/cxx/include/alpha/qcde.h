@@ -17,7 +17,6 @@
 #include <cstdint>
 
 /// Framework include files
-#include <bos/bosbank.h>
 
 /// ALPHA namespace declaration
 namespace alpha  {

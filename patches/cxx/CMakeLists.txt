@@ -41,8 +41,7 @@ endif()
 #
 #
 #
-file( GLOB alpha_userlib_files ${user_dir}/src/*.cpp	
-			       ${user_dir}/tests/*.cpp
+file( GLOB alpha_userlib_files ${user_dir}/src/*.cpp
                                ${user_dir}/dd4hep/aleph_geometry.cpp
                                ${user_dir}/dd4hep/geant3_dump.cpp
                                ${user_dir}/dd4hep/geant3_geometry.cpp )
@@ -82,8 +81,10 @@ dd4hep_add_plugin(AlephGeometry SOURCES ${user_dir}/dd4hep/*.cpp
 target_include_directories( AlephGeometry PUBLIC  ${user_dir}/include )
 #
 #
-file( GLOB alpha_user_files ${user_dir}/src/*.F ${user_dir}/tests/*.F )
-add_executable( alpha_user  ${alpha_user_files} ${user_dir}/main/quuser.cpp
+file( GLOB alpha_user_files ${user_dir}/src/*.F ${user_dir}/tests/*.F ${user_dir}/tests/*.cpp )
+add_executable( alpha_user  ${alpha_user_files}
+                            ${user_dir}/main/functions.cpp
+                            ${user_dir}/main/quuser.cpp
                             ${ALEPH_PROGRAM_SOURCES} 
 )
 target_link_libraries( alpha_user
@@ -98,7 +99,14 @@ target_link_libraries( alpha_user
 target_compile_options(alpha_user PUBLIC "-fpie")
 target_link_options(alpha_user PUBLIC "-fpie")
 #
-add_executable( alpha_test  ${alpha_user_files} ${user_dir}/main/qutest.cpp
+add_executable( alpha_test  ${user_dir}/tests/f77_tests.F
+                            ${user_dir}/src/quuser.F
+                            ${user_dir}/main/qutest.cpp
+                            ${user_dir}/main/functions.cpp
+                            ${user_dir}/src/functions.cpp
+                            ${user_dir}/src/bcs.cpp
+                            ${user_dir}/src/bosbank.cpp
+                            ${user_dir}/src/tpcgeom.cpp
                             ${ALEPH_PROGRAM_SOURCES} 
 )
 target_link_libraries( alpha_test
@@ -107,7 +115,7 @@ target_link_libraries( alpha_test
            Aleph::julialib
            Aleph::alephio
            Aleph::alephlib
- 	   Aleph::bos77 Aleph::alpha_userlib
+ 	   Aleph::bos77 # Aleph::alpha_userlib
            ${ALEPH_CERN_LIBRARIES}
 )
 target_compile_options(alpha_test PUBLIC "-fpie")
@@ -117,7 +125,7 @@ target_link_options(alpha_test PUBLIC "-fpie")
 dd4hep_install_dir(${user_dir}/compact DESTINATION ${CMAKE_INSTALL_PREFIX} )
 install(DIRECTORY  ${user_dir}/include/alpha  DESTINATION include)
 install(DIRECTORY  ${user_dir}/include/bos    DESTINATION include)
-install(TARGETS    alpha_userlib alpha_user alpha_test EXPORT Aleph
+install(TARGETS    alpha_userlib  alpha_test EXPORT Aleph
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

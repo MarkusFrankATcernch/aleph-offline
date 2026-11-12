@@ -10,6 +10,7 @@
 //
 //  Author     : Markus Frank
 //==========================================================================
+
 /// Framework include files
 #include <tests/tests.h>
 
@@ -756,7 +757,7 @@ namespace alpha  {
 }
 
 /// Framework event callback
-template <> void alpha::processor<alpha::test_processor>::handle_event(alpha::constants_t& /* par */)  {
+template <> void alpha::processor<alpha::test_processor>::handle_event()  {
   if( debug ) ::printf("test_processor:  +++++++  Calling %s   KNEVT:%d\n", __FUNCTION__, qcde.KNEVT);
   tests::process_event();
 }
@@ -770,3 +771,4 @@ template <> void alpha::processor<alpha::test_processor>::terminate()  {
 template <> void alpha::processor<alpha::test_processor>::initialize()  {
   tests::initialize();
 }
+

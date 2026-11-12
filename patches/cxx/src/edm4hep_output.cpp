@@ -592,7 +592,7 @@ namespace {
 }
 
 /// Framework event callback
-template <> void alpha::processor<alpha::edm4hep_output>::handle_event(constants_t& /* par */)  {
+template <> void alpha::processor<alpha::edm4hep_output>::handle_event()  {
   if( debug ) ::printf("edm4hep_output:  +++++++  Calling %s   KNEVT:%d\n", __FUNCTION__, qcde.KNEVT);
   ::printf("+++++++  Calling %s\n", __FUNCTION__);
   auto evt = conv->begin_event();
@@ -795,7 +795,7 @@ bool alpha::edm4hep_output::finalize()  {
 }
 
 /// Framework event callback
-bool alpha::edm4hep_output::handle_event(constants_t& /* par */)  {
+bool alpha::edm4hep_output::handle_event()  {
   auto event = this->begin_event();
   this->convert_event(*event);
   this->end_event(*event);

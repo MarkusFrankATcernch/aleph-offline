@@ -14,10 +14,11 @@
 /// C/C++ include files
 #include <cstdio>
 #include <alpha/qcde.h>
+#include <alpha/alpha.h>
 #include <alpha/processor.h>
 
-extern "C"  {
-  void bosta_ ( );
+namespace alpha  {
+  void (*bosta) ();
 }
 namespace alpha {  class event_processor;   }
 
@@ -27,8 +28,9 @@ template <> void alpha::processor<alpha::event_processor>::initialize()  {
 }
 
 /// Framework event callback
-template <> void alpha::processor<alpha::event_processor>::handle_event(constants_t& /* par */)  {
-  if( debug ) ::printf("event_processor: +++++++  Calling %s   KNEVT:%d\n", __FUNCTION__, qcde.KNEVT);
+template <> void alpha::processor<alpha::event_processor>::handle_event()  {
+  if( debug ) ::printf("event_processor: +++++++  Calling %s   KNEVT:%d\n",
+                       __FUNCTION__, qcde.KNEVT);
   alpha::init_event();
 }
 
@@ -36,6 +38,6 @@ template <> void alpha::processor<alpha::event_processor>::handle_event(constant
 template <> void alpha::processor<alpha::event_processor>::terminate()  {
   if( debug )  {
     ::printf("event_processor: +++++++  Calling %s\n", __FUNCTION__);
-    ::bosta_();
+    ::alpha::bosta();
   }
 }

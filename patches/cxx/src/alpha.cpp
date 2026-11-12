@@ -15,6 +15,7 @@
 /// Framework include files
 #include <alpha/alpha.h>
 #include <alpha/qcde.h>
+#include <alpha/f77functions.h>
 #include <bos/bosbank.h>
 
 /// C/C++ include files
@@ -26,6 +27,8 @@ namespace {
 }
 
 namespace alpha {
+  
+  
   constants_t& params = s__params;
   // trim from end of string (right)
   inline std::string& rtrim(std::string& s, const char* t = ws)  {
@@ -43,8 +46,6 @@ namespace alpha {
     return ltrim(rtrim(s, t), t);
   }
 }
-
-extern "C" void aublis_(const char* bank_list, int32_t len);
 
 std::string alpha::fmt_ene(float v)  {
   char  text[128];
@@ -91,7 +92,7 @@ std::string& alpha::_trim(std::string& s)  {
 
 /// Bank listing of all BOS lists
 void alpha::aublis(const char bank_list)  {
-  aublis_(&bank_list, 1);
+  f77::fun->aublis_(&bank_list, 1);
 }
 
 /// Bank listing of all BOS lists

@@ -15,8 +15,8 @@
 #include <alpha/ptnc.h>
 #include <alpha/ptun.h>
 #include <alpha/tpcgeom.h>
+#include <alpha/f77functions.h>
 
-extern "C" void tctglb_(int32_t& slot, float& rs, float& rphis, float& zs, float& r, float& rphi, float& z);
 
 /// Create Production output Tpc pad Coordinates (NR=0)
 void alpha::edm4hep_output::event_t::process_ptnc()  {
@@ -100,7 +100,7 @@ void alpha::edm4hep_output::event_t::process_ptnc()  {
     /// -- changes in drift velocity
     /// -- time-of-flight
     /// -- drift field distortions
-    ::tctglb_(slot, rs, rphis, zs, r, rphi, z);
+    f77::fun->tctglb_(slot, rs, rphis, zs, r, rphi, z);
 
     float           phi = rphi/r;
     PositionRhoZPhi pos (_LEN(r), _LEN(z), phi);

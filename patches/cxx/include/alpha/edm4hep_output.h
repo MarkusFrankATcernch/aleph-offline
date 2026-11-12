@@ -82,7 +82,7 @@ namespace alpha  {
     /// Finalize conversion. Close file
     bool finalize();
     /// Framework event callback
-    bool handle_event(constants_t& par);
+    bool handle_event();
 
     /// Start event saving
     std::unique_ptr<event_t> begin_event();

@@ -12,9 +12,7 @@
 //==========================================================================
 
 /// Framework include files
-#include <alpha/qcde.h>
-#include <alpha/qcnami.h>
-#include <alpha/processor.h>
+#include <alpha/f77functions.h>
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
@@ -24,123 +22,6 @@
 #include <vector>
 #include <memory>
 #include <dlfcn.h>
-
-#include "../src/alpha.cpp"
-#include "../src/bosbank.cpp"
-#include "../src/event_processor.cpp"
-
-extern "C"  {
-  extern alpha::qcde_t      qcde_;
-  extern alpha::qcnami_t    qcnami_;
-  void qminit_();
-  void qmread_();
-  void abruev_(int& irun, int& ievt);
-  void qmevnt_(int& irun, int& ievt);
-  int32_t namind_( const char* bname, int );
-}
-
-extern "C"  {
-  extern union bos77::bcs_t    bcs_;
-  extern class bos77::sysbos_t sysbos_;
-}
-
-/// bos77 namespace declaration
-namespace bos77  {
-  //union bcs_t&       bcs    = bcs_;
-  //class sysbos_t&    sysbos = sysbos_;
-}
-
-
-namespace alpha  {
-  qcde_t& qcde = qcde_;
-  qcnami_t& qcnami = qcnami_;
-  const std::string& bos_bank_lists = "CERST";
-
-  class event_processor;
-  std::unique_ptr<processor<event_processor> > event_proc;
-}
-
-namespace {
-  
-  union _callback  {
-    void (*function)(void);
-    void (*function_args)(const std::vector<std::string>& args);
-    void* pointer;
-  };
-
-  _callback __init, __event, __fini;
-  
-  std::vector<std::string> arguments;
-  
-  void* load_func(const char* sym_name)  {
-    const char* lib_name = "libalpha_userlib.so";
-    ::dlerror();    /* Clear any existing error */
-    void* handle = ::dlopen(lib_name, RTLD_LAZY);
-    if( handle )  {
-      void *pointer = ::dlsym(handle, sym_name);
-      if( nullptr == pointer )  {
-        char* error = ::dlerror();
-        std::cout << "+++ Loading library: " << lib_name
-                  << " symbol: " << sym_name
-                  << "  [" << error << "] "
-                  << std::endl;
-        return nullptr;
-      } 
-      std::cout << "+++ Loaded: " << lib_name
-                << " symbol: " << sym_name
-                << std::endl;
-      return pointer;
-    }
-    char* error = ::dlerror();
-    std::cout << "+++ Loading library: " << lib_name
-              << "  [" << error << "] "
-              << std::endl;
-    return nullptr;
-  }
-}
-using namespace alpha;
-
-extern "C" int64_t mem_addr_(int32_t& value)  {
-  int64_t val = (int64_t)&value;
-  return val;
-}
-
-extern "C"  {
-
-  /// Initialization function
-  void quinit_()  {
-    bool debug = false;
-    bool print = false;
-    event_proc   = std::make_unique<processor<event_processor> >(debug, print);
-    __init.pointer  = load_func("init_111");
-    __fini.pointer  = load_func("fini_111");
-    __event.pointer = load_func("event_111");
-    std::cout << "Namind pointer is " << (void*)namind_ << std::endl;
-    if( __init.pointer )  {
-      (*__init.function_args)(arguments);
-    }
-  }
-
-  /// Finalization function
-  void quterm_()  {
-    if( __fini.pointer )  {
-      (*__fini.function)();
-    }
-    if ( event_proc )  {
-      event_proc->terminate();
-    }
-  }
-
-  /// Event processing function
-  void quevnt_()  {
-    if( event_proc   )  {
-      event_proc->handle_event(params);
-    }
-    if( __event.pointer )  {
-      (*__event.function)();
-    }
-  }
-}
 
 namespace  {
 
@@ -164,6 +45,81 @@ namespace  {
     }
     ::printf( "+++ Set ALPHACARDS=%s\n", resolved );
     ::setenv("ALPHACARDS", resolved, 1);
+  }
+
+  union _callback  {
+    void (*function)(void);
+    void (*function_args)(void* fcn, void* com, const std::vector<std::string>& args);
+    void* pointer;
+  };
+
+  _callback __init, __event, __fini;
+  std::vector<std::string> arguments;
+  
+  void* load_func(const char* sym_name)  {
+    const char* lib_name = "libalpha_userlib.so";
+    ::dlerror();    /* Clear any existing error */
+    void* handle = ::dlopen(lib_name, RTLD_NOW|RTLD_GLOBAL);
+    if( handle )  {
+      void *pointer = ::dlsym(handle, sym_name);
+      if( nullptr == pointer )  {
+        char* error = ::dlerror();
+        std::cout << "+++ Loading library: " << lib_name
+                  << " symbol: " << sym_name
+                  << "  [" << error << "] "
+                  << std::endl;
+        return nullptr;
+      } 
+      std::cout << "+++ Loaded: " << lib_name
+                << " symbol: " << sym_name
+                << std::endl;
+      return pointer;
+    }
+    char* error = ::dlerror();
+    std::cout << "+++ Loading library: " << lib_name
+              << "  [" << error << "] "
+              << std::endl;
+    return nullptr;
+  }
+}
+namespace alpha  {  void forward_functions();  }
+
+using namespace alpha;
+
+extern "C"  {
+  void qminit_();
+  void qmread_();
+  void abruev_(int& irun, int& ievt);
+  void qmevnt_(int& irun, int& ievt);
+
+  int64_t mem_addr_(int32_t& value)  {
+    int64_t val = (int64_t)&value;
+    return val;
+  }
+
+  /// Initialization function
+  void quinit_()  {
+    alpha::forward_functions();
+    __init.pointer  = load_func("init_111");
+    __fini.pointer  = load_func("fini_111");
+    __event.pointer = load_func("event_111");
+    if( __init.pointer )  {
+      (*__init.function_args)(f77::fun, f77::com, arguments);
+    }
+  }
+
+  /// Finalization function
+  void quterm_()  {
+    if( __fini.pointer )  {
+      (*__fini.function)();
+    }
+  }
+
+  /// Event processing function
+  void quevnt_()  {
+    if( __event.pointer )  {
+      (*__event.function)();
+    }
   }
 }
 

@@ -17,7 +17,6 @@
 #include <cstdint>
 
 /// Framework include files
-#include <alpha/alpha.h>
 
 /// ALPHA namespace declaration
 namespace alpha  {
@@ -29,7 +28,7 @@ namespace alpha  {
   public:
     processor(bool deb, bool prt) : debug(deb), print(prt) {}
     virtual void initialize();
-    virtual void handle_event(constants_t& params);
+    virtual void handle_event();
     virtual void terminate();
   };
 
