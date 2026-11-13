@@ -73,7 +73,7 @@ void alpha::edm4hep_output::event_t::process_vdht()  {
     hit.setPosition( { pos.x(), pos.y(), pos.z() } );
     hit.setPathLength(_LEN(dir.r()));
     dir = dir.Unit() * hit.getEDep();
-    hit.setMomentum( { dir.x(), dir.y(), dir.z() } );
+    hit.setMomentum( edm4hep::Vector3f(dir.x(), dir.y(), dir.z()) );
     hit.setCellID( cell );
     hit.setQuality( ah->trackNumber() );
   }

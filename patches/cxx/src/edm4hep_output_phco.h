@@ -56,6 +56,19 @@ void alpha::edm4hep_output::event_t::process_phco()  {
                          bit 5 Dig. Matching (0=OK,1=Noise)
         9    PC  I    PCOB
                          CalObject number
+
+                         
+      PCRL (Calobject ReLations: PCOB, PECO, PFRF, PHCO, PPOB)
+      
+      -- HCAL
+      PFHR ---> PFRF, PHCO
+      PHER (ECAL-HCAL relations : (PECO-PHCO) )
+      PHHY (Hadronic calobject HYpothesis)                         ---> PHCO #)
+      PHMH (Relation between HCAL objects and FKIN tracks)         ---> PHCO #)
+      PHPR (Hcalobject-digital Pattern Relations)                  ---> PHCO #)
+      PHST (P.o.t. Hcal STorey data)                               ---> PHCO #)
+      PHTO (Topology of Hadronic calObject)                        ---> PHOB #) ???
+
   */
   std::stringstream log;
   bool  dbg = this->data.phco.debug;
@@ -66,13 +79,13 @@ void alpha::edm4hep_output::event_t::process_phco()  {
   for( uint32_t itk=1, siz=tab->size(); itk <= siz; ++itk )  {
     auto          hit  = this->hits_hcal.create();
     auto*         ah   = this->data.phco.row<class phco>(itk);
-    uint64_t      cell = ah->pcOB();
-    PositionPolar pos(1e0, ah->theta(), ah->phi()); // HCAL Radius unknown from bank
+    // uint64_t      cell = ah->pcOB();
+    // hit.setCellID( cell );
+    // hit.setTime(   0e0 );
 
-    hit.setCellID( cell );
-    hit.setTime( 0e0 );
-    hit.setPosition( { pos.x(), pos.y(), pos.z() } );
-    hit.setEnergy(ah->ecorr());
+    hit.setITheta( ah->theta() );
+    hit.setIPhi(   ah->phi()   );
+    hit.setEnergy( ah->ecorr() );
     hit.setEnergyError( std::abs(ah->ecorr() - ah->eraw()) );
     hit.setType(((  0x7 & ah->rbits())) +
 		((  0x7 & ah->ccode()) <<  3) +

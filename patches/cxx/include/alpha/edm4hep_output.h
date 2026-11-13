@@ -66,6 +66,10 @@ namespace alpha  {
 
     bool        save_calorimeter     { false };
     bool        save_ecal_reco       { false };
+    bool        save_ecal_hits_pept  { false };
+    bool        save_ecal_hits_etdi  { false };
+    bool        save_ecal_wire_pewi  { false };
+    
     bool        save_hcal_reco       { false };
 
   public:

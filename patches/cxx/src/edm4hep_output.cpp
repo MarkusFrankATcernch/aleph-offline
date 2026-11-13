@@ -273,6 +273,9 @@ namespace alpha  {
     bank_access_t ftcl;  // FTCL table bank: Tpc Geometry track Coordinate List
 
     bank_access_t peco;  // PECO table bank: Electromagnetic Calorimeter Object (Mini: DECO)
+    bank_access_t pept;  // PEPT table bank: Electromagnetic calorimeter object Phi and Theta values
+    bank_access_t pest;  // PEST table bank: Pot Electromagnetic calorimeter SToreys
+
 
     bank_access_t pewi;  // PEWI table bank: Ecal Wire plane Digits Raw bank: EWDI
     bank_access_t etdi;  // ETDI table bank: Ecal Tower DIgits NR=0. (RAW)
@@ -355,8 +358,9 @@ namespace alpha  {
     using trhit2trhit_t       = podio_trhit2trhit_t;
     using trhit2mcp_t         = podio_trhit2mcp_t;
 
-    using calohit_t           = edm4hep::MutableCalorimeterHit;
+    using calohit_t           = edm4hep::MutableCluster;
     using calohits_t          = edm4hep::CalorimeterHitCollection;
+    using caloclusters_t      = edm4hep::ClusterCollection;
 
     using rawcalohit_t        = edm4hep::MutableRawCalorimeterHit;
     using rawcalohits_t       = edm4hep::RawCalorimeterHitCollection;
@@ -365,6 +369,8 @@ namespace alpha  {
 
   public:
 
+    edm4hep_output&                      parent;    
+    edm4hep_output&                      config;
     experiment_t&                        exp;
     data_access_t&                       data;
 
@@ -449,17 +455,18 @@ namespace alpha  {
     /// dEdx data: Useful length of track for dE/dx from QPADX for charged tracks
     dedxdata_t                           dedx_pads_tracklen              {  };
     /// dEdx data: Number of samples used for dE/dx from QPADX for charged tracks
-    dedxdata_t                           dedx_pads_num_pads           {  };
+    dedxdata_t                           dedx_pads_num_pads              {  };
     /// dEdx data: Ionization+error of dE/dX from QPADX for charged tracks
     dedxdata_t                           dedx_pads_ionization            {  };
 
     /// ECAL hits from PECO
-    calohits_t                           hits_ecal                       {  };
-    /// ECAL wire hits
-    rawcalohits_t                        hits_ecal_wire                  {  };
-
+    caloclusters_t                       ecal_hits                       {  };
+    caloclusters_t                       ecal_hits_pept                  {  };
+    calohits_t                           ecal_hits_etdi                  {  };
+    calohits_t                           ecal_wire_pewi                  {  };
+    
     /// HCAL hits from PHCO
-    calohits_t                           hits_hcal                       {  };
+    caloclusters_t                       hits_hcal                       {  };
     ///
     rawcalohits_t                        hits_hcal_plane                 {  };
 
@@ -486,7 +493,7 @@ namespace alpha  {
     mcparticle_t                         invalid_mc_particle             {  };
 
     /// Default constructor
-    event_t(experiment_t& experiment, data_access_t& data);
+    event_t(edm4hep_output& parent, experiment_t& experiment, data_access_t& data);
     /// Default destructor
     virtual ~event_t();
 
@@ -570,12 +577,16 @@ namespace alpha  {
     /// Process relationships between charged tracks and VDCO, ITCO and TPCO
     void         process_frtl();
 
-    /// Create ECAL cluster from PECO row
+    /// Create ECAL cluster from PECO rows
     void         process_peco();
-    /// Analyze ECAL wire data from PEWI bank
-    void         process_pewi();
+    /// Create ECAL stack cluster from PEST rows
+    void         process_pest();
     /// ETDI table bank: Ecal Tower DIgits NR=0. (RAW)
     void         process_etdi();
+    /// PEPT table bank: Electromagnetic calorimeter object Phi and Theta values
+    void         process_pept();
+    /// Analyze ECAL wire data from PEWI bank
+    void         process_pewi();
 
     /// Create HCAL cluster from PHCO row
     void         process_phco();
@@ -615,6 +626,9 @@ namespace alpha  {
 #include <alpha/processor.h>
 namespace {
   std::unique_ptr<alpha::edm4hep_output> conv;
+}
+namespace limits  {
+  constexpr static const double small_number = 1e-8;
 }
 
 /// Framework event callback
@@ -789,23 +803,28 @@ bool alpha::edm4hep_output::initialize()  {
     }
     ::printf("+++ Opened successfully %s for output.\n", this->output_file.c_str() ) ;
   }
-  this->save_parameters   |=  this->save_all;
-  this->save_particles    |=  this->save_all;
-  this->save_mc_particles |= (this->save_all | this->save_particles);
+  this->save_parameters     |=  this->save_all;
+  this->save_particles      |=  this->save_all;
+  this->save_mc_particles   |= (this->save_all | this->save_particles);
 
-  this->save_tracker      |=  this->save_all;
-  this->save_vdet_reco    |=  this->save_tracker;
-  this->save_vdet_sim     |=  this->save_tracker;
+  this->save_tracker        |=  this->save_all;
+  this->save_vdet_reco      |=  this->save_tracker;
+  this->save_vdet_sim       |=  this->save_tracker;
 
-  this->save_itc_reco     |=  this->save_tracker;
-  this->save_itc_sim      |=  this->save_tracker;
+  this->save_itc_reco       |=  this->save_tracker;
+  this->save_itc_sim        |=  this->save_tracker;
 
-  this->save_tpc_reco     |=  this->save_tracker;
-  this->save_tpc_sim      |=  this->save_tracker;
+  this->save_tpc_reco       |=  this->save_tracker;
+  this->save_tpc_sim        |=  this->save_tracker;
 
-  this->save_calorimeter  |=  this->save_all;
-  this->save_ecal_reco    |=  this->save_calorimeter;
-  this->save_hcal_reco    |=  this->save_calorimeter;
+  this->save_calorimeter    |=  this->save_all;
+  this->save_ecal_reco      |=  this->save_calorimeter;
+  this->save_ecal_hits_etdi |=  this->save_ecal_reco;
+  this->save_ecal_hits_pept |=  this->save_ecal_reco;
+  this->save_ecal_wire_pewi |=  this->save_ecal_reco;
+
+
+  this->save_hcal_reco      |=  this->save_calorimeter;
 
   return true;
 }
@@ -832,7 +851,7 @@ bool alpha::edm4hep_output::handle_event(constants_t& /* par */)  {
 std::unique_ptr<alpha::edm4hep_output::event_t>
 alpha::edm4hep_output::begin_event()  {
   this->data->event_config();
-  auto event = std::make_unique<edm4hep_output::event_t>(*this->exp, *this->data);
+  auto event = std::make_unique<edm4hep_output::event_t>(*this, *this->exp, *this->data);
   return event;
 }
 
@@ -882,7 +901,7 @@ void alpha::edm4hep_output::end_event(event_t& event)  {
     pio.put(event.dedx_avg_drift,                  "DEDX_AverageDrivt" );
     pio.put(event.dedx_tracklen,                   "DEDX_TrackLength" );
     pio.put(event.dedx_num_samples,                "DEDX_NumberSamples" );
-    
+
     pio.put(event.dedx_wire_trunc_mean,            "DEDX_Wire_trunc_mean" );
     pio.put(event.dedx_wire_tracklen,              "DEDX_Wire_track_length" );
     pio.put(event.dedx_wire_num_samples,           "DEDX_Wire_num_samples" );
@@ -893,9 +912,17 @@ void alpha::edm4hep_output::end_event(event_t& event)  {
     pio.put(event.dedx_pads_num_pads,              "DEDX_Pads_num_pads" );
     pio.put(event.dedx_pads_ionization,            "DEDX_Pads_ionization" );
   }
-
   if( this->save_ecal_reco )  {
-    pio.put(event.hits_ecal,                       "ECAL_Clusters" );
+    pio.put(event.ecal_hits,                       "ECAL_Clusters" );
+  }
+  if( this->save_ecal_hits_pept )  {
+    pio.put(event.ecal_hits_pept,                  "ECAL_Clusters_pept" );
+  }
+  if( this->save_ecal_hits_etdi )  {
+    pio.put(event.ecal_hits_etdi,                  "ECAL_Clusters_etdi" );
+  }
+  if( this->save_ecal_wire_pewi )  {
+    pio.put(event.ecal_wire_pewi,                  "ECAL_Wires_pewi" );
   }
   if( this->save_hcal_reco )  {
     pio.put(event.hits_hcal,                       "HCAL_Clusters" );
@@ -1073,14 +1100,18 @@ void alpha::edm4hep_output::event_t::convert_tpc()  {
 
 /// Convert ECAL hits and clusters
 void alpha::edm4hep_output::event_t::convert_ecal()  {
-  /// Create all ECAL clusters from PECO
+  /// Create all ECAL clusters from PECO rows
   this->process_peco();
+  /// Create ECAL stack cluster from PEST rows. process_peco must run before.
+  this->process_pest();
+  /// Create ECAL stack cluster from ETDI rows. process_peco must run before.
+  this->process_etdi();
+  /// PEPT table bank: Electromagnetic calorimeter object Phi and Theta values
+  this->process_pept();
+  /// Analyze ECAL wire data from PEWI bank. process_peco must run before.
+  this->process_pewi();
   /// Create HCAL cluster relations from PECO/PHCO/calo objects to FRFT tracks
   this->process_pcrl();
-  /// Analyze ECAL wire data from PEWI bank
-  this->process_pewi();
-  /// ETDI table bank: Ecal Tower DIgits NR=0. (RAW)
-  this->process_etdi();
 }
 
 /// Convert HCAL hits and clusters
@@ -1104,6 +1135,8 @@ alpha::edm4hep_output::data_access_t::data_access_t(const std::string& debug_ban
   this->config_data(this->frtl, "FRTL", debug_banks);
 
   this->config_data(this->peco, "PECO", debug_banks);
+  this->config_data(this->pest, "PEST", debug_banks);
+  this->config_data(this->pept, "PEPT", debug_banks);
   this->config_data(this->pgac, "PGAC", debug_banks);
   this->config_data(this->pewi, "PEWI", debug_banks);
   this->config_data(this->etdi, "ETDI", debug_banks);
@@ -1175,8 +1208,8 @@ void alpha::edm4hep_output::data_access_t::event_config()  {
 }
 
 /// Default constructor
-alpha::edm4hep_output::event_t::event_t(experiment_t& ex, data_access_t& dat)
-  : exp(ex), data(dat), invalid_mc_particle()
+alpha::edm4hep_output::event_t::event_t(edm4hep_output& p, experiment_t& ex, data_access_t& dat)
+  : parent(p), config(p), exp(*parent.exp), data(*parent.data), invalid_mc_particle()
 {
   invalid_mc_particle.unlink();
 }
@@ -1326,19 +1359,7 @@ void alpha::edm4hep_output::event_t::process_calorimeter_objects()  {
 #include <Math/VectorUtil.h>
 #include <Math/Cylindrical3D.h>
 
-namespace {
-  edm4hep::Vector3f null_position(0e0, 0e0, 0e0);
-
-  constexpr static const double ENECONV = (TGeoUnit::GeV/G4::GeV);
-  double _ENE(double val) { return val * ENECONV;   }
-
-  constexpr static const double LENCONV = (TGeoUnit::GeV/G4::GeV);
-  double _LEN(double val)  { return val * LENCONV;   }
-  double _LEN2(double val) { return val * LENCONV * LENCONV;   }
-
-  constexpr static const double TIMECONV = (TGeoUnit::ns/G4::ns);
-  double _TIM(double val) { return val * TIMECONV;  }
-
+namespace  {
   typedef ROOT::Math::RhoZPhiVectorF PositionRhoZPhi;
   typedef ROOT::Math::Polar3DVectorF PositionPolar;
   typedef ROOT::Math::XYZVectorF     Position;
@@ -1411,10 +1432,14 @@ namespace {
 
 /// Create ECAL cluster from PECO row
 #include "edm4hep_output_peco.h"
-/// Analyze ECAL wire data from PEWI bank
-#include "edm4hep_output_pewi.h"
+/// Create ECAL stack cluster from PEST rows
+#include "edm4hep_output_pest.h"
 /// ETDI table bank: Ecal Tower DIgits NR=0. (RAW)
 #include "edm4hep_output_etdi.h"
+/// PEPT table bank: Electromagnetic calorimeter object Phi and Theta values
+#include "edm4hep_output_pept.h"
+/// Analyze ECAL wire data from PEWI bank
+#include "edm4hep_output_pewi.h"
 /// Create HCAL cluster relations from PECO/PHCO/calo objects to FRFT tracks
 #include "edm4hep_output_pcrl.h"
 

@@ -19,6 +19,22 @@
 /// Framework include files
 #include <alpha/defs.h>
 
+// ROOT include files
+#include <Math/Vector3D.h>
+#include <Math/Transform3D.h>
+#include <Math/Translation3D.h>
+#include <Math/RotationX.h>
+#include <Math/RotationY.h>
+#include <Math/RotationZ.h>
+#include <Math/Rotation3D.h>
+#include <Math/RotationZYX.h>
+#include <Math/EulerAngles.h>
+#include <Math/VectorUtil.h>
+#include <TGeoSystemOfUnits.h>
+#include <TGeant4SystemOfUnits.h>
+#include <edm4hep/Vector3f.h>
+
+
 /// ALPHA namespace declaration
 namespace alpha  {
 
@@ -35,6 +51,22 @@ namespace alpha  {
   class pmlt;
   class efol;
   class frft;
+
+  typedef ROOT::Math::RhoZPhiVector PositionRhoZPhi;
+  typedef ROOT::Math::Polar3DVector PositionPolar;
+  typedef ROOT::Math::XYZVector     Position;
+  typedef ROOT::Math::XYZVector     Direction;
+  typedef ROOT::Math::XYZVector     XYZAngles;
+
+  static edm4hep::Vector3f null_position(0e0, 0e0, 0e0);
+  constexpr static const double ENECONV = (TGeoUnit::GeV/TGeant4Unit::GeV);
+  constexpr static const double LENCONV = (TGeoUnit::GeV/TGeant4Unit::GeV);
+  constexpr static const double TIMECONV = (TGeoUnit::ns/TGeant4Unit::ns);
+  
+  inline double _ENE(double val) { return val * ENECONV;   }
+  inline double _LEN(double val)  { return val * LENCONV;   }
+  inline double _LEN2(double val) { return val * LENCONV * LENCONV;   }
+  inline double _TIM(double val) { return val * TIMECONV;  }
 
   /// Helper class to access BOS data structures from ALEPH
   /**

@@ -14,8 +14,8 @@
 #define ALPHA_EDM4HEP_ENCODERS_H
 
 /// Include files
+#include <alpha/alpha.h>
 #include <DD4hep/IDDescriptor.h>
-#include <TGeant4SystemOfUnits.h>
 
 /// C/C++ include files
 #include <memory>
@@ -104,6 +104,15 @@ namespace alpha  {
 
   /// Helper class
   /**
+   *    ECAL energy resolution
+   *    dE/E = (16.98 +- 0.44 %)/sqrt(E) + 0.45 % (wires)
+   *    dE/E = (19.23 +- 0.49 %)/sqrt(E) + 0.33 % (pads)
+   *
+   *    Spacial resolution of cluster in tower units
+   *    dphi = dtheta = a + b/sqrt(E)
+   *    a = (1 += 0.2) * 0.01
+   *    b = (17.6 += 0.9) * 0.01 * sqrt(GeV)
+   *
    *    \author  M.Frank
    *    \date    01/08/2026
    */
@@ -111,9 +120,83 @@ namespace alpha  {
   public:
     const Field* field_barrel = nullptr;
     const Field* field_layer  = nullptr;
+    class tower  {
+    public:
+      std::size_t num_corners { 0UL };
+      Position    corners[8];
+      Position    center      {     };
+      int32_t     module      {  -1 };
+    };
+    struct tower_id  {
+    public:
+      int32_t theta = 0, phi = 0, stack = 0;
+      bool operator<(const tower_id& c) const  {
+        if( theta < c.theta )
+          return true;
+        else if( phi < c.phi )
+          return true;
+        else if( stack < c.stack )
+          return true;
+        return false;
+      }
+    };
+
+    /// Tower geometry
+    class _tower_geometry  {
+    protected:
+      /// map with ecal tower geometries 
+      mutable std::map<tower_id, class tower> _towers;
+      
+      /// Select tower from identifier. If not present try to load from ECAL geometry package
+      const class tower* _get_tower( const tower_id& id )  const;
+      
+    public:
+      /// Default constructor
+      _tower_geometry() = default;
+      
+      /// Access ECAL tower center by id
+      Position tower_center(const tower_id& id)  {
+        if( const auto* p = this->_get_tower(id) )
+          return p->center;
+        return { };
+      }
+      /// Access ECAL tower corners by id
+      std::pair<std::size_t, const Position*> tower_corners(const tower_id& id)  {
+        if( const auto* p = this->_get_tower(id) )
+          return { p->num_corners, p->corners };
+        return { 0, nullptr };
+      }
+      /// Access ECAL tower center by id triplet
+      Position tower_center(int itheta, int iphi, int kstack)  {
+        return this->tower_center( {itheta, iphi, kstack} );
+      }
+      /// Access ECAL tower corners by id triplet
+      std::pair<std::size_t, const Position*> tower_corners(int itheta, int iphi, int kstack)  {
+        return this->tower_corners( {itheta, iphi, kstack} );
+      }
+    } tower_geometry;
+
+
   public:
     /// Default constructor
     detector_ecal_t();
+    /// Wire energy resolution of clusters
+    double wire_energy_error(double energy_in_gev)  const  {
+      double sq_e = std::sqrt(energy_in_gev);
+      double de = 0.1698 * sq_e + 0.0045*energy_in_gev;
+      return de;
+    }
+    /// Pad energy resolution of clusters
+    double pad_energy_error(double energy_in_gev)  const  {
+      double sq_e = std::sqrt(energy_in_gev);
+      double de = 0.1923 * sq_e + 0.0033*energy_in_gev;
+      return de;
+    }
+    /// Spacial resolution of cluster in tower units
+    double cluster_space_error(double energy_in_gev)  const  {
+      double dsp = 1e-2 + 17.9e-2/std::sqrt(energy_in_gev);
+      return dsp;
+    }
   };
 
   /// Helper class

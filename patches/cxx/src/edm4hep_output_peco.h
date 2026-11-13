@@ -13,6 +13,9 @@
 
 /// Alpha include files
 #include <alpha/peco.h>
+#include <alpha/pest.h>
+#include <alpha/pept.h>
+#include <alpha/etdi.h>
 
 /// Create ECAL hit from PECO row
 void alpha::edm4hep_output::event_t::process_peco()  {
@@ -69,29 +72,93 @@ void alpha::edm4hep_output::event_t::process_peco()  {
                          3 : Both ch tk and HC relation
         10   PC  I    PCOB
                          CalObject number
+
+
+      PCRL (Calobject ReLations: PCOB, PECO, PFRF, PHCO, PPOB)
+
+      -- ECAL
+      PEHY (Electromagnetic calobject HYpothesis)                   --> PECO #)
+      PEMH (Relation between ECAL and LCAL objects and FKIN tracks  --> PECI #)
+      PEST (Pot Electromagnetic calorimeter SToreys                 --> PECO #)
+      EGPC (Photons from GAMPEC                                     --> PECO #)
+      PEPT (Theta/Phi of stack1/2 and stack3                   parallel PECO  )
+      PHER (ECAL-HCAL relations : (PECO-PHCO) )
+      EGPR (Link EGPC to PEST (PECO row #) )
+
+      PECO ---> PCOB
+      PCHY (Calobject HYpothesis                                   ---> PCOB #)
+
+      IADD = ITABL(KETDI,ITDI,JETDTL)
+      TJ = IBITS(IADD,16,8)
+      FI = IBITS(IADD,2,9)
+      KS = ITABL(KPEST,ISTO,JPESKS)
+      
+
+      see also:
+      process_pest();
+      process_etdi();
+      
+ETHT (GALEPH)
+   |
+   v
+ETDI (JULIA)
+   |
+   v
+PEST.
+PEST.ET   ---------> PECO row number
+   |
+   +---> ETDI row number
+                  |
+                  v
+              ETDI.TL
+                  |
+                  v
+             Packed IADD
+                  |
+          +-------+-------+
+          |               |
+          v               v
+      IBITS(16,8)     IBITS(2,9)
+          |               |
+          v               v
+          TJ              FI
+          |               |
+          +-------+-------+
+                  |
+                  v
+        CALL ESRDIR(TJ+0.5,FI+0.5,
+                    THETA,PHI)
+                  |
+                  v
+           Physical direction
+             in radians
+
   */
   bool  dbg = this->data.phco.debug;
-  auto* tab = this->data.peco.table<class peco>();
-  if( dbg )  {
-    std::cout << bos77::to_string(tab) << std::endl;
-  }
-  for( uint32_t itk=1, siz=tab->size(); itk <= siz; ++itk )  {
-    auto          hit  = this->hits_ecal.create();
-    auto*         ah   = this->data.peco.row<class peco>(itk);
-    uint64_t      cell = ah->pcOB();
-    PositionPolar pos(1e0, ah->theta(), ah->phi()); // Radius is unknown from bank
+  //auto& ecal = *this->exp.ecal;
+  auto* peco = this->data.peco.load<object_table<class peco> >(true);
 
-    hit.setCellID( cell );
-    hit.setTime( 0e0 );
-    hit.setPosition( { pos.x(), pos.y(), pos.z() } );
-    hit.setEnergy( ah->ecorr() );
-    hit.setEnergyError( std::abs(ah->ecorr() - ah->eraw()) );
-    hit.setPosition( { pos.x(), pos.y(), pos.z() } );
-    hit.setType(((  0x7 & ah->rbits())) +
-                ((  0x7 & ah->ccode()) <<  3) +
-                ((  0x7 & ah->kdrg())  <<  6) +  // Bit 9 unused.
-                ((0x3FF & int(ah->esta1()*1000e0)) << 10) +
-                ((0x3FF & int(ah->esta2()*1000e0)) << 20));
+  if( dbg )  {
+    std::cout << bos77::to_string(peco) << std::endl;
+  }
+  for( uint32_t itk=1, siz=peco->size(); itk <= siz; ++itk )  {
+    auto   hit  = this->ecal_hits.create();
+    auto*  ah   = this->data.peco.row<class peco>(itk);
+    double ecor = ah->ecorr();
+    double ene  = _ENE(ecor);
+    uint64_t      cell = ah->pcOB();
+
+    //hit.setTime(   0e0 );
+    hit.setEnergy( ene );
+    hit.setITheta( ah->theta() );
+    hit.setIPhi(   ah->phi()   );
+    hit.setEnergyError( std::abs(ene - ah->eraw()) );
+    hit.setType( ((0x10 & cell)) +
+                 ((  0x7 & ah->rbits()) <<  5) +
+                 ((  0x7 & ah->ccode()) <<  8) +
+                 ((  0x7 & ah->kdrg())  << 11) +
+                 ((0x3FF & int(ah->esta1()*512e0)) << 14) +
+                 ((0x3FF & int(ah->esta2()*512e0)) << 23) );
 
     if( dbg )  {
       char text[512];

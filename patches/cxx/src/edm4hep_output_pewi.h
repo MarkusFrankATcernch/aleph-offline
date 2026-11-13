@@ -54,7 +54,7 @@ void alpha::edm4hep_output::event_t::process_pewi()  {
       for( int32_t iplane=0; iplane < 44; ++iplane )  {
         // Modules:  1-12 ECA, 13-24 barrel, 25-36 ECB
         uint64_t     cell = (uint64_t(module) << 32) + iplane;
-        this->hits_ecal_wire.create(cell, edep[iplane], t0);
+        this->ecal_wire_pewi.create(cell, edep[iplane], t0);
         if( dbg )  {
           char text[256];
           ::snprintf(text, sizeof(text),
