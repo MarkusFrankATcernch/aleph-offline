@@ -42,15 +42,12 @@ void alpha::edm4hep_output::event_t::process_texs()  {
                        1= >40% saturated hits.
                        0= <40% saturated hits
    */
-  std::stringstream log;
   auto& tpc = *this->exp.tpc;
   auto& dsc = tpc.descriptor;
   bool  dbg = this->data.texs.debug;
   auto* tab = this->data.texs.load<object_table<class texs> >(true);
 
-  if( dbg )  {
-    log << bos77::to_string(tab) << std::endl;
-  }
+  printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,"+++ %s", bos77::to_string(tab).c_str() );
   for( uint32_t i=1; i <= tab->size(); ++i )  {
     auto*    ah      = tab->row(i);
     int32_t  slot    = ah->segmentId();
@@ -66,16 +63,9 @@ void alpha::edm4hep_output::event_t::process_texs()  {
     drift.setTrack(track);
     samples.setTrack(track);
     length.setTrack(track);
-    if( dbg )  {
-      char text[512];
-      ::snprintf(text, sizeof(text),
-                 "\tTEXS %3d %08lX Cell:%08lX Sector:%2d Mean:%7.3f len:%s samples:%3d drift:%3.0f track:%3d flag:%1d",
-                 i, uint64_t(ah), cell, sector, ah->truncatedMean(), fmt_len(ah->trackLength()).c_str(),
-                 ah->numberSamples(), ah->averageDrift(), ah->trackNumber(), ah->satFlag());
-      log << text << std::endl;
-    }
-  }
-  if( dbg )  {
-    ::printf("%s\n", log.str().c_str());
+    printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,
+              "+++ \tTEXS %3d %08lX Cell:%08lX Sector:%2d Mean:%7.3f len:%s samples:%3d drift:%3.0f track:%3d flag:%1d",
+              i, uint64_t(ah), cell, sector, ah->truncatedMean(), fmt_len(ah->trackLength()).c_str(),
+              ah->numberSamples(), ah->averageDrift(), ah->trackNumber(), ah->satFlag());
   }
 }

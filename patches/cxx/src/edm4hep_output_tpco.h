@@ -75,14 +75,12 @@
 
 /// Create VDET 3D hit from VDCO row
 void alpha::edm4hep_output::event_t::process_tpco()  {
-  std::stringstream log;
   auto& tpc = *this->exp.tpc;
   auto& dsc = tpc.descriptor;
   bool  dbg = this->data.tpco.debug;
   auto* tab = this->data.tpco.load<object_table<class tpco> >(true);
-  if( dbg )  {
-    log << bos77::to_string(tab) << std::endl;
-  }
+
+  printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,"+++ %s", bos77::to_string(tab).c_str() );
   for( uint32_t i=1; i <= tab->size(); ++i )  {
     class tpco* ah     = tab->row(i);
     uint64_t    indx   = ah->index();
@@ -121,20 +119,14 @@ void alpha::edm4hep_output::event_t::process_tpco()  {
     hit.setCovMatrix( 0.0f, edm4hep::Cartesian::z, edm4hep::Cartesian::y);
     hit.setCovMatrix( sigz2, edm4hep::Cartesian::z, edm4hep::Cartesian::z);
 
-    if( dbg )  {
-      char text[512];
-      ::snprintf(text, sizeof(text),
-                 "\tTPCO %3d %08lX Cell:%08lX Indx:%8ld Sector:%2d Padrow:%2d Pad:%3d Track:%3d "
-                 "r:%s phi:%5.2f z:%s subclu:%3d org:%1d",
-                 i, uint64_t(ah), cell, indx, sector, padrow, pad, ah->trackNumber(),
-                 fmt_len(ah->rvalue()).c_str(), ah->phi(), fmt_len(ah->zvalue()).c_str(),
-                 ah->clusterNumbe(), ah->originFlag() );
-      log << text << std::endl;
-    }
+    printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,
+              "+++ \tTPCO %3d %08lX Cell:%08lX Indx:%8ld Sector:%2d Padrow:%2d Pad:%3d Track:%3d "
+              "r:%s phi:%5.2f z:%s subclu:%3d org:%1d",
+              i, uint64_t(ah), cell, indx, sector, padrow, pad, ah->trackNumber(),
+              fmt_len(ah->rvalue()).c_str(), ah->phi(), fmt_len(ah->zvalue()).c_str(),
+              ah->clusterNumbe(), ah->originFlag() );
   }
-  if( dbg )  {
-    ::printf("%s\n", log.str().c_str());
-  }
+  ++this->data.tpco.num_process;
 }
 
 /// Create VDET 3D hit from VDCO row

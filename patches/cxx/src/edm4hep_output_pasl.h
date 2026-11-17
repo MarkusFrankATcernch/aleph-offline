@@ -35,6 +35,7 @@ void alpha::edm4hep_output::event_t::process_pasl()  {
   auto* frft = this->data.frft.load<object_table<class frft> >();
   auto* pitm = this->data.pitm.load<object_table<class pitm> >();
   auto* pasl = this->data.pasl.load<object_table<class pasl> >();
+
   for( uint32_t itk=0, frft_size = frft->size(); itk < frft_size; ++itk )  {
     edm4hep::MutableTrack track = this->particles_reco[itk];
     for( uint32_t itm=0, ipa=0, pitm_size = pitm->size(); itm < pitm_size; ++itm )  {

@@ -68,10 +68,21 @@ std::string alpha::fmt_len(float v)  {
   return { text };
 }
 
+/// Default destructor
+alpha::bank_access_t::~bank_access_t()   {
+  if( this->num_process > 0 )  {
+    //printout(ALWAYS, "bank_access", "+++ Bank: %4s  #Loads: %8d #Process: %8d",
+    //         this->name.c_str(), this->num_load, this->num_process);
+  }
+}
+
 /// Access BOS bank com BOS common by hashed index (NR=0)
 int32_t* alpha::bank_access_t::get_bank_first()   {
   bos77::bank* bank = bos77::get_bank_pointer_from_namind( this->nami );
-  if( bank ) bos77::verify_bank_type(bank, this->nami);
+  if( bank )  {
+    bos77::verify_bank_type(bank, this->nami);
+  }
+  ++this->num_load;
   return (int32_t *)bank;
 }
 

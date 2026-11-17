@@ -21,12 +21,9 @@ void alpha::edm4hep_output::event_t::process_iasl()  {
  | IASL |  JULIA track to FKIN track
  +------+  association list (accessed via ITMA bank). (ordered
            according to increasing FRFT track number) (JUL)
-
      ..............................................................
-     1          I    Number of words/associated (=3)
-                     FKIN track.
-     2          I    Number of associated FKIN
-                     tracks.
+       1       I    Number of words/associated (=3) FKIN track.
+       2       I    Number of associated FKIN tracks.
      ..............................................................
       1    FK  I    FKin             [1,*]
                        No. of FKIN track associated with
@@ -37,10 +34,12 @@ void alpha::edm4hep_output::event_t::process_iasl()  {
       3    CS  F    ChiSquared       [0.0,*]
                        Chi**2 of comparison of helix
                        params. of FRFT and FKIN track
+     ..............................................................
    */
   auto* frft = this->data.frft.load<object_table<class frft> >();
   auto* itma = this->data.itma.load<object_table<class itma> >();
   auto* iasl = this->data.iasl.load<object_table<class iasl> >();
+  
   for( uint32_t itk=0, frft_size = frft->size(); itk < frft_size; ++itk )  {
     edm4hep::MutableTrack track = this->particles_reco[itk];
     for( uint32_t itm=0, ipa=0, itma_size = itma->size(); itm < itma_size; ++itm )  {

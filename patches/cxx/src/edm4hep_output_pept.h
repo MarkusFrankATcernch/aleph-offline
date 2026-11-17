@@ -58,7 +58,7 @@ void alpha::edm4hep_output::event_t::process_pept()  {
       int32_t   iphi     = (addr>>2)  & 0x1FF;
       double    energy   = _ENE(bnk_pest->ecoR());
       calohit_t hpeco    = this->ecal_hits.at(bnk_pest->peCO()-1);
-      Position  pos      = ecal.tower_geometry.tower_center({itheta, iphi, kstack});
+      Position  pos      = ecal.tower_geometry.tower_center( { itheta, iphi, kstack } );
       edm4hep::Vector3f center( pos.x(), pos.y(), pos.z() );
 
       /// Get the sub-hits for stacks 1/2 and stack 3

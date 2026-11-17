@@ -101,16 +101,17 @@ void alpha::edm4hep_output::event_t::process_peco()  {
 ETHT (GALEPH)
    |
    v
-ETDI (JULIA)
+ETDI (JULIA)                      
    |
    v
-PEST.
-PEST.ET   ---------> PECO row number
+PEST.ED                 ---------> ECAL dead storey row index in EDDB
+   |
+PEST.ET                 ---------> PECO row number
    |
    +---> ETDI row number
                   |
                   v
-              ETDI.TL
+              ETDI.TL = ITABL(KETDI,IETDI,JETDTL)
                   |
                   v
              Packed IADD
@@ -121,32 +122,39 @@ PEST.ET   ---------> PECO row number
       IBITS(16,8)     IBITS(2,9)
           |               |
           v               v
-          TJ              FI
+          TJ (ITHETA)    FI (IPHI)
           |               |
           +-------+-------+
                   |
                   v
-        CALL ESRDIR(TJ+0.5,FI+0.5,
-                    THETA,PHI)
+        CALL ESRDIR(TJ+0.5,FI+0.5,THETA,PHI)
                   |
                   v
-           Physical direction
-             in radians
+           Physical direction in radians
+
+Get Module:
+CALL ECSCMD ( IPHI,ITETA,IMOD,ISC) 
+IGMOD = (ISC-1)*12+IMOD
+
+  -- Clusters get updated in               process_pewi()
+     with T0 and layer wire digits as linked by PRPW
+  -- Clusters get updated in               process_pept()
+     with stack 1/2/3 sub-clusters and tower positions of stacks
+  -- Clusters get linked to FRFT tracks in process_pcrl()
+                         to CalObjects ( this->calobj2frft and this->frft2calobj )
+  -- Clusters get linked to MC   tracks in process_pemh()
 
   */
-  bool  dbg = this->data.phco.debug;
-  //auto& ecal = *this->exp.ecal;
+  bool  dbg  = this->data.phco.debug;
   auto* peco = this->data.peco.load<object_table<class peco> >(true);
 
-  if( dbg )  {
-    std::cout << bos77::to_string(peco) << std::endl;
-  }
+  printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,"+++ %s", bos77::to_string(peco).c_str() );
   for( uint32_t itk=1, siz=peco->size(); itk <= siz; ++itk )  {
-    auto   hit  = this->ecal_hits.create();
-    auto*  ah   = this->data.peco.row<class peco>(itk);
-    double ecor = ah->ecorr();
-    double ene  = _ENE(ecor);
-    uint64_t      cell = ah->pcOB();
+    auto     hit  = this->ecal_hits.create();
+    auto*    ah   = this->data.peco.row<class peco>(itk);
+    double   ecor = ah->ecorr();
+    double   ene  = _ENE(ecor);
+    uint64_t cell = ah->pcOB();
 
     //hit.setTime(   0e0 );
     hit.setEnergy( ene );
@@ -160,17 +168,13 @@ PEST.ET   ---------> PECO row number
                  ((0x3FF & int(ah->esta1()*512e0)) << 14) +
                  ((0x3FF & int(ah->esta2()*512e0)) << 23) );
 
-    if( dbg )  {
-      char text[512];
-      ::snprintf(text, sizeof(text),
-                 "PECO %3d %8lX Energy:%s Corr:%s [%s,%s] Theta: %4.2f Phi: %4.2f"
-                 " Region:%3d CC:%1d RB:%2d CalObjID:%3d",
-                 itk, uint64_t(ah),
-                 fmt_ene(ah->eraw()).c_str(),  fmt_ene(ah->ecorr()).c_str(),
-                 fmt_ene(ah->esta1()).c_str(), fmt_ene(ah->esta2()).c_str(),
-                 ah->theta(), ah->phi(), ah->kdrg(), ah->ccode(),
-                 ah->rbits(), ah->pcOB());
-      std::cout << text << std::endl;
-    }
+    printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,
+              "+++ \tPECO %3d %8lX Energy:%s Corr:%s [%s,%s] Theta: %4.2f Phi: %4.2f"
+              " Region:%3d CC:%1d RB:%2d CalObjID:%3d",
+              itk, uint64_t(ah),
+              fmt_ene(ah->eraw()).c_str(),  fmt_ene(ah->ecorr()).c_str(),
+              fmt_ene(ah->esta1()).c_str(), fmt_ene(ah->esta2()).c_str(),
+              ah->theta(), ah->phi(), ah->kdrg(), ah->ccode(),
+              ah->rbits(), ah->pcOB());
   }
 }

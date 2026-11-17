@@ -134,4 +134,5 @@ void alpha::edm4hep_output::event_t::process_vcpl()  {
   if( !log.str().empty() )  {
     ::printf("%s", log.str().c_str());
   }
+  ++this->data.vcpl.num_process;
 }

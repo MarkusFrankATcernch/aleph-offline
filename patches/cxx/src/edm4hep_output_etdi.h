@@ -58,16 +58,16 @@ void alpha::edm4hep_output::event_t::process_etdi()  {
       float     energy[3] = { float(bnk_etdi->stack1()/1e6),
                               float(bnk_etdi->stack2()/1e6),
                               float(bnk_etdi->stack3()/1e6) };
-      int32_t   addr   = bnk_etdi->towerLabel();
-      int32_t   itheta = (addr>>16) & 0xFF;
-      int32_t   iphi   = (addr>>2)  & 0x1FF;
-      auto      center = ecal.tower_geometry.tower_center( {itheta, iphi, kstack+1} );
+      int32_t   addr      = bnk_etdi->towerLabel();
+      int32_t   itheta    = (addr>>16) & 0xFF;
+      int32_t   iphi      = (addr>>2)  & 0x1FF;
+      auto      center    = ecal.tower_geometry.tower_center( {itheta, iphi, kstack+1} );
 
       edm4hep::MutableCalorimeterHit hit = this->ecal_hits_etdi.create();
       hit.setType(   kstack+1 );
       hit.setEnergy( _ENE(energy[kstack]) );
       hit.setEnergyError( _ENE(ecal.pad_energy_error(energy[kstack])) );
-      hit.setPosition( edm4hep::Vector3f( center.x(), center.y(), center.z() ) );
+      hit.setPosition( edm4hep::Vector3f(center.x(), center.y(), center.z()) );
       peco.addToHits( hit );
       if( dbg )  {
         ::printf("+++ ETDI %3d PECO %3d Stack:%1d E: %s+-%s [%s] "

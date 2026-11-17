@@ -37,36 +37,31 @@ void alpha::edm4hep_output::event_t::process_hpdi()  {
                        endcapA=1,Barrel=2,endcapB=3
       2    ED  I    EnergyDepos      [0,100000]
                        Energy in plane ( MeV)
+
+-- requires process_phco run before
+
   */
-  std::stringstream log;
   bool dbg = this->data.hpdi.debug;
+
   for( this->data.hpdi.load(false); this->data.hpdi.data; this->data.hpdi.knext() )  {
     auto* tab = this->data.hpdi.table<class hpdi>();
-    if( dbg )  {
-      log << bos77::to_string(tab) << std::endl;
-    }
+    printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,"+++ %s", bos77::to_string(tab).c_str() );
     for( uint32_t i=0, siz=tab->size(); i < siz; ++i )  {
       const class hpdi* plane = tab->at(i);
       int32_t  edep = plane->energyDepos();
       uint64_t cell = uint64_t(plane->planeAddres());
-      this->hits_hcal_plane.create(cell, edep, 0e0);
-      if( dbg )  {
-        char text[256];
-        int detector = (cell>>16)&0xF;
-        int module   = (cell>>8)&0xFF;
-        int plane    = (cell&0xFF);
-        const char* det_name = "Endcap B";
-        if(      detector == 1 ) det_name = "Endcap A";
-        else if( detector == 2 ) det_name = "Barrel  ";
+      this->hcal_hits_plane.create(cell, edep, 0e0);
+      
+      int detector = (cell>>16)&0xF;
+      int module   = (cell>>8)&0xFF;
+      int planeid  = (cell&0xFF);
+      const char* det_name = "Endcap B";
+      if(      detector == 1 ) det_name = "Endcap A";
+      else if( detector == 2 ) det_name = "Barrel  ";
 
-        ::snprintf(text, sizeof(text),
-                   "\tHWDI plane hit %s add:%08lX det:%2d mod:%2d plane:%3d E:%s GeV",
-                   det_name, cell, detector, module, plane, fmt_ene(edep/1000e0).c_str());
-        log << text << std::endl;
-      }
+      printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,
+                "+++ \tHPDI plane hit %s add:%08lX det:%2d mod:%2d plane:%3d E:%s GeV",
+                det_name, cell, detector, module, planeid, fmt_ene(edep/1000e0).c_str());
     }
-  }
-  if( dbg )  {
-    ::printf("%s\n", log.str().c_str());
   }
 }

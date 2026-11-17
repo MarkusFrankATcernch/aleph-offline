@@ -63,21 +63,35 @@ void alpha::edm4hep_output::event_t::process_phco()  {
       -- HCAL
       PFHR ---> PFRF, PHCO
       PHER (ECAL-HCAL relations : (PECO-PHCO) )
-      PHHY (Hadronic calobject HYpothesis)                         ---> PHCO #)
+      PHHY (Hadronic calobject HYpothesis)                         ---> PHCO #) (redundant PCRL ?)
       PHMH (Relation between HCAL objects and FKIN tracks)         ---> PHCO #)
-      PHPR (Hcalobject-digital Pattern Relations)                  ---> PHCO #)
-      PHST (P.o.t. Hcal STorey data)                               ---> PHCO #)
+      PHPR (Hcalobject-digital Pattern Relations)                  ---> PHCO #) (redundant PCRL ?)
+      PHST (P.o.t. Hcal STorey data, theta, phi, corr.energy)      ---> PHCO #)
       PHTO (Topology of Hadronic calObject)                        ---> PHOB #) ???
+      HLTU (True MC longit. coordinate of Hcal hit)                ---> HTUB #)
+      HTUB (Hcal TUBes data (from Julia prepare data)              ---> HCAL coordinates(barrel, module, layer)
+                                                                   ---> HWDI
+                                                                   ---> PPOB (=HPCO)
+      HPDI (Hcal Plane DIgits (RawData))                           ---> Planeaddress (HCAL coordinates) ---> HTUB
+      HWDI (Hcal Wire (tube) DIgits(RawData) )                     ---> Cluster address: tube, layer, module, barrel
+      HROA (Hcal road data for current track)                      ---> HTUB #)
+
+  -- Clusters get updated in               process_pept()
+     with stack 1/2/3 sub-clusters and tower positions of stacks
+  -- Clusters get updated in               process_ppob()
+     with digital patterns and digital streamer energies
+     
+  -- Clusters get linked to FRFT tracks in process_pcrl()
+                         to CalObjects ( this->calobj2frft and this->frft2calobj )
+  -- Clusters get linked to MC   tracks in process_phmh()
 
   */
-  std::stringstream log;
   bool  dbg = this->data.phco.debug;
   auto* tab = this->data.phco.table<class phco>();
-  if( dbg )  {
-    log << bos77::to_string(tab) << std::endl;
-  }
+
+  printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,"+++ %s", bos77::to_string(tab).c_str() );
   for( uint32_t itk=1, siz=tab->size(); itk <= siz; ++itk )  {
-    auto          hit  = this->hits_hcal.create();
+    auto          hit  = this->hcal_hits.create();
     auto*         ah   = this->data.phco.row<class phco>(itk);
     // uint64_t      cell = ah->pcOB();
     // hit.setCellID( cell );
@@ -91,18 +105,11 @@ void alpha::edm4hep_output::event_t::process_phco()  {
 		((  0x7 & ah->ccode()) <<  3) +
 		((  0x7 & ah->noiseFlag())  <<  6));
 
-    if( dbg )  {
-      char text[512];
-      ::snprintf(text, sizeof(text),
-                 "  PHCO %3d %8lX Energy:%7.3f Corr:%7.3f Theta: %4.2f Phi: %4.2f"
-                 " Region:%3d CC:%2d Rel:%2d CalObjID:%5d",
-                 itk, uint64_t(ah), ah->eraw(), ah->ecorr(), ah->theta(), ah->phi(),
-                 ah->kdrg(), ah->ccode(), ah->rbits(), ah->pcOB());
-      log << text << std::endl;
-    }
-  }
-  if( dbg )  {
-    ::printf("%s\n", log.str().c_str());
+    printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,
+              "+++ \tPHCO %3d %8lX Energy:%7.3f Corr:%7.3f Theta: %4.2f Phi: %4.2f"
+              " Region:%3d CC:%2d Rel:%2d CalObjID:%5d",
+              itk, uint64_t(ah), ah->eraw(), ah->ecorr(), ah->theta(), ah->phi(),
+              ah->kdrg(), ah->ccode(), ah->rbits(), ah->pcOB());
   }
 }
 

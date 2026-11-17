@@ -51,56 +51,46 @@ void alpha::edm4hep_output::event_t::process_t2xs()  {
                        Pointer to second track entry in TGFT
      ..............................................................
    */
-  std::stringstream log;
   auto& tpc = *this->exp.tpc;
   auto& dsc = tpc.descriptor;
   bool  dbg = this->data.t2xs.debug;
-  auto* tab = this->data.t2xs.load<object_table<class t2xs> >(true);
+  auto* tab = this->data.t2xs.load<object_table<class t2xs> >( false );
 
-  if( dbg )  {
-    log << bos77::to_string(tab) << std::endl;
-  }
-  if( !tab )  {
-    return;
-  }
-  for( uint32_t i=1; i <= tab->size(); ++i )  {
-    auto*    ah      = tab->row(i);
-    int32_t  slot    = ah->segmentId();
-    int32_t  sector  = tpcgeom.ITPSEC[slot-1];
-    uint64_t cell    = tpc.desc_system + dsc.encode(tpc.field_sector, sector);
-    track_t  track1  = this->particle_frft(ah->tracknumber1());
-    track_t  track2  = this->particle_frft(ah->tracknumber2());
+  if( tab )  {
+    printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,"+++ %s", bos77::to_string(tab).c_str() );
+    for( uint32_t i=1; i <= tab->size(); ++i )  {
+      auto*    ah      = tab->row(i);
+      int32_t  slot    = ah->segmentId();
+      int32_t  sector  = tpcgeom.ITPSEC[slot-1];
+      uint64_t cell    = tpc.desc_system + dsc.encode(tpc.field_sector, sector);
+      track_t  track1  = this->particle_frft(ah->tracknumber1());
+      track_t  track2  = this->particle_frft(ah->tracknumber2());
 
-    {
-      auto mean    = this->dedx_trunc_mean.create( _dedxOv(DEDX_TRUNCATED_MEAN, ah->truncatedMean(), 0e0));
-      auto drift   = this->dedx_avg_drift.create(  _dedxOv(DEDX_AVERAGE_DRIFT, ah->averageDrift(), 0e0));
-      auto samples = this->dedx_num_samples.create(_dedxOv(DEDX_NUM_SAMPLES, ah->numberSamples(), 0e0));
-      auto length  = this->dedx_tracklen.create(   _dedxOv(DEDX_TRACKLENGTH, ah->trackLength(), 0e0));
-      mean.setTrack(track1);
-      drift.setTrack(track1);
-      samples.setTrack(track1);
-      length.setTrack(track1);
+      {
+        auto mean    = this->dedx_trunc_mean.create( _dedxOv(DEDX_TRUNCATED_MEAN, ah->truncatedMean(), 0e0));
+        auto drift   = this->dedx_avg_drift.create(  _dedxOv(DEDX_AVERAGE_DRIFT, ah->averageDrift(), 0e0));
+        auto samples = this->dedx_num_samples.create(_dedxOv(DEDX_NUM_SAMPLES, ah->numberSamples(), 0e0));
+        auto length  = this->dedx_tracklen.create(   _dedxOv(DEDX_TRACKLENGTH, ah->trackLength(), 0e0));
+        mean.setTrack(track1);
+        drift.setTrack(track1);
+        samples.setTrack(track1);
+        length.setTrack(track1);
+      }
+      {
+        auto mean    = this->dedx_trunc_mean.create( _dedxOv(DEDX_TRUNCATED_MEAN, ah->truncatedMean(), 0e0));
+        auto drift   = this->dedx_avg_drift.create(  _dedxOv(DEDX_AVERAGE_DRIFT, ah->averageDrift(), 0e0));
+        auto samples = this->dedx_num_samples.create(_dedxOv(DEDX_NUM_SAMPLES, ah->numberSamples(), 0e0));
+        auto length  = this->dedx_tracklen.create(   _dedxOv(DEDX_TRACKLENGTH, ah->trackLength(), 0e0));
+        mean.setTrack(track2);
+        drift.setTrack(track2);
+        samples.setTrack(track2);
+        length.setTrack(track2);
+      }
+      printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,
+                "+++ \tT2XS %3d %08lX Cell:%08lX Sector:%2d Mean:%7.3f len:%s samples:%3d drift:%3.0f track:%2d/%2d",
+                i, uint64_t(ah), cell, sector, ah->truncatedMean(), fmt_len(ah->trackLength()).c_str(),
+                ah->numberSamples(), ah->averageDrift(), ah->tracknumber1(), ah->tracknumber2());
     }
-    {
-      auto mean    = this->dedx_trunc_mean.create( _dedxOv(DEDX_TRUNCATED_MEAN, ah->truncatedMean(), 0e0));
-      auto drift   = this->dedx_avg_drift.create(  _dedxOv(DEDX_AVERAGE_DRIFT, ah->averageDrift(), 0e0));
-      auto samples = this->dedx_num_samples.create(_dedxOv(DEDX_NUM_SAMPLES, ah->numberSamples(), 0e0));
-      auto length  = this->dedx_tracklen.create(   _dedxOv(DEDX_TRACKLENGTH, ah->trackLength(), 0e0));
-      mean.setTrack(track2);
-      drift.setTrack(track2);
-      samples.setTrack(track2);
-      length.setTrack(track2);
-    }
-    if( dbg )  {
-      char text[512];
-      ::snprintf(text, sizeof(text),
-                 "\tT2XS %3d %08lX Cell:%08lX Sector:%2d Mean:%7.3f len:%s samples:%3d drift:%3.0f track:%2d/%2d",
-                 i, uint64_t(ah), cell, sector, ah->truncatedMean(), fmt_len(ah->trackLength()).c_str(),
-                 ah->numberSamples(), ah->averageDrift(), ah->tracknumber1(), ah->tracknumber2());
-      log << text << std::endl;
-    }
-  }
-  if( dbg )  {
-    ::printf("%s\n", log.str().c_str());
+    ++this->data.t2xs.num_process;
   }
 }

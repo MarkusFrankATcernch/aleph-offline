@@ -30,6 +30,8 @@ void alpha::edm4hep_output::event_t::process_pfhr()  {
       2    PH  I    PHCO
                        Row index of HcalObject
   */
-  // Do not know how to resolve this: Calorimeter hits cannot attached to edm4hep::MutableTrack
+
+  /// Functionality covered by process_pcrl
+  
 }
 

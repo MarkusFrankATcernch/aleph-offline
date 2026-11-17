@@ -46,10 +46,10 @@ void alpha::edm4hep_output::event_t::process_icco()  {
       5    SZ  F    SigmaZ           [0.0,*]
                        Sigma(z)**2 (cm**2)
    */
+  bool  dbg = this->data.icco.debug;
   auto* tab = this->data.icco.load<object_table<class icco> >(true);
-  if( this->data.icco.debug )  {
-    std::cout << bos77::to_string(tab) << std::endl;
-  }
+
+  printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,"+++ %s", bos77::to_string(tab).c_str() );
   for( uint32_t i=1; i <= tab->size(); ++i )  {
     const icco*     ah  = tab->row(i);
     trackerhit_t    hit = this->hits_icco.create();

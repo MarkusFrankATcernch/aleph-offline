@@ -93,15 +93,14 @@ void alpha::edm4hep_output::event_t::process_frtl()  {
                        coordinate number in TPCO
  ..............................................................
   */
+  std::stringstream log;
   bool  dbg = this->data.frtl.debug;
   auto* tab_frtl = this->data.frtl.load<object_table<class frtl> >();
   auto* tab_fvcl = this->data.fvcl.load<object_table<class fvcl> >();
   auto* tab_ficl = this->data.ficl.load<object_table<class ficl> >();
   auto* tab_ftcl = this->data.ftcl.load<object_table<class ftcl> >();
-  std::stringstream log;
-  if( dbg )  {
-    log << bos77::to_string(tab_frtl) << std::endl;
-  }
+
+  printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,"+++ %s", bos77::to_string(tab_frtl).c_str() );
 
   for( int itk = qcde.KFCHT; itk <= qcde.KLCHT; ++itk )  {
     std::size_t itr    = itk - qcde.KFCHT + 1;
@@ -113,6 +112,7 @@ void alpha::edm4hep_output::event_t::process_frtl()  {
     const char* tag_it = nitc>0 ? " ITCO:" : "";
     const char* tag_tp = ntpc>0 ? " TPCO:" : "";
 
+    log.str("");
     if( dbg && (nvdet+nitc+ntpc)>0 )  {
       log << "  FRTL/FRFT: " << std::setw(2) << itr << " ";
     }
@@ -147,9 +147,6 @@ void alpha::edm4hep_output::event_t::process_frtl()  {
       this->link_hit_to_frft_track( itr, hit );
       if( dbg ) log << std::setw(2) << num << " ";
     }
-    if( dbg ) log << std::endl;
-  }
-  if( dbg )  {
-    ::printf("%s\n", log.str().c_str());
+    printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,"+++ %s", log.str().c_str());
   }
 }

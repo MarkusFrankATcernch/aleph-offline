@@ -48,16 +48,12 @@
 
 /// Create ITC 3D hit from ITCO row
 void alpha::edm4hep_output::event_t::process_itco()  {
-  char text[512];
-  std::stringstream log;
   auto& itc  = *this->exp.itc;
   auto& desc = itc.descriptor;
   bool  dbg  = this->data.itco.debug;
   auto* tab  = this->data.itco.load<object_table<class itco> >(true);
-  if( dbg )  {
-    log << bos77::to_string(tab) << std::endl;
-  }
 
+  printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,"+++ %s", bos77::to_string(tab).c_str() );
   for( uint32_t i=1; i <= tab->size(); ++i )  {
     class itco*  ah   = tab->row(i);
     double       r        = _LEN(ah->radius());
@@ -109,35 +105,22 @@ void alpha::edm4hep_output::event_t::process_itco()  {
     hit2.setCovMatrix( 0.0f,  edm4hep::Cartesian::z, edm4hep::Cartesian::y);
     hit2.setCovMatrix( sigz2, edm4hep::Cartesian::z, edm4hep::Cartesian::z);
 
-    if( dbg )  {
-      ::snprintf(text, sizeof(text),
-                 "\tITCO %3d %8lX Cell:%08lX Wire:%6d r:%s phi:%5.1f/%5.1f z:%s drift:%3.0f ns",
-                 i  , uint64_t(ah), cell, ah->wireNumber(),
-                 fmt_len(ah->radius()).c_str(), ah->phi1(),
-                 ah->phi2(), fmt_len(ah->zhit()).c_str(),
-                 ah->driftTime() );
-      log << text << std::endl;
-    }
-  }
-  if( dbg )  {
-    ::printf("%s\n", log.str().c_str());
+    printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,
+              "+++ \tITCO %3d %8lX Cell:%08lX Wire:%6d r:%s phi:%5.1f/%5.1f z:%s drift:%3.0f ns",
+              i  , uint64_t(ah), cell, ah->wireNumber(), fmt_len(ah->radius()).c_str(), ah->phi1(),
+              ah->phi2(), fmt_len(ah->zhit()).c_str(), ah->driftTime() );
   }
 }
 
 /// Create ITC hit planes from ITCO row
 void alpha::edm4hep_output::event_t::process_itco_planes()  {
   constexpr double halfPi = M_PI / 2.0;
-  char text[512];
-  std::stringstream log;
   auto& itc  = *this->exp.itc;
   auto& desc = itc.descriptor;
   bool  dbg  = this->data.itco.debug;
   auto* tab  = this->data.itco.load<object_table<class itco> >(true);
   
-  if( dbg )  {
-    log << bos77::to_string(tab) << std::endl;
-  }
-
+  printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,"+++ %s", bos77::to_string(tab).c_str() );
   for( uint32_t i=1; i <= tab->size(); ++i )  {
     class itco*  ah       = tab->row(i);
     double       r        = _LEN(ah->radius());
@@ -197,18 +180,10 @@ void alpha::edm4hep_output::event_t::process_itco_planes()  {
     hit2.setCovMatrix( 0.0f,  edm4hep::Cartesian::z, edm4hep::Cartesian::y);
     hit2.setCovMatrix( sigz2, edm4hep::Cartesian::z, edm4hep::Cartesian::z);
 
-    if( dbg )  {
-      ::snprintf(text, sizeof(text),
-                 "\tITCO %3d %8lX Cell:%08lX Wire:%6d r:%s phi:%5.1f/%5.1f z:%s drift:%3.0f ns",
-                 i  , uint64_t(ah), cell, ah->wireNumber(),
-                 fmt_len(ah->radius()).c_str(), ah->phi1(),
-                 ah->phi2(), fmt_len(ah->zhit()).c_str(),
-                 ah->driftTime() );
-      log << text << std::endl;
-    }
-  }
-  if( dbg )  {
-    ::printf("%s\n", log.str().c_str());
+    printout( dbg ? ALWAYS : DEBUG, __FUNCTION__,
+              "+++ \tITCO %3d %8lX Cell:%08lX Wire:%6d r:%s phi:%5.1f/%5.1f z:%s drift:%3.0f ns",
+              i  , uint64_t(ah), cell, ah->wireNumber(), fmt_len(ah->radius()).c_str(), ah->phi1(),
+              ah->phi2(), fmt_len(ah->zhit()).c_str(), ah->driftTime() );
   }
 }
 

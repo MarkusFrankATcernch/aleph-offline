@@ -59,14 +59,20 @@ namespace alpha  {
   typedef ROOT::Math::XYZVector     XYZAngles;
 
   static edm4hep::Vector3f null_position(0e0, 0e0, 0e0);
-  constexpr static const double ENECONV = (TGeoUnit::GeV/TGeant4Unit::GeV);
-  constexpr static const double LENCONV = (TGeoUnit::GeV/TGeant4Unit::GeV);
+#ifdef HAVE_GEANT4_UNITS
+  constexpr static const double ENECONV  = (TGeoUnit::GeV/TGeant4Unit::GeV);
+  constexpr static const double LENCONV  = (TGeoUnit::GeV/TGeant4Unit::GeV);
   constexpr static const double TIMECONV = (TGeoUnit::ns/TGeant4Unit::ns);
-  
-  inline double _ENE(double val) { return val * ENECONV;   }
-  inline double _LEN(double val)  { return val * LENCONV;   }
-  inline double _LEN2(double val) { return val * LENCONV * LENCONV;   }
-  inline double _TIM(double val) { return val * TIMECONV;  }
+#else
+  constexpr static const double ENECONV  = 1e0;
+  constexpr static const double LENCONV  = 1e0;
+  constexpr static const double TIMECONV = 1e0;
+#endif
+  constexpr static const double LENCONV2 = LENCONV*LENCONV;
+  inline double _ENE(double val)   { return val * ENECONV;             }
+  inline double _LEN(double val)   { return val * LENCONV;             }
+  inline double _LEN2(double val)  { return val * LENCONV2;            }
+  inline double _TIM(double val)   { return val * TIMECONV;            }
 
   /// Helper class to access BOS data structures from ALEPH
   /**
@@ -81,16 +87,24 @@ namespace alpha  {
     int32_t* get_bank_next();
 
   public:
-    int32_t  nami  {       0 };
-    int32_t  kq    {       0 };
-    int32_t* data  { nullptr };
-    bool     debug {   false };
+    int32_t     nami   {       0 };
+    int32_t     kq     {       0 };
+    int32_t*    data   { nullptr };
+    bool        debug  {   false };
+    std::string bname;
+    int64_t     num_load     { 0 };
+    int64_t     num_process  { 0 };
 
+  public:
+    /// Default destructor
+    virtual ~bank_access_t() final;
+    
     /// Load bank for event: must be called for EVERY event. Implicit call to NLINKC.
     template<typename T=int32_t> T* load(bool throw_if_not=true)  {
       if( 0 != nami )  {
-        this->data = this->get_bank_first();
-        return (T*)this->data;
+        if( (this->data = this->get_bank_first()) )  {
+          return (T*)this->data;
+        }
       }
       if( throw_if_not )  {
         throw std::runtime_error("Error: BOS bank access failed NAMI not resolved!");
