@@ -9,7 +9,7 @@
 # ==================================================================================================
 #
 find_package( X11 REQUIRED )
-SET( galeph_dir ${CMAKE_CURRENT_SOURCE_DIR} )
+SET( galeph_dir ${CMAKE_CURRENT_SOURCE_DIR}/../galeph )
 message(STATUS "+++ GALEPH:     Build library from sources: ${galeph_dir}" )
 #
 SET( tpc_dir    ${CMAKE_CURRENT_SOURCE_DIR}/../tpcsim )

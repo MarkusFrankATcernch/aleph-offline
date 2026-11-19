@@ -9,7 +9,7 @@
 # ==================================================================================================
 #
 SET( alpha_dir ${CMAKE_CURRENT_SOURCE_DIR}/../alpha )
-SET( user_dir  ${CMAKE_CURRENT_SOURCE_DIR}  )
+SET( user_dir  ${CMAKE_CURRENT_SOURCE_DIR}/../cxx  )
 #
 #
 find_package(EDM4HEP REQUIRED)
@@ -40,27 +40,27 @@ else()
 endif()
 #
 #
-#
-file( GLOB alpha_userlib_files ${user_dir}/src/*.cpp	
-			       ${user_dir}/tests/*.cpp
+# ==============================================================================
+file( GLOB alpha_userlib_files ${user_dir}/src/*.cpp
+                               ${user_dir}/tests/*.cpp
                                ${user_dir}/dd4hep/aleph_geometry.cpp
                                ${user_dir}/dd4hep/geant3_dump.cpp
                                ${user_dir}/dd4hep/geant3_geometry.cpp )
-add_library( alpha_userlib STATIC  ${alpha_userlib_files} )
+add_library( alpha_userlib STATIC ${alpha_userlib_files} )
 add_library( Aleph::alpha_userlib ALIAS alpha_userlib )
 #
 target_include_directories( alpha_userlib
    PUBLIC  ${user_dir}/include
-	   ${user_dir}/../aleph_headers
+           ${user_dir}/../aleph_headers
            ${user_dir}
 )
+#
 target_link_libraries(      alpha_userlib
-   PUBLIC
-           Aleph::alphalib
-	   Aleph::julialib
+   PUBLIC  Aleph::alphalib
+           Aleph::julialib
            Aleph::alephlib
-	   Aleph::alephio
-	   Aleph::bos77
+           Aleph::alephio
+           Aleph::bos77
            DD4hep::DDCore
            EDM4HEP::edm4hep
            EDM4HEP::edm4hepDict
@@ -74,9 +74,10 @@ target_link_libraries(      alpha_userlib
            ${ALEPH_CERN_LIBRARIES}
 )
 #
+# ==============================================================================
 include(DD4hepMacros) 
 #
-dd4hep_add_plugin(AlephGeometry SOURCES ${user_dir}/dd4hep/*.cpp
+dd4hep_add_plugin(          AlephGeometry SOURCES ${user_dir}/dd4hep/*.cpp
   USES DD4hep::DDCore ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore
 )
 target_include_directories( AlephGeometry PUBLIC  ${user_dir}/include )
@@ -95,10 +96,11 @@ target_link_libraries( alpha_user
            Aleph::alephlib
            ${ALEPH_CERN_LIBRARIES}
 )
-target_compile_options(alpha_user PUBLIC "-fpie")
-target_link_options(alpha_user PUBLIC    "-fpie")
+target_compile_options( alpha_user PUBLIC "-fpie" )
+target_link_options(    alpha_user PUBLIC "-fpie" )
 #
 #
+# ==============================================================================
 #add_executable( alpha_test  ${alpha_user_files} ${user_dir}/main/qutest.cpp
 #                            ${ALEPH_PROGRAM_SOURCES} 
 #)
@@ -109,13 +111,19 @@ target_link_options(alpha_user PUBLIC    "-fpie")
 #           Aleph::julialib
 #           Aleph::alephio
 #           Aleph::alephlib
-# 	   Aleph::bos77 Aleph::alpha_userlib
+#           Aleph::bos77 Aleph::alpha_userlib
 #           ${ALEPH_CERN_LIBRARIES}
 #)
 #target_compile_options(alpha_test PUBLIC "-fpie")
 #target_include_directories(alpha_test PUBLIC  ${user_dir} ${user_dir}/include )
 #target_link_options(alpha_test PUBLIC    "-fpie")
+#install( TARGETS alpha_test EXPORT Aleph
+#  RUNTIME DESTINATION bin
+#  ARCHIVE DESTINATION lib
+#  LIBRARY DESTINATION lib
+#)
 #
+# ==============================================================================
 dd4hep_install_dir(${user_dir}/compact DESTINATION ${CMAKE_INSTALL_PREFIX} )
 install(DIRECTORY  ${user_dir}/include/alpha  DESTINATION include)
 install(DIRECTORY  ${user_dir}/include/bos    DESTINATION include)

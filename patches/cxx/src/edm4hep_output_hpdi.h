@@ -17,29 +17,28 @@
 /// HPDI table bank: Hcal Plane DIgits (RawData)
 void alpha::edm4hep_output::event_t::process_hpdi()  {
   /**
- +------+                              Subschema: HcalRAWBanks
- | HPDI |  Hcal Plane DIgits (RawData)
- +------+
-
- ..............................................................
-     1          I    Number of words / plane (=2)
-     2          I    Number of planes
- ..............................................................
-      1    PA  I    PlaneAddres      [10101,306022]
-                       Plane address
-                       bits: 0- 7 : plane number
-                       endcaps[1,12] 89-90-91 data
-                       endcaps[1,22] 92 data
-                       barrel[1,23] 89-90-91-92 data
-                       8-15 : module number
-                       endcaps[1,6],barrel[1,24]
-                       16-23 : subdetector number [1,3]
-                       endcapA=1,Barrel=2,endcapB=3
-      2    ED  I    EnergyDepos      [0,100000]
-                       Energy in plane ( MeV)
-
--- requires process_phco run before
-
+     +------+                              Subschema: HcalRAWBanks
+     | HPDI |  Hcal Plane DIgits (RawData)
+     +------+
+    
+     ..............................................................
+         1          I    Number of words / plane (=2)
+         2          I    Number of planes
+     ..............................................................
+          1    PA  I    PlaneAddres      [10101,306022]
+                           Plane address
+                           bits: 0- 7 : plane number
+                           endcaps[1,12] 89-90-91 data
+                           endcaps[1,22] 92 data
+                           barrel[1,23] 89-90-91-92 data
+                           8-15 : module number
+                           endcaps[1,6],barrel[1,24]
+                           16-23 : subdetector number [1,3]
+                           endcapA=1,Barrel=2,endcapB=3
+          2    ED  I    EnergyDepos      [0,100000]
+                           Energy in plane ( MeV)
+    
+    -- requires process_phco run before
   */
   bool dbg = this->data.hpdi.debug;
 

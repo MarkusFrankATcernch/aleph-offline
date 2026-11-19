@@ -9,7 +9,7 @@
 # ==================================================================================================
 #
 find_package( X11 REQUIRED )
-SET( mini_dir  ${CMAKE_CURRENT_SOURCE_DIR} )
+SET( mini_dir  ${CMAKE_CURRENT_SOURCE_DIR}/../mini )
 SET( alpha_dir ${CMAKE_CURRENT_SOURCE_DIR}/../alpha )
 message(STATUS "+++ MINI:       Build library from sources: ${mini_dir}" )
 #

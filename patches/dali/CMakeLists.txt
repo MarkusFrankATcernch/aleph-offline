@@ -9,7 +9,7 @@
 # ==================================================================================================
 #
 find_package( X11 REQUIRED )
-SET( dali_dir ${CMAKE_CURRENT_SOURCE_DIR} )
+SET( dali_dir ${CMAKE_CURRENT_SOURCE_DIR}/../dali )
 message(STATUS "+++ DALI:       Build library from sources: ${dali_dir}" )
 #
 file( GLOB dali_files ${dali_dir}/*.F ${dali_dir}/*.c )

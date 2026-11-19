@@ -45,6 +45,8 @@ POT banks:
     ICCO   ItcJuliaBanks    Itc Corrected COordinates for the final track fit
     IWCR   ItcJuliaBanks    Itc Wire to Coordinate
     IDIG/PIDI ItcPOTBanks   Itc DIgitisings (NR=0)
+
+
     IASL/PASL ItcPOTBanks   JULIA track to FKIN track association list (accessed via ITMA bank).
     ITMA/PITM ItcPOTBanks   JULIA track to FKIN track association (using ITC + TPC coordinate information).
 
@@ -266,6 +268,7 @@ namespace alpha  {
     bank_access_t ficl;  // FICL table bank: Itc Geometry track Coordinate
     bank_access_t icco;  // ICCO table bank: Itc Corrected COordinates
     bank_access_t idig;  // IDIG table bank: Packed Itc DIgitisings (NR=0)
+    //bank_access_t iwcr;  // IWCR table bank: Itc Wire to Coordinate Relation (NR=0) (JUL)
 
     bank_access_t ptun;  // PTUN table bank: Units
     bank_access_t texs;  // TEXS table bank: Production output Tpc track pad dE/dX (NR=0)
@@ -395,8 +398,10 @@ namespace alpha  {
     edm4hep::MCParticleCollection        particles_mc                    {  };
     /// Container with reconstructed tracks
     edm4hep::TrackCollection             particles_reco                  {  };
-    /// Relationship between reconstructed tracks and Monte-Carlo tracks
-    track2mctrack_t                      rel_part_reco_mc                {  };
+    /// Relationship between reconstructed tracks and Monte-Carlo tracks. Link attribute: # of hits
+    track2mctrack_t                      rel_part_reco_mc_nhit           {  };
+    /// Relationship between reconstructed tracks and Monte-Carlo tracks. Link attribute: Chisquare of match
+    track2mctrack_t                      rel_part_reco_mc_chi2           {  };
 
     edm4hep::TrackCollection             calorimeter_objects             {  };
 
@@ -438,6 +443,9 @@ namespace alpha  {
     /// ITC R-Phi hits (ambiguity)
     trackerhits_t                        hits_itco2                      {  };
     trackerplanehits_t                   hitplanes_itco2                 {  };
+
+
+    
     /// TPC corrected coordinates
     trackerhits_t                        hits_tpco                       {  };
     trackerplanehits_t                   hitplanes_tpco                  {  };
@@ -903,14 +911,19 @@ void alpha::edm4hep_output::end_event(event_t& event)  {
     pio.put_params(event.eveh_properties);
     pio.put_params(event.eveh_properties);
   }
-  if( this->save_mc_particles   ) pio.put(event.particles_mc,     "MCParticles" );
-  if( this->save_charged_tracks ) pio.put(event.particles_reco,   "ChargedTracks" );
-  if( this->save_mc_particles && this->save_charged_tracks )
-    pio.put(event.rel_part_reco_mc,                "TrackMCRelations" );
-
-  if( this->save_vdet_reco ) {
+  if( this->save_mc_particles   )  {
+    pio.put(event.particles_mc,                    "MCParticles" );
+  }
+  if( this->save_charged_tracks )  {
+    pio.put(event.particles_reco,                  "ChargedTracks" );
+  }
+  if( this->save_mc_particles && this->save_charged_tracks )  {
+    pio.put(event.rel_part_reco_mc_nhit,           "TrackMCRelations_nhit" );
+    pio.put(event.rel_part_reco_mc_chi2,           "TrackMCRelations_chi2" );
+  }
+  if( this->save_vdet_reco )  {
     pio.put(event.hits_vdco,                       "VDCO_Hits" );
-    //pio.put(event.hitplanes_vdco,                  "VDCO_HitPlanes" );
+    pio.put(event.hitplanes_vdco,                  "VDCO_HitPlanes" );
   }
   if( this->save_vdet_sim )  {
     pio.put(event.hits_vdxy,                       "VDXY_Hits" );
@@ -1219,7 +1232,6 @@ alpha::edm4hep_output::data_access_t::data_access_t(const std::string& debug_ban
   this->config_data(this->icco, "ICCO", debug_banks);
   this->config_data(this->iasl, "IASL", debug_banks);
   this->config_data(this->itma, "ITMA", debug_banks);
-  this->config_data(this->iasl, "IASL", debug_banks);
 
   this->config_data(this->tpco, "TPCO", debug_banks);
   this->config_data(this->ftcl, "FTCL", debug_banks);
@@ -1477,6 +1489,7 @@ namespace  {
 #include "edm4hep_output_mc_particles.h"
 #include "edm4hep_output_charged_tracks.h"
 
+/// JULIA track to FKIN track association list (accessed via ITMA bank).
 #include "edm4hep_output_iasl.h"
 
 /// VDET coordinated NR=0 (POT)

@@ -80,6 +80,92 @@ namespace alpha  {
    *    \date    01/08/2026
    */
   class detector_itc_t : public detector_t  {
+    /// Decode Itc DIGitisings
+    /**
+     *  +------+                            Subschema: ItcEventRecord                
+     *  | IDIG |  Itc DIGitisings (ordered by 
+     *  +------+  increasing wire number)  (RAW)
+     *  ..............................................................                
+     *      1          I    Number of words/digit. (=1)                               
+     *      2          I    Number of digits                                          
+     *  ..............................................................                
+     *       1    PD  I    PackedDigit      [*,*]                                     
+     *                        ITC digits. info. packed into                           
+     *                        a 32 bit word.                                          
+     *                        10 bits wire number - bits 0 - 9,                       
+     *                        9 bits r-phi TDC - bits 10 - 18,                        
+     *                        9 bits Z TDC - bits 19 - 27,                            
+     *                        2 bits quality flag- bits 28 - 29,                      
+     *                        2 bits spare - bits 30 - 31. (least                     
+     *                        signif. bit = bit 0).                                   
+     *  ..............................................................
+     *       
+     *  See: alephlib/ides/igeomw.F
+     *       alephlib/itc/icrcoo.F
+     *       alephlib/itc/itswco.F
+     *       
+     *    \author  M.Frank
+     *    \date    01/08/2026
+     */
+    class DigitDecoder  {
+    public:
+      int32_t _address;
+
+      // alephlib/ides/igeomw.F:
+      static constexpr int32_t NWIR[8] = { 96,    96,    96,    96,   144,   144,   144,   144    };
+      static constexpr int32_t IWIR[8] = {  0,    96,   192,   288,   384,   528,   672,   816    };
+      static constexpr float   RWIR[8] = { 16.11, 17.20, 18.70, 19.79, 21.68, 23.01, 24.69, 26.02 };
+      static constexpr float   PHWR[8] = {  0.,    1.,    0.,    1.,    0.,    1.,    0.,    1.   };
+      static constexpr float   SGMXIT  =    0.010;
+      static constexpr float   WZMXIT  =  100.;
+      static constexpr float   twopi   =    2.0e0 * M_PI;
+      //
+      // IWIRIT(I) = IWIR(I)
+      // NWIRIT(I) = NWIR(I)
+      // RWIRIT(I) = RWIR(I)
+      // CELWIT(I) = TWOPI*RWIR(I)/FLOAT(NWIR(I))
+      // PHWRIT(I) = PI*PHWR(I)/FLOAT(NWIR(I))
+      //
+    public:
+      DigitDecoder(int32_t addr) : _address(addr)  {      }
+      int32_t digit()  const     {  return this->_address;                 }
+      int32_t wire()  const      {  return (this->_address)     & 0x3FF;   }
+      int32_t tdc_rphi()  const  {  return (this->_address>>10) & 0x1FF;   }
+      int32_t tdc_z()  const     {  return (this->_address>>18) & 0x1FF;   }
+      int32_t quality()  const   {  return (this->_address>>27) & 0x3;     }
+      int32_t _spare()  const    {  return (this->_address>>29) & 0x3;     }
+      
+      /// Layer number starting from 'offset'
+      int32_t layer(int32_t offset=0)  const     {
+        auto w = this->wire();
+        if( w < IWIR[4] ) return (w-1)/NWIR[0] + offset;
+        return ((w-IWIR[4]-1)/NWIR[4]) + 4 + offset;
+      }
+      /// 
+      float phi()  const         {  // See: igeomw.F, itswco.F
+        int32_t wir  = this->wire();
+        int32_t lay  = this->layer();
+        int32_t ind  = IWIR[lay];
+        float   j    = float(wir - ind - 1);
+        float   phsw = M_PI * ( j*2e0 + PHWR[lay] ) / float(NWIR[lay]);
+        return (phsw < 0e0) ? phsw + twopi : ((phsw > twopi) ? phsw - twopi : phsw);
+      }
+#if 0
+      float r()  const           { // itswco.F
+        float tdiff = ;
+        float sag   = SGMXIT * (1.0 - ()*() );
+        float value = RWIR[this->layer(0)];
+        return value;
+      }
+      float z0()  const  {         // itswco.F
+        //int32_t tdiff =
+        return 0x0;
+      }
+      float sigmaZ0()  const  {
+        return 0x0;
+      }
+#endif
+    };
   public:
     const Field* field_layer = nullptr;
     const Field* field_wire  = nullptr;
@@ -208,6 +294,43 @@ namespace alpha  {
   public:
     const Field* field_barrel = nullptr;
     const Field* field_layer  = nullptr;
+
+    /// Decode HCAL wire/cluster address
+    /**
+     * See: HWDI:   Hcal Wire (tube) DIgits(RawData)
+     *      HLWD:   Hcal Longitudinal Wire Digit        
+     * ..............................................................                
+     *     1          I    Nb of words/wirecluster (=1)                              
+     *     2          I    Number of clusters                                        
+     * ..............................................................                
+     *      1    CA  I    ClusterAddr      [*,*]                                     
+     *                       Cluster address and width                               
+     *                       bits: 0- 7 : address of last tube                       
+     *                       in cluster [1,255]                                      
+     *                       8-15 : cluster width [1,15]                             
+     *                       16-23 : layer number [0,22]                             
+     *                       24-31 : electronic module number                        
+     *                       [1,36]                                                  
+     *                       1-12 end-cap A                                          
+     *                       13-24 barrel                                            
+     *                       25-36 end-cap B                                         
+     *    \author  M.Frank
+     *    \date    01/08/2026
+     */
+    class WireDecoder  {
+    public:
+      int32_t _address;
+    public:
+      WireDecoder(int32_t addr) : _address(addr)  {                         }
+      int32_t address()  const   {  return this->_address;                  }
+      int32_t tube()  const      {  return (this->_address)     & 0xFF;     }
+      int32_t width()  const     {  return (this->_address>>8)  & 0x1F;     }
+      int32_t layer()  const     {  return (this->_address>>16) & 0x1F;     }
+      int32_t module()  const    {  return (this->_address>>24) & 0xFF;     }
+      bool    is_endcapA() const {  return this->module() < 13;             }
+      bool    is_endcapB() const {  return this->module() > 24;             }
+      bool    is_barrel() const  {  return !(is_endcapA() || is_endcapB()); }
+    };
   public:
     /// Default constructor
     detector_hcal_t();

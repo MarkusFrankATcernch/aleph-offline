@@ -98,52 +98,51 @@ void alpha::edm4hep_output::event_t::process_peco()  {
       process_pest();
       process_etdi();
       
-ETHT (GALEPH)
-   |
-   v
-ETDI (JULIA)                      
-   |
-   v
-PEST.ED                 ---------> ECAL dead storey row index in EDDB
-   |
-PEST.ET                 ---------> PECO row number
-   |
-   +---> ETDI row number
-                  |
-                  v
-              ETDI.TL = ITABL(KETDI,IETDI,JETDTL)
-                  |
-                  v
-             Packed IADD
-                  |
-          +-------+-------+
-          |               |
-          v               v
-      IBITS(16,8)     IBITS(2,9)
-          |               |
-          v               v
-          TJ (ITHETA)    FI (IPHI)
-          |               |
-          +-------+-------+
-                  |
-                  v
-        CALL ESRDIR(TJ+0.5,FI+0.5,THETA,PHI)
-                  |
-                  v
-           Physical direction in radians
-
-Get Module:
-CALL ECSCMD ( IPHI,ITETA,IMOD,ISC) 
-IGMOD = (ISC-1)*12+IMOD
-
-  -- Clusters get updated in               process_pewi()
-     with T0 and layer wire digits as linked by PRPW
-  -- Clusters get updated in               process_pept()
-     with stack 1/2/3 sub-clusters and tower positions of stacks
-  -- Clusters get linked to FRFT tracks in process_pcrl()
-                         to CalObjects ( this->calobj2frft and this->frft2calobj )
-  -- Clusters get linked to MC   tracks in process_pemh()
-
+    ETHT (GALEPH)
+       |
+       v
+    ETDI (JULIA)                      
+       |
+       v
+    PEST.ED                 ---------> ECAL dead storey row index in EDDB
+       |
+    PEST.ET                 ---------> PECO row number
+       |
+       +---> ETDI row number
+                      |
+                      v
+                  ETDI.TL = ITABL(KETDI,IETDI,JETDTL)
+                      |
+                      v
+                 Packed IADD
+                      |
+              +-------+-------+
+              |               |
+              v               v
+          IBITS(16,8)     IBITS(2,9)
+              |               |
+              v               v
+              TJ (ITHETA)    FI (IPHI)
+              |               |
+              +-------+-------+
+                      |
+                      v
+            CALL ESRDIR(TJ+0.5,FI+0.5,THETA,PHI)
+                      |
+                      v
+               Physical direction in radians
+    
+    Get Module:
+    CALL ECSCMD ( IPHI,ITETA,IMOD,ISC) 
+    IGMOD = (ISC-1)*12+IMOD
+    
+      -- Clusters get updated in               process_pewi()
+         with T0 and layer wire digits as linked by PRPW
+      -- Clusters get updated in               process_pept()
+         with stack 1/2/3 sub-clusters and tower positions of stacks
+      -- Clusters get linked to FRFT tracks in process_pcrl()
+                             to CalObjects ( this->calobj2frft and this->frft2calobj )
+      -- Clusters get linked to MC   tracks in process_pemh()
   */
   bool  dbg  = this->data.phco.debug;
   auto* peco = this->data.peco.load<object_table<class peco> >(true);

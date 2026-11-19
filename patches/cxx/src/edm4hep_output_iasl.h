@@ -47,9 +47,13 @@ void alpha::edm4hep_output::event_t::process_iasl()  {
       for( ; nass > 0; --nass,++ipa )  {
         const class iasl* pa = iasl->at(ipa);
         int32_t fkin = pa->fkin();
-        int32_t nhit = pa->numberHits(); // Number of shared hits. Save as weight
+        // Number of shared hits. Save as weight
+        int32_t nhit = pa->numberHits();
+        // Chi**2 of comparison of helix params. of FRFT and FKIN track
+        float   chi2 = pa->chiSquared();
         auto mcpart  = this->particle_mc_fkin(fkin);
-        _set_link(rel_part_reco_mc, track, mcpart, nhit);
+        _set_link(rel_part_reco_mc_nhit, track, mcpart, nhit);
+        _set_link(rel_part_reco_mc_chi2, track, mcpart, chi2);
       }
     }
   }
